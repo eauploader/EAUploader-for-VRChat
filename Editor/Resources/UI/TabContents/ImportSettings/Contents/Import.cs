@@ -86,7 +86,10 @@ namespace EAUploader.UI.ImportSettings
             ApplyTheme(ThemeUtility.GetCurrentTheme());
 
             root.Q<Label>("version").text = EAUploaderCore.GetVersion();
+            /*
+            v1.4.4- 停止
             root.Q<ShadowButton>("send_feedback").clicked += () => DiscordWebhookSender.OpenDiscordWebhookSenderWindow();
+            */
             root.Q<ShadowButton>("open_logreport").clicked += () => GenerateLogReport();
             root.Q<ShadowButton>("exit_unity").clicked += () =>
             {
@@ -99,22 +102,22 @@ namespace EAUploader.UI.ImportSettings
 
         private static void GenerateLogReport()
         {
-            const string DISCORD_WEBHOOK_URL = "https://ptb.discord.com/api/webhooks/1236925621871968266/LKVhFhjJADqBc5Pw11klIWGZL1a-pDKK_mzx5WGXjVLqpNCB7h303gJekr_Bbbplsq-t";
+            const string DISCORD_WEBHOOK_URL = "";
 
             Action action = async () =>
             {
-
+                /*
                 try
                 {
                     var filePath = Directory.GetFiles(EAULogger.GetLogFolderFullPath())
                         .OrderByDescending(f => File.GetLastWriteTime(f))
                         .FirstOrDefault();
 
-                if (filePath == null)
-                {
-                    DialogPro.Show(DialogType.Info, T7e.Get("Open log report"), T7e.Get("Could not find log file to send."), true);
-                    return;
-                }
+                    if (filePath == null)
+                    {
+                        DialogPro.Show(DialogPro.DialogType.Info, T7e.Get("Open log report"), T7e.Get("Could not find log file to send."), true);
+                        return;
+                    }
 
                     using var form = new MultipartFormDataContent();
                     using var fileContent = new ByteArrayContent(File.ReadAllBytes(filePath));
@@ -123,30 +126,35 @@ namespace EAUploader.UI.ImportSettings
                     form.Add(fileContent, "file", Path.GetFileName(filePath));
                     HttpResponseMessage response = await client.PostAsync(DISCORD_WEBHOOK_URL, form);
 
-
                     // 送信成功
                     if (response.IsSuccessStatusCode)
                     {
-                        DialogPro.Show(DialogType.Success, T7e.Get("Open log report"), T7e.Get("Transmission was successful. Thank you."), true);
+                        DialogPro.Show(DialogPro.DialogType.Success, T7e.Get("Open log report"), T7e.Get("Transmission was successful. Thank you."), true);
                         return;
                     }
 
-
                     // 送信失敗
-                    DialogPro.Show(DialogType.Info, T7e.Get("Open log report"), T7e.Get("Transmission was failed."), true);
+                    DialogPro.Show(DialogPro.DialogType.Info, T7e.Get("Open log report"), T7e.Get("Transmission failed."), true);
                     return;
-
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
-                    DialogPro.Show(DialogType.Info, T7e.Get("Open log report"), T7e.Get("Transmission was failed."), true);
+                    DialogPro.Show(DialogPro.DialogType.Info, T7e.Get("Open log report"), T7e.Get("Transmission failed."), true);
                     Debug.LogError(ex);
                     return;
                 }
-
-
+                */
+                // ウィンドウを閉じる処理
+                var dialogProWindow = EditorWindow.GetWindow<DialogPro>();
+                if (dialogProWindow != null)
+                {
+                    dialogProWindow.Close();
+                }
             };
 
-            DialogPro.Show(DialogType.Info, T7e.Get("Open log report"), T7e.Get("Press the \"Send\" button to send the log report.\nSubmissions are irrevocable."), "送信", action,false);
+            DialogPro.Show(DialogPro.DialogType.Info, T7e.Get("Open log report"), T7e.Get("The folder where the log files are stored is opened."), "OK", action, true);
+            
+            // ログフォルダを開く
             string LogFolderFullPath = EAULogger.GetLogFolderFullPath();
             System.Diagnostics.Process.Start(LogFolderFullPath);
         }
