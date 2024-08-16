@@ -19,6 +19,8 @@ namespace EAUploader.UI.ImportSettings
         private static ScrollView modelList;
         private static SortOrder sortOrder = SortOrder.LastModifiedDescending;
         private static FilterOrder filterOrder = FilterOrder.NotShowHiddenModels;
+        private static GenreFilter selectedGenreFilter = GenreFilter.Avatar; // デフォルトをAvatarに設定
+        private static bool isUpdatingModelList = false; // フラグでリスト描画を制御
 
         public enum SortOrder
         {
@@ -33,6 +35,15 @@ namespace EAUploader.UI.ImportSettings
             NotShowHiddenModels,
             ShowHiddenModels,
             ShowOnlyHiddenModels
+        }
+
+        // 新しくGenreフィルタを追加
+        public enum GenreFilter
+        {
+            Avatar,
+            Cloth,
+            Accessory,
+            Other
         }
 
         public static void ShowContent(VisualElement rootElement)
@@ -80,6 +91,22 @@ namespace EAUploader.UI.ImportSettings
                 UpdateModelList();
             });
 
+            var genreDropdown = new DropdownField("", new List<string>
+            {
+                "Avatar",
+                "Cloth",
+                "Accessory",
+                "Other"
+            }, 0);
+            genreDropdown.RegisterValueChangedCallback(evt =>
+            {
+                selectedGenreFilter = (GenreFilter)genreDropdown.index;
+                UpdateModelList();
+            });
+
+            var genrebar = root.Q<VisualElement>("filterbar");
+            genrebar.Add(genreDropdown);
+
             var libraryFoldButton = root.Q<VisualElement>("library_fold_button");
             var icon = libraryFoldButton.Q<MaterialIcon>();
             icon.icon = Main.isLibraryOpen ? "chevron_right" : "chevron_left";
@@ -88,9 +115,6 @@ namespace EAUploader.UI.ImportSettings
                 Main.ToggleLibrary();
                 icon.icon = Main.isLibraryOpen ? "chevron_right" : "chevron_left";
             });
-
-            var filterbar = root.Q<VisualElement>("filterbar");
-            filterbar.Add(filterDropdown);
 
             if (EAUploaderCore.HasVRM)
             {
@@ -137,11 +161,11 @@ namespace EAUploader.UI.ImportSettings
                         case ".unitypackage":
                             AssetDatabase.ImportPackage(path, false);
                             break;
-#if HAS_VRM
+    #if HAS_VRM
                         case ".vrm":
                             VRMImporter.ImportVRM(path);
                             break;
-#endif
+    #endif
                     }
                 }
             }
@@ -164,23 +188,30 @@ namespace EAUploader.UI.ImportSettings
 
         internal static async void UpdateModelList()
         {
+            if (isUpdatingModelList) return;
+            isUpdatingModelList = true;
+
             await Task.Yield();
             var searchQuery = root.Q<TextField>("searchQuery").value;
             UpdatePrefabsWithPreview(searchQuery);
 
             modelList.Clear();
-            AddPrefabsToModelListAsync();
+            await AddPrefabsToModelListAsync();
+
+            isUpdatingModelList = false;
         }
 
         private static void UpdatePrefabsWithPreview(string searchValue = "")
         {
             prefabsWithPreview = PrefabManager.GetAllPrefabsIncludingHidden();
 
+            // 検索条件に基づくフィルタリング
             if (!string.IsNullOrEmpty(searchValue))
             {
                 prefabsWithPreview = prefabsWithPreview.Where(prefab => prefab.Name.Contains(searchValue)).ToList();
             }
 
+            // ソート条件に基づくフィルタリング
             switch (sortOrder)
             {
                 case SortOrder.LastModifiedDescending:
@@ -197,20 +228,43 @@ namespace EAUploader.UI.ImportSettings
                     break;
             }
 
+            // フィルター条件に基づくフィルタリング
             switch (filterOrder)
             {
                 case FilterOrder.NotShowHiddenModels:
                     prefabsWithPreview = prefabsWithPreview.Where(p => p.Status != EAUploaderMeta.PrefabStatus.Hidden).ToList();
                     break;
                 case FilterOrder.ShowHiddenModels:
+                    // 何もする必要がない
                     break;
                 case FilterOrder.ShowOnlyHiddenModels:
                     prefabsWithPreview = prefabsWithPreview.Where(p => p.Status == EAUploaderMeta.PrefabStatus.Hidden).ToList();
                     break;
             }
+
+            // **ジャンルフィルタに基づくフィルタリングのみを行う**
+            prefabsWithPreview = prefabsWithPreview.Where(p => p.Genre == GetSelectedGenre()).ToList();
         }
 
-        private static async void AddPrefabsToModelListAsync()
+        // ジャンルフィルタの選択を直接返す関数
+        private static EAUploaderMeta.PrefabGenre GetSelectedGenre()
+        {
+            switch (selectedGenreFilter)
+            {
+                case GenreFilter.Avatar:
+                    return EAUploaderMeta.PrefabGenre.Avatar;
+                case GenreFilter.Cloth:
+                    return EAUploaderMeta.PrefabGenre.Cloth;
+                case GenreFilter.Accessory:
+                    return EAUploaderMeta.PrefabGenre.Accessory;
+                case GenreFilter.Other:
+                    return EAUploaderMeta.PrefabGenre.Other;
+                default:
+                    return EAUploaderMeta.PrefabGenre.Other; // デフォルトはOtherにしておく
+            }
+        }
+
+        private static async Task AddPrefabsToModelListAsync()
         {
             foreach (var prefab in prefabsWithPreview)
             {
@@ -234,7 +288,6 @@ namespace EAUploader.UI.ImportSettings
             if (prefab != null)
             {
                 prefab.Status = EAUploaderMeta.PrefabStatus.Hidden;
-                Debug.Log($"Hide prefab to {prefab.Status}");
                 PrefabManager.SavePrefabsInfo(allPrefabs);
                 ManageModels.UpdateModelList();
             }
@@ -252,6 +305,7 @@ namespace EAUploader.UI.ImportSettings
             }
         }
     }
+
 
     internal class PrefabItem : VisualElement
     {

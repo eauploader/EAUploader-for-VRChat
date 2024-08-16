@@ -251,5 +251,25 @@ namespace EAUploader.CustomPrefabUtility
             PrefabUtility.SaveAsPrefabAsset(prefab, path);
             ImportPrefab(path);
         }
+
+        public static void SetPrefabType(string path, EAUploaderMeta.PrefabType type)
+        {
+            var prefabInfo = prefabs.FirstOrDefault(p => p.Path == path);
+            if (prefabInfo != null)
+            {
+                prefabInfo.SetType(type);
+                SavePrefabsInfo(prefabs);
+            }
+        }
+
+        public static void SetPrefabGenre(string path, EAUploaderMeta.PrefabGenre genre)
+        {
+            var prefabInfo = prefabs.FirstOrDefault(p => p.Path == path);
+            if (prefabInfo != null)
+            {
+                prefabInfo.SetGenre(genre);
+                SavePrefabsInfo(prefabs);
+            }
+        }
     }
 }

@@ -1,12 +1,11 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEditor.UIElements;
 using EAUploader.UI.Components;
 using EAUploader.CustomPrefabUtility;
 using EAUploader.Components;
 using System;
-using System.IO;
+using System.Collections.Generic;
 
 namespace EAUploader.UI.Windows
 {
@@ -18,6 +17,10 @@ namespace EAUploader.UI.Windows
         [MenuItem("EAUploader/Avatar Settings")]
         public static AvatarSettingsWindow ShowWindow()
         {
+            // ウィンドウがすでに開かれている場合は新たに開かない
+            if (HasOpenInstances<AvatarSettingsWindow>())
+                return GetWindow<AvatarSettingsWindow>();
+
             AvatarSettingsWindow wnd = GetWindow<AvatarSettingsWindow>();
             wnd.titleContent = new GUIContent("Avatar Settings");
             return wnd;
@@ -45,6 +48,8 @@ namespace EAUploader.UI.Windows
             var genreDropdown = rootVisualElement.Q<DropdownField>("genreDropdown");
             if (genreDropdown != null)
             {
+                // 選択肢を動的に設定
+                genreDropdown.choices = new List<string> { "Avatar", "Cloth", "Accessory" };
                 var genre = PrefabManager.GetPrefabGenre(prefabPath);
                 if (genre != null)
                 {
@@ -80,12 +85,14 @@ namespace EAUploader.UI.Windows
                 return;
             }
 
+            // ボタンとフィールドのイベントを設定
             renameButton.clicked += () => RenamePrefab(renameTextField.value);
             duplicateButton.clicked += DuplicatePrefab;
             closeButton.clicked += Close;
             genreDropdown.RegisterValueChangedCallback(evt => ChangePrefabGenre(evt.newValue));
 
             UpdatePreviewImage();
+            UpdateGenreDropdown(); // ドロップダウンの初期化
         }
 
         private void RenamePrefab(string newName)

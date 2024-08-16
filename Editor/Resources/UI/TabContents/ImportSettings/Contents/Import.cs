@@ -1,4 +1,5 @@
 ﻿using EAUploader.CustomPrefabUtility;
+using EAUploader.Components;
 using EAUploader.UI.Components;
 using EAUploader.UI.Windows;
 using System;
@@ -190,13 +191,45 @@ namespace EAUploader.UI.ImportSettings
             switch (fileExtension)
             {
                 case ".prefab":
+                    // プレハブのインポート
                     AssetDatabase.ImportAsset(filePath, ImportAssetOptions.Default);
+                    var importedPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(filePath);
+
+                    if (importedPrefab != null)
+                    {
+                        HandlePrefabImport(importedPrefab, filePath);
+                    }
                     break;
+
                 case ".unitypackage":
                     AssetDatabase.ImportPackage(filePath, false);
                     break;
             }
             AssetDatabase.Refresh();
+        }
+
+        private static void HandlePrefabImport(GameObject prefab, string filePath)
+        {
+            bool hasAvatarDescriptor = Utility.CheckAvatarHasVRCAvatarDescriptor(prefab);
+
+            if (hasAvatarDescriptor)
+            {
+                // AvatarDescriptorを持っている場合、ジャンルとタイプをAvatarに設定
+                PrefabManager.SetPrefabType(filePath, EAUploaderMeta.PrefabType.VRChat);
+                PrefabManager.SetPrefabGenre(filePath, EAUploaderMeta.PrefabGenre.Avatar);
+                Debug.Log($"Prefab '{filePath}' is set as Avatar.");
+            }
+            else
+            {
+                // AvatarDescriptorを持っていない場合、タイプをOtherに設定し、アバター設定ウィンドウを開く
+                PrefabManager.SetPrefabType(filePath, EAUploaderMeta.PrefabType.Other);
+                PrefabManager.SetPrefabGenre(filePath, EAUploaderMeta.PrefabGenre.Other);
+                Debug.Log($"Prefab '{filePath}' is set as Other. Opening Avatar Settings Window...");
+
+                // Avatar Settings ウィンドウを開く
+                var avatarSettingsWindow = AvatarSettingsWindow.ShowWindow();
+                avatarSettingsWindow.SetPrefabPath(filePath, AssetPreview.GetAssetPreview(prefab));
+            }
         }
 
         private static void ImportAllAssetsFromFolder(string folderPath)

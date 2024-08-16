@@ -33,13 +33,7 @@
 
                     <ui:VisualElement class="flex-row justify-between items-center pb-2">
                         <ui:Label text="Prefab Genre" class="text-lg font-medium" />
-                        <ui:DropdownField name="genreDropdown" class="flex-1 ml-2">
-                            <ui:Choices>
-                                <ui:Choice text="Avatar" value="Avatar" />
-                                <ui:Choice text="Cloth" value="Cloth" />
-                                <ui:Choice text="Accessory" value="Accessory" />
-                            </ui:Choices>
-                        </ui:DropdownField>
+                        <ui:DropdownField name="genreDropdown" class="flex-1 ml-2" />
                     </ui:VisualElement>
 
                     <eau:ShadowButton name="closeButton" text="Close" class="mt-4" />
