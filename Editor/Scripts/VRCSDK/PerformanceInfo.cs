@@ -54,10 +54,12 @@ public class PerformanceInfoComputer
             case AvatarPerformanceCategory.SkinnedMeshCount: return $"{stats.skinnedMeshCount}";
             case AvatarPerformanceCategory.MeshCount: return $"{stats.meshCount}";
             case AvatarPerformanceCategory.MaterialCount: return $"{stats.materialCount}";
+            /* Good-bye DynamicBone!!
             case AvatarPerformanceCategory.DynamicBoneComponentCount: return $"{stats.dynamicBone?.componentCount}";
             case AvatarPerformanceCategory.DynamicBoneSimulatedBoneCount: return $"{stats.dynamicBone?.transformCount}";
             case AvatarPerformanceCategory.DynamicBoneColliderCount: return $"{stats.dynamicBone?.colliderCount}";
             case AvatarPerformanceCategory.DynamicBoneCollisionCheckCount: return $"{stats.dynamicBone?.collisionCheckCount}";
+            */
             case AvatarPerformanceCategory.PhysBoneComponentCount: return $"{stats.physBone?.componentCount}";
             case AvatarPerformanceCategory.PhysBoneTransformCount: return $"{stats.physBone?.transformCount}";
             case AvatarPerformanceCategory.PhysBoneColliderCount: return $"{stats.physBone?.colliderCount}";
