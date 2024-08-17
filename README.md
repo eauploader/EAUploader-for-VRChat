@@ -12,9 +12,9 @@ Unity Extension Editor for easy uploading of avatars to VRChat.
 `VRChat Creator Companion` or `ALCOM` is required.
 
 
-# v1.4.3 was released!
-* Dialog proの重複を修正
-* vpmDependenciesを修正
+# v1.4.4 was released!
+* 修正
+* VRCSDK v3.7.0 対応
 
 ## ⭐ Join us on Discord!
 Discordに参加し、フィードバックやご意見を是非お聞かせください。

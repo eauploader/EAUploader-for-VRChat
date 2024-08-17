@@ -784,6 +784,10 @@
     {
       "key": "Unlink from VRChat",
       "value": "VRChatとの紐づけを切る"
+    },
+    {
+      "key": "The folder where the log files are stored is opened.",
+      "value": "ログファイルが保存されているフォルダを開きました。"
     }
   ]
 }
