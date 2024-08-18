@@ -39,12 +39,34 @@ namespace EAUploader.CustomPrefabUtility
         public static void ImportPrefab(string prefabPath)
         {
             GameObject prefab = GetPrefab(prefabPath);
-            var existingMeta = prefab.GetComponent<EAUploaderMeta>();
-            if (existingMeta == null)
+            var meta = Utility.GetEAUploaderMeta(prefab);
+            meta.type = GetPrefabType(prefabPath);
+            meta.status = GetPrefabStatus(prefabPath);
+            meta.genre = GetPrefabGenre(prefabPath);
+            EditorUtility.SetDirty(meta);
+            AssetDatabase.SaveAssets();
+
+            PrefabInfo prefabInfo = new PrefabInfo
             {
-                var meta = prefab.AddComponent<EAUploaderMeta>();
-                meta.type = GetPrefabType(prefabPath);
+                Path = prefabPath,
+                Name = Path.GetFileNameWithoutExtension(prefabPath),
+                LastModified = File.GetLastWriteTime(prefabPath),
+                Type = GetPrefabType(prefabPath),
+                Status = GetPrefabStatus(prefabPath),
+                Genre = GetPrefabGenre(prefabPath)
+            };
+
+            if (prefabs == null)
+            {
+                prefabs = new List<PrefabInfo>();
             }
+
+            if (prefabs.Find(p => p.Path == prefabPath) == null)
+            {
+                prefabs.Add(prefabInfo);
+            }
+
+            SavePrefabsInfo(prefabs);
 
             Texture2D preview = PrefabPreview.GeneratePreview(prefab);
             PrefabPreview.SavePrefabPreview(prefabPath, preview);
@@ -125,21 +147,29 @@ namespace EAUploader.CustomPrefabUtility
             return allPrefabs;
         }
 
-        private static PrefabInfo CreatePrefabInfo(string path)
+        private static PrefabInfo CreatePrefabInfo(string prefabPath)
         {
+            GameObject prefab = GetPrefab(prefabPath);
+            var meta = Utility.GetEAUploaderMeta(prefab);
+            meta.type = GetPrefabType(prefabPath);
+            meta.status = GetPrefabStatus(prefabPath);
+            EditorUtility.SetDirty(meta);
+            AssetDatabase.SaveAssets();
+
             return new PrefabInfo
             {
-                Path = path,
-                Name = Path.GetFileNameWithoutExtension(path),
-                LastModified = File.GetLastWriteTime(path),
-                Type = GetPrefabType(path),
-                Status = GetPrefabStatus(path)
+                Path = prefabPath,
+                Name = Path.GetFileNameWithoutExtension(prefabPath),
+                LastModified = File.GetLastWriteTime(prefabPath),
+                Type = GetPrefabType(prefabPath),
+                Status = GetPrefabStatus(prefabPath),
+                Genre = GetPrefabGenre(prefabPath)
             };
         }
 
         private static EAUploaderMeta.PrefabType GetPrefabType(string path)
         {
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            GameObject prefab = GetPrefab(path);
             if (prefab != null)
             {
                 if (prefab.GetComponent("VRC_AvatarDescriptor") != null)
@@ -152,10 +182,20 @@ namespace EAUploader.CustomPrefabUtility
 
         private static EAUploaderMeta.PrefabStatus GetPrefabStatus(string path)
         {
-            var allPrefabsInfo = LoadPrefabsInfo();
-            var prefabInfo = allPrefabsInfo.FirstOrDefault(info => info.Path == path);
+            var meta = Utility.GetEAUploaderMeta(GetPrefab(path));
+            return meta.status;
+        }
 
-            return prefabInfo?.Status ?? EAUploaderMeta.PrefabStatus.Other;
+        public static EAUploaderMeta.PrefabGenre GetPrefabGenre(string path)
+        {
+            var meta = Utility.GetEAUploaderMeta(GetPrefab(path));
+
+            if (meta != null)
+            {
+                return meta.genre;
+            }
+
+            return EAUploaderMeta.PrefabGenre.Other;
         }
 
         public static GameObject GetPrefab(string prefabPath)
@@ -165,34 +205,23 @@ namespace EAUploader.CustomPrefabUtility
 
         public static void ChangePrefabGenre(string path, EAUploaderMeta.PrefabGenre newGenre)
         {
-            var prefab = prefabs.FirstOrDefault(p => p.Path == path);
+            var prefab = prefabs.Find(p => p.Path == path);
             if (prefab != null)
             {
                 prefab.Genre = newGenre;
 
-                var asset = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                if (asset != null)
-                {
-                    var metaComponent = asset.GetComponent<EAUploaderMeta>();
-                    if (metaComponent != null)
-                    {
-                        metaComponent.genre = newGenre;
-                        EditorUtility.SetDirty(metaComponent);
-                        AssetDatabase.SaveAssets();
-                    }
-                }
-            }
-        }
+                var mett = Utility.GetEAUploaderMeta(GetPrefab(path));
+                mett.genre = newGenre;
+                EditorUtility.SetDirty(mett);
+                AssetDatabase.SaveAssets();
 
-        public static EAUploaderMeta.PrefabGenre? GetPrefabGenre(string path)
-        {
-            var prefab = prefabs.FirstOrDefault(p => p.Path == path);
-            return prefab?.Genre;
+                SavePrefabsInfo(prefabs);
+            }
         }
 
         public static PrefabInfo GetPrefabInfo(string path)
         {
-            return prefabs.FirstOrDefault(p => p.Path == path);
+            return prefabs.Find(p => p.Path == path);
         }
 
         public static bool ShowDeletePrefabDialog(string prefabPath)
@@ -219,12 +248,18 @@ namespace EAUploader.CustomPrefabUtility
 
         public static void PinPrefab(string prefabPath)
         {
-            var allPrefabs = LoadPrefabsInfo();
-            var prefab = allPrefabs.FirstOrDefault(p => p.Path == prefabPath);
+            var prefab = prefabs.Find(p => p.Path == prefabPath);
             if (prefab != null)
             {
                 prefab.Status = (prefab.Status == EAUploaderMeta.PrefabStatus.Pinned) ? EAUploaderMeta.PrefabStatus.Show : EAUploaderMeta.PrefabStatus.Pinned;
-                SavePrefabsInfo(allPrefabs);
+
+                var meta = Utility.GetEAUploaderMeta(GetPrefab(prefabPath));
+
+                meta.status = prefab.Status;
+                EditorUtility.SetDirty(meta);
+                AssetDatabase.SaveAssets();
+
+                SavePrefabsInfo(prefabs);
             }
         }
 
@@ -241,9 +276,8 @@ namespace EAUploader.CustomPrefabUtility
 
         public static bool IsPinned(string prefabPath)
         {
-            var allPrefabs = LoadPrefabsInfo();
-            var prefab = allPrefabs.FirstOrDefault(p => p.Path == prefabPath);
-            return prefab?.Status == EAUploaderMeta.PrefabStatus.Pinned;
+            var meta = Utility.GetEAUploaderMeta(GetPrefab(prefabPath));
+            return meta.status == EAUploaderMeta.PrefabStatus.Pinned;
         }
 
         public static void SavePrefab(GameObject prefab, string path)
@@ -254,7 +288,7 @@ namespace EAUploader.CustomPrefabUtility
 
         public static void SetPrefabType(string path, EAUploaderMeta.PrefabType type)
         {
-            var prefabInfo = prefabs.FirstOrDefault(p => p.Path == path);
+            var prefabInfo = prefabs.Find(p => p.Path == path);
             if (prefabInfo != null)
             {
                 prefabInfo.SetType(type);
@@ -264,7 +298,7 @@ namespace EAUploader.CustomPrefabUtility
 
         public static void SetPrefabGenre(string path, EAUploaderMeta.PrefabGenre genre)
         {
-            var prefabInfo = prefabs.FirstOrDefault(p => p.Path == path);
+            var prefabInfo = prefabs.Find(p => p.Path == path);
             if (prefabInfo != null)
             {
                 prefabInfo.SetGenre(genre);
@@ -278,11 +312,12 @@ namespace EAUploader.CustomPrefabUtility
             AssetDatabase.RenameAsset(path, newName);
             AssetDatabase.SaveAssets();
 
-            var prefabInfo = prefabs.FirstOrDefault(p => p.Path == path);
+            var prefabInfo = prefabs.Find(p => p.Path == path);
             if (prefabInfo != null)
             {
                 prefabInfo.Name = newName;
                 prefabInfo.Path = newPrefabPath;
+
                 SavePrefabsInfo(prefabs);
             }
         }
