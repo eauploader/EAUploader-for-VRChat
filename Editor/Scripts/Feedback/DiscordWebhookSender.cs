@@ -10,7 +10,7 @@ namespace EAUploader
 
     public class DiscordWebhookSender : EditorWindow
     {
-        private string WEBHOOK_URL = "https://discord.com/api/webhooks/1197382760873074728/CNcOYFDeVcIQbLm2pHoSlxIsZMJzxPKhUfGbG2ObKwD9XMXNzvsXHc4A21NKIz-Tz37D";
+        private string WEBHOOK_URL = "";
         private static string lng = LanguageUtility.GetCurrentLanguage();
         private static bool sentFeedback = false;
 
