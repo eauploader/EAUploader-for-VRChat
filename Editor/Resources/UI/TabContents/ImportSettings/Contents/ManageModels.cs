@@ -1,6 +1,7 @@
 ﻿using EAUploader.Components;
 using EAUploader.CustomPrefabUtility;
 using EAUploader.UI.Components;
+using EAUploader.UI.Modals;
 using EAUploader.UI.Windows;
 using System.Collections.Generic;
 using System.IO;
@@ -161,11 +162,11 @@ namespace EAUploader.UI.ImportSettings
                         case ".unitypackage":
                             AssetDatabase.ImportPackage(path, false);
                             break;
-    #if HAS_VRM
+#if HAS_VRM
                         case ".vrm":
                             VRMImporter.ImportVRM(path);
                             break;
-    #endif
+#endif
                     }
                 }
             }
@@ -342,8 +343,9 @@ namespace EAUploader.UI.ImportSettings
 
         private static void OpenSettings(string prefabPath, Texture2D preview)
         {
-            var settingsWindow = AvatarSettingsWindow.ShowWindow();
-            settingsWindow.SetPrefabPath(prefabPath, preview);
+            var settingsModal = new AvatarSettingsModal(prefabPath, preview);
+            settingsModal.OnSave += () => ManageModels.UpdateModelList();
+            settingsModal.Open();
         }
 
         private static void DeletePrefab(string prefabPath)

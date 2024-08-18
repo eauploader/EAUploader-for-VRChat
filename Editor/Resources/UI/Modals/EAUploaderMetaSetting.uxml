@@ -1,0 +1,39 @@
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    xmlns:eau="EAUploader.UI.Components"
+    xsi="http://www.w3.org/2001/XMLSchema-instance"
+    engine="UnityEngine.UIElements"
+    editor="UnityEditor.UIElements"
+    noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd"
+    editor-extension-mode="False"
+>
+    <ui:VisualElement class="flex flex-row">
+        <!-- Left column for the image -->
+        <ui:VisualElement class="flex-col flex-1 mr-2 border-r border-zinc-200 p-4">
+            <ui:Image name="previewImage" />
+        </ui:VisualElement>
+
+        <!-- Right column for other elements -->
+        <ui:VisualElement class="flex-1 ml-2 p-4">
+            <ui:VisualElement class="flex-col">
+                <ui:Label text="Prefab Info" class="font-bold text-lg pb-2" />
+                <ui:VisualElement class="flex-row justify-between items-center pb-2">
+                    <ui:Label text="Name" class="font-medium" />
+                    <ui:TextField name="nameTextField" class="flex-1 ml-2" />
+                </ui:VisualElement>
+                <ui:VisualElement class="flex-row justify-between items-center pb-2">
+                    <ui:Label text="Genre" class="font-medium" />
+                    <ui:DropdownField name="genreDropdown" class="flex-1 ml-2" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="flex-col mt-4">
+                <ui:Label text="Actions" class="font-bold text-lg pb-2" />
+                <ui:VisualElement class="flex-row justify-between items-center pb-2">
+                    <ui:Label text="Duplicate Prefab" class="font-medium" />
+                    <eau:ShadowButton name="duplicateButton" text="Duplicate" class="ml-2" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

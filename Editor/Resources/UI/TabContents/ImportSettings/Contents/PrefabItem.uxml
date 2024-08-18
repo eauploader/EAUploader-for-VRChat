@@ -15,7 +15,7 @@
         <ui:VisualElement name="miscellaneous" class="flex-col items-start" />
     </ui:VisualElement>
     <ui:VisualElement name="controls" class="flex-col h-full">
-        <ui:Button name="settingsButton" class="rounded-bl-none rounded-br-none group-button">
+        <ui:Button name="settingsButton" class="rounded-bl-none rounded-br-none group-button border-b">
             <eau:MaterialIcon icon="edit" />
         </ui:Button>
         <ui:Button name="deleteButton" class="rounded-tl-none rounded-tr-none group-button">

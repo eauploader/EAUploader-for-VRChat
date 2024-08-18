@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static EAUploader.UI.Windows.DialogPro;
 using EAULogger = EAUploader.UI.Windows.Logger;
+using EAUploader.UI.Modals;
 
 namespace EAUploader.UI.ImportSettings
 {
@@ -235,8 +236,8 @@ namespace EAUploader.UI.ImportSettings
                 Debug.Log($"Prefab '{filePath}' is set as Other. Opening Avatar Settings Window...");
 
                 // Avatar Settings ウィンドウを開く
-                var avatarSettingsWindow = AvatarSettingsWindow.ShowWindow();
-                avatarSettingsWindow.SetPrefabPath(filePath, AssetPreview.GetAssetPreview(prefab));
+                var avatarSettingsWindow = new AvatarSettingsModal(filePath, AssetPreview.GetAssetPreview(prefab));
+                avatarSettingsWindow.Open();
             }
         }
 

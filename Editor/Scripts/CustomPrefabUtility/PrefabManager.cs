@@ -271,5 +271,20 @@ namespace EAUploader.CustomPrefabUtility
                 SavePrefabsInfo(prefabs);
             }
         }
+
+        public static void RenamePrefab(string path, string newName)
+        {
+            var newPrefabPath = Path.Combine(Path.GetDirectoryName(path), newName + ".prefab").Replace("\\", "/");
+            AssetDatabase.RenameAsset(path, newName);
+            AssetDatabase.SaveAssets();
+
+            var prefabInfo = prefabs.FirstOrDefault(p => p.Path == path);
+            if (prefabInfo != null)
+            {
+                prefabInfo.Name = newName;
+                prefabInfo.Path = newPrefabPath;
+                SavePrefabsInfo(prefabs);
+            }
+        }
     }
 }
