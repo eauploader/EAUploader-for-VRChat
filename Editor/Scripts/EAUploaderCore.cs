@@ -40,6 +40,7 @@ namespace EAUploader
         private static bool initializationPerformed = false;
         public static bool HasVRM = false;
         public static bool HasAAO = false;
+
         internal static IEnumerable<(string package, string version)> VpmLockedPackages()
         {
             try
