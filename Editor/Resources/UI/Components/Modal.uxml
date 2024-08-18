@@ -1,0 +1,18 @@
+﻿<ui:UXML
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    xmlns:eau="EAUploader.UI.Components"
+    xsi="http://www.w3.org/2001/XMLSchema-instance"
+    engine="UnityEngine.UIElements"
+    editor="UnityEditor.UIElements"
+    noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd"
+    editor-extension-mode="False"
+>
+    <eau:Shadow shadow-corner-radius="32" class="modal__shadow">
+        <ui:VisualElement class="modal" name="modal">
+            <ui:Label class="modal__title" name="modal_title" />
+            <ui:VisualElement class="modal__content" name="modal_content" />
+            <ui:VisualElement class="modal__footer" name="modal_footer" />
+        </ui:VisualElement>
+    </eau:Shadow>
+</ui:UXML>
