@@ -3,13 +3,16 @@ using EAUploader.CustomPrefabUtility;
 using EAUploader.UI.Components;
 using EAUploader.UI.Modals;
 using EAUploader.UI.Windows;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Object = UnityEngine.Object;
 
 namespace EAUploader.UI.ImportSettings
 {
@@ -21,7 +24,7 @@ namespace EAUploader.UI.ImportSettings
         private static SortOrder sortOrder = SortOrder.LastModifiedDescending;
         private static FilterOrder filterOrder = FilterOrder.NotShowHiddenModels;
         private static GenreFilter selectedGenreFilter = GenreFilter.Avatar; // デフォルトをAvatarに設定
-        private static bool isUpdatingModelList = false; // フラグでリスト描画を制御
+        private static CancellationTokenSource cts;
 
         public enum SortOrder
         {
@@ -99,6 +102,7 @@ namespace EAUploader.UI.ImportSettings
                 "Accessory",
                 "Other"
             }, 0);
+
             genreDropdown.RegisterValueChangedCallback(evt =>
             {
                 selectedGenreFilter = (GenreFilter)genreDropdown.index;
@@ -189,17 +193,24 @@ namespace EAUploader.UI.ImportSettings
 
         internal static async void UpdateModelList()
         {
-            if (isUpdatingModelList) return;
-            isUpdatingModelList = true;
-
             await Task.Yield();
             var searchQuery = root.Q<TextField>("searchQuery").value;
             UpdatePrefabsWithPreview(searchQuery);
 
             modelList.Clear();
-            await AddPrefabsToModelListAsync();
 
-            isUpdatingModelList = false;
+            // 既存のオペレーションをキャンセル
+            cts?.Cancel();
+            cts = new CancellationTokenSource();
+
+            try
+            {
+                await AddPrefabsToModelListAsync(cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                // キャンセルされた場合は何もしない
+            }
         }
 
         private static void UpdatePrefabsWithPreview(string searchValue = "")
@@ -265,12 +276,13 @@ namespace EAUploader.UI.ImportSettings
             }
         }
 
-        private static async Task AddPrefabsToModelListAsync()
+        private static async Task AddPrefabsToModelListAsync(CancellationToken cancellationToken)
         {
             foreach (var prefab in prefabsWithPreview)
             {
-                var item = CreatePrefabItem(prefab);
+                cancellationToken.ThrowIfCancellationRequested();
 
+                var item = CreatePrefabItem(prefab);
                 modelList.Add(item);
                 await Task.Yield();
             }

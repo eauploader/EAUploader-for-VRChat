@@ -200,14 +200,7 @@ namespace EAUploader.UI.ImportSettings
             switch (fileExtension)
             {
                 case ".prefab":
-                    // プレハブのインポート
                     AssetDatabase.ImportAsset(filePath, ImportAssetOptions.Default);
-                    var importedPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(filePath);
-
-                    if (importedPrefab != null)
-                    {
-                        HandlePrefabImport(importedPrefab, filePath);
-                    }
                     break;
 
                 case ".unitypackage":

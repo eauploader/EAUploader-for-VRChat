@@ -19,6 +19,7 @@ namespace EAUploader.UI.Modals
         private ShadowButton duplicateButton;
         private Image previewImageElement;
         private DropdownField genreDropdown;
+        private PrefabInfo prefabInfo;
 
         // Create event when save button is clicked
         public event Action OnSave;
@@ -79,7 +80,7 @@ namespace EAUploader.UI.Modals
             }
 
             // Set name of the prefab
-            var prefabInfo = PrefabManager.GetPrefabInfo(prefabPath);
+            prefabInfo = PrefabManager.GetPrefabInfo(prefabPath);
             if (prefabInfo != null)
             {
                 nameTextField.value = prefabInfo.Name;
@@ -115,20 +116,24 @@ namespace EAUploader.UI.Modals
 
         private void SavePrefab()
         {
-            var newName = nameTextField.value;
-            if (string.IsNullOrEmpty(newName))
+            if (prefabInfo.Name != nameTextField.value)
             {
-                EditorUtility.DisplayDialog("Error", "Please enter a new name.", "OK");
-                return;
-            }
+                var newName = nameTextField.value;
+                if (string.IsNullOrEmpty(newName))
+                {
+                    EditorUtility.DisplayDialog("Error", "Please enter a new name.", "OK");
+                    return;
+                }
 
-            if (string.IsNullOrEmpty(prefabPath))
-            {
-                EditorUtility.DisplayDialog("Error", "No prefab selected.", "OK");
-                return;
-            }
+                if (string.IsNullOrEmpty(prefabPath))
+                {
+                    EditorUtility.DisplayDialog("Error", "No prefab selected.", "OK");
+                    return;
+                }
 
-            PrefabManager.RenamePrefab(prefabPath, newName);
+                PrefabManager.RenamePrefab(prefabPath, newName);
+            }
+            
 
             // Update PrefabGenre
             ChangePrefabGenre(genreDropdown.value);
