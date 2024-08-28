@@ -73,7 +73,7 @@ namespace EAUploader.CustomPrefabUtility
             string msg1 = T7e.Get("Prefabs with missing or problematic shaders:");
             string msg2 = T7e.Get("Please confirm the required shaders from the avatar distributor.");
             string msg3 = T7e.Get("Why am I seeing this?");
-            StringBuilder messageBuilder = new StringBuilder();
+            StringBuilder messageBuilder = new();
             messageBuilder.Append(msg1);
             messageBuilder.Append("\n");
             messageBuilder.Append(prefabName);
