@@ -81,9 +81,9 @@ namespace EAUploader.CustomPrefabUtility
             messageBuilder.Append(msg2);
 
             string message = messageBuilder.ToString();
-            if (EditorUtility.DisplayDialogComplex(T7e.Get("Shader Issues Found"), message, "OK", msg3, "") == 1)
+            if (EditorUtility.DisplayDialogComplex(T7e.Get("Shader Issues Found"), message, msg3, "OK", "") == 0)
             {
-                Application.OpenURL("https://www.uslog.tech/eauploader-forum/__q-a/siedagajian-tukaranaiera");
+                Application.OpenURL("https://eauploader-docs.uslog.tech/faq/missing_shader");
             }
         }
 
