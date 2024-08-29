@@ -48,9 +48,8 @@ namespace EAUploader.CustomPrefabUtility
             return shaderGroups;
         }
 
-        private static bool ContainsMissingOrProblematicShaderMaterial(Renderer[] renderers, out string errorInfo)
+        private static bool ContainsMissingOrProblematicShaderMaterial(Renderer[] renderers)
         {
-            errorInfo = string.Empty;
             foreach (Renderer renderer in renderers)
             {
                 foreach (Material material in renderer.sharedMaterials)
@@ -60,12 +59,12 @@ namespace EAUploader.CustomPrefabUtility
                         string shaderName = material.shader.name;
                         if (shaderName == "Hidden/InternalErrorShader" || !ShaderExists(shaderName))
                         {
-                            errorInfo += $"Game Object: {renderer.gameObject.name}, Material: {material.name}, Shader: {shaderName}\n";
+                            return true;
                         }
                     }
                 }
             }
-            return !string.IsNullOrEmpty(errorInfo);
+            return false;
         }
 
         private static void DisplayShaderIssueMessageBox(string prefabName)
@@ -93,14 +92,16 @@ namespace EAUploader.CustomPrefabUtility
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
             Renderer[] renderers = prefab.GetComponentsInChildren<Renderer>(true);
 
-            DisplayShaderIssueMessageBox(prefab.name);
+            if (ContainsMissingOrProblematicShaderMaterial(renderers))
+            {
+                DisplayShaderIssueMessageBox(prefab.name);
+            }
         }
 
         public static bool CheckAvatarHasShader(GameObject avatar)
         {
             Renderer[] renderers = avatar.GetComponentsInChildren<Renderer>(true);
-            string errorInfo;
-            return !ContainsMissingOrProblematicShaderMaterial(renderers, out errorInfo);
+            return !ContainsMissingOrProblematicShaderMaterial(renderers);
         }
 
         private static bool ShaderExists(string shaderName)
