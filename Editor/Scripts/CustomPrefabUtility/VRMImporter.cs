@@ -25,27 +25,25 @@ namespace EAUploader.CustomPrefabUtility
             {
                 path = EditorUtility.OpenFilePanel("Open .vrm", "", "vrm");
             }
-            else
+
+            if (path.StartsWithUnityAssetPath())
             {
-                if (path.StartsWithUnityAssetPath())
-                {
-                    Debug.LogWarningFormat("disallow import from folder under the Assets");
-                    return;
-                }
-                string vrmFolder = "Assets/VRM";
-                if (!AssetDatabase.IsValidFolder(vrmFolder))
-                {
-                    AssetDatabase.CreateFolder("Assets", "VRM");
-                }
-
-                var prefabPath = Path.Combine(vrmFolder, Path.GetFileNameWithoutExtension(path) + ".prefab");
-                vrmAssetPostprocessor.ImportVrmAndCreatePrefab(path, UnityPath.FromUnityPath(prefabPath));
-
-                WaitForPrefabGeneration(prefabPath, () =>
-                {
-                    VRMImporterWindow.ShowWindow(prefabPath);
-                });
+                Debug.LogWarningFormat("disallow import from folder under the Assets");
+                return;
             }
+            string vrmFolder = "Assets/VRM";
+            if (!AssetDatabase.IsValidFolder(vrmFolder))
+            {
+                AssetDatabase.CreateFolder("Assets", "VRM");
+            }
+
+            var prefabPath = Path.Combine(vrmFolder, Path.GetFileNameWithoutExtension(path) + ".prefab");
+            vrmAssetPostprocessor.ImportVrmAndCreatePrefab(path, UnityPath.FromUnityPath(prefabPath));
+
+            WaitForPrefabGeneration(prefabPath, () =>
+            {
+                VRMImporterWindow.ShowWindow(prefabPath);
+            });
         }
 
         private static void WaitForPrefabGeneration(string prefabPath, Action callback)

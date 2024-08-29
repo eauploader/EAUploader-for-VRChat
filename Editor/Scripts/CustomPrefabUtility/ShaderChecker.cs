@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -67,15 +68,22 @@ namespace EAUploader.CustomPrefabUtility
             return !string.IsNullOrEmpty(errorInfo);
         }
 
-        private static void DisplayShaderIssueMessageBox(string prefabName, string errorInfo)
+        private static void DisplayShaderIssueMessageBox(string prefabName)
         {
             string msg1 = T7e.Get("Prefabs with missing or problematic shaders:");
             string msg2 = T7e.Get("Please confirm the required shaders from the avatar distributor.");
             string msg3 = T7e.Get("Why am I seeing this?");
-            string message = $"{msg1}\n{prefabName}\n\nError Details:\n{errorInfo}\n{msg2}";
-            if (EditorUtility.DisplayDialogComplex(T7e.Get("Shader Issues Found"), message, "OK", msg3, "") == 1)
+            StringBuilder messageBuilder = new();
+            messageBuilder.Append(msg1);
+            messageBuilder.Append("\n");
+            messageBuilder.Append(prefabName);
+            messageBuilder.Append("\n\n");
+            messageBuilder.Append(msg2);
+
+            string message = messageBuilder.ToString();
+            if (EditorUtility.DisplayDialogComplex(T7e.Get("Shader Issues Found"), message, msg3, "OK", "") == 0)
             {
-                Application.OpenURL("https://www.uslog.tech/eauploader-forum/__q-a/siedagajian-tukaranaiera");
+                Application.OpenURL("https://eauploader-docs.uslog.tech/faq/missing_shader");
             }
         }
 
@@ -84,11 +92,8 @@ namespace EAUploader.CustomPrefabUtility
             if (path == null) return;
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
             Renderer[] renderers = prefab.GetComponentsInChildren<Renderer>(true);
-            string errorInfo;
-            if (ContainsMissingOrProblematicShaderMaterial(renderers, out errorInfo))
-            {
-                DisplayShaderIssueMessageBox(prefab.name, errorInfo);
-            }
+
+            DisplayShaderIssueMessageBox(prefab.name);
         }
 
         public static bool CheckAvatarHasShader(GameObject avatar)
