@@ -85,32 +85,20 @@ namespace EAUploader.UI.ImportSettings
 
             var filterDropdown = new DropdownField("", new List<string>
             {
-                T7e.Get("Do not show hidden models"),
-                T7e.Get("Show hidden models"),
-                T7e.Get("Show only hidden models")
-            }, 0);
-            filterDropdown.RegisterValueChangedCallback(evt =>
-            {
-                filterOrder = (FilterOrder)filterDropdown.index;
-                UpdateModelList();
-            });
-
-            var genreDropdown = new DropdownField("", new List<string>
-            {
                 "Avatar",
                 "Cloth",
                 "Accessory",
                 "Other"
             }, 0);
 
-            genreDropdown.RegisterValueChangedCallback(evt =>
+            filterDropdown.RegisterValueChangedCallback(evt =>
             {
-                selectedGenreFilter = (GenreFilter)genreDropdown.index;
+                selectedGenreFilter = (GenreFilter)filterDropdown.index;
                 UpdateModelList();
             });
 
-            var genrebar = root.Q<VisualElement>("filterbar");
-            genrebar.Add(genreDropdown);
+            var filterbar = root.Q<VisualElement>("filterbar");
+            filterbar.Add(filterDropdown);
 
             var libraryFoldButton = root.Q<VisualElement>("library_fold_button");
             var icon = libraryFoldButton.Q<MaterialIcon>();
