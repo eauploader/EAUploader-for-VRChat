@@ -43,7 +43,7 @@ namespace EAUploader.UI.Windows
                 return; // 既にウィンドウが開いている場合は新しいウィンドウを開かない
             }
 
-            var eauWindow = GetWindow<EAUploader>(null, focus: false);
+            var eauWindow = EAUploader.Instance;
             DialogPro wnd = CreateInstance<DialogPro>();
             wnd.titleContent = new GUIContent(title);
             wnd.position = new Rect(eauWindow.position.x + eauWindow.position.width / 2 - 200, eauWindow.position.y + eauWindow.position.height / 2 - 100, 400, 200);
@@ -110,7 +110,7 @@ namespace EAUploader.UI.Windows
                 return; // 既にウィンドウが開いている場合は新しいウィンドウを開かない
             }
 
-            var eauWindow = GetWindow<EAUploader>(null, focus: false);
+            var eauWindow = EAUploader.Instance;
             DialogPro wnd = CreateInstance<DialogPro>();
             wnd.titleContent = new GUIContent(title);
             wnd.position = new Rect(eauWindow.position.x + eauWindow.position.width / 2 - 200, eauWindow.position.y + eauWindow.position.height / 2 - 100, 400, 200);
@@ -161,6 +161,7 @@ namespace EAUploader.UI.Windows
             }
 
             wnd.Show();
+            wnd.Focus();
         }
     }
 }
