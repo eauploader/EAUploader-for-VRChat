@@ -26,6 +26,7 @@ namespace EAUploader.CustomPrefabUtility
             previewRenderUtility.camera.clearFlags = CameraClearFlags.SolidColor;
             previewRenderUtility.camera.orthographic = true;
             previewRenderUtility.camera.orthographicSize = Mathf.Max(bounds.size.x, bounds.size.y) / 2;
+            previewRenderUtility.camera.nearClipPlane = 0.01f;
 
             Vector3 cameraPosition = bounds.center;
             cameraPosition.z = bounds.center.z + bounds.size.z * 2;
