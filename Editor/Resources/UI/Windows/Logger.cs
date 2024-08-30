@@ -13,6 +13,31 @@ namespace EAUploader.UI.Windows
 {
     public class Logger : EditorWindow
     {
+        private static Logger instance;
+
+        public static Logger Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = GetWindow<Logger>();
+                }
+                return instance;
+            }
+        }
+
+        internal void OnEnable()
+        {
+            instance = this;
+            _stringBuilder = new StringBuilder();
+        }
+
+        private void OnDisable()
+        {
+            instance = null;
+        }
+
 
         /// <summary>
         /// EAUploaderのログ出力において使用するログ種別。
@@ -81,12 +106,6 @@ namespace EAUploader.UI.Windows
             Debug.LogError("This is a test error message");
         }
 
-        internal void OnEnable()
-        {
-            _stringBuilder = new StringBuilder();
-        }
-
-
         public static string GetLogFolderFullPath()
         {
             return new DirectoryInfo(LOGFOLDER_PATH).FullName;
@@ -130,8 +149,8 @@ namespace EAUploader.UI.Windows
 
             if (logType == LogType.Exception || logType == LogType.Error)
             {
-                var eauWindow = GetWindow<UI.EAUploader>(null, focus: false);
-                Logger wnd = GetWindow<Logger>();
+                var eauWindow = UI.EAUploader.Instance;
+                Logger wnd = Instance;
                 wnd.titleContent = new GUIContent(T7e.Get("Error Report"));
                 wnd.position = new Rect(eauWindow.position.x + eauWindow.position.width / 2 - 400, eauWindow.position.y + eauWindow.position.height / 2 - 300, 800, 600);
                 wnd.minSize = new Vector2(800, 600);

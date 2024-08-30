@@ -8,13 +8,39 @@ namespace EAUploader.UI
 {
     public class EAUploader : EditorWindow
     {
+        private static EAUploader instance;
+
+        public static EAUploader Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = GetWindow<EAUploader>();
+                }
+                return instance;
+            }
+        }
+
+        private void OnEnable()
+        {
+            instance = this;
+        }
+
+        private void OnDisable()
+        {
+            instance = null;
+        }
+
         [MenuItem("EAUploader/Open EAUploader")]
         public static void ShowWindow()
         {
-            EAUploader wnd = GetWindow<EAUploader>();
-            wnd.titleContent = new GUIContent("EAUploader");
-            wnd.position = new Rect(100, 100, 1280, 640);
-            wnd.minSize = new Vector2(1080, 640);
+            EAUploader window = Instance;
+            window.titleContent = new GUIContent("EAUploader");
+            window.position = new Rect(100, 100, 1280, 640);
+            window.minSize = new Vector2(1080, 640);
+            window.Show();
+            window.Focus();
         }
 
         private VisualElement contentRoot = null;
