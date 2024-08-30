@@ -23,7 +23,6 @@
         <ui:VisualElement class="flex-row pb-2">
             <ui:VisualElement name="sortbar" class="pr-2"/>
             <ui:VisualElement name="filterbar" class="pl-2"/>
-            <ui:VisualElement name="genrebar" class="pl-2"/>
         </ui:VisualElement>
         <ui:ScrollView name="model_list" class="flex-1" />
     </ui:VisualElement>
