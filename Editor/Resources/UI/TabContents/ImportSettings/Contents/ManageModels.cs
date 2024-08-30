@@ -61,9 +61,8 @@ namespace EAUploader.UI.ImportSettings
             BuildUI();
         }
 
-        internal static async void BuildUI()
+        internal static void BuildUI()
         {
-            await Task.Yield();
             var searchButton = root.Q<ShadowButton>("searchButton");
             searchButton.clicked += UpdateModelList;
 
