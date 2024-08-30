@@ -165,23 +165,9 @@ namespace EAUploader
 
         private static void OpenEAUploaderWindow()
         {
-            // 既存のウィンドウを検索
-            var windows = Resources.FindObjectsOfTypeAll<EditorWindow>()
-                .Where(window => window.GetType().Name == "EAUploader").ToList();
-
-            Debug.Log($"EAUploader windows found: {windows.Count}");
-
-            if (windows.Count == 0)
-            {
-                Debug.Log("Attempting to open EAUploader...");
-                bool result = EditorApplication.ExecuteMenuItem("EAUploader/Open EAUploader");
-                Debug.Log($"EAUploader opened: {result}");
-            }
-            else
-            {
-                Debug.Log("Focusing on existing EAUploader window.");
-                windows[0].Focus();
-            }
+            UI.EAUploader window = UI.EAUploader.Instance;
+            window.Show();
+            window.Focus();
         }
 
         public static string GetVersion(bool noText = false)
