@@ -45,12 +45,10 @@ namespace EAUploader.UI.Modals
             if (genreDropdown != null)
             {
                 // 選択肢を動的に設定
-                genreDropdown.choices = new List<string> { "Avatar", "Cloth", "Accessory" };
+                genreDropdown.choices = new List<string> { "Avatar", "Cloth", "Accessory", "Other" };
                 var genre = PrefabManager.GetPrefabGenre(prefabPath);
-                if (genre != null)
-                {
-                    genreDropdown.value = genre.ToString();
-                }
+                
+                genreDropdown.value = genre.ToString();
             }
         }
 
