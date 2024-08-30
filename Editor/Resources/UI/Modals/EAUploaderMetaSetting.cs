@@ -136,7 +136,10 @@ namespace EAUploader.UI.Modals
             
 
             // Update PrefabGenre
-            ChangePrefabGenre(genreDropdown.value);
+            if (genreDropdown.value != prefabInfo.Genre.ToString())
+            {
+                ChangePrefabGenre(genreDropdown.value);
+            }
         }
 
         private void DuplicatePrefab()
