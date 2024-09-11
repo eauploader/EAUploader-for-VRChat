@@ -72,6 +72,19 @@ Button:active {
 	background-color: var(--primary-active);
 }
 
+Button.button__light {
+	background-color: white;
+	color: var(--primary);
+}
+
+Button.button__light:hover {
+	background-color: var(--default-hover);
+}
+
+Button.button__light:active {
+	background-color: var(--default-active);
+}
+
 /* Header Styles */
 #library_fold_button
 {
@@ -92,20 +105,11 @@ Button:active {
 .group-button {
 	flex-grow: 1;
 	justify-content: center;
+	border-color: var(--primary-active);
 }
 
 .group-button MaterialIcon {
 	font-size: 20px;
-}
-
-.group-button__center {
-	border-radius: 0px;
-	border-bottom-color: var(--primary-active);
-	border-top-color: var(--primary-active);
-	border-bottom-width: 1px;
-	border-top-width: 1px;
-	flex-grow: 1;
-	justify-content: center;
 }
 
 /* Image Button Styles */
@@ -263,7 +267,7 @@ PrefabItem > Label {
 
 /* Text Input Styles */
 TextInput {
-	font-size: 12px;
+	font-size: 14px;
 	padding: 4px 16px;
 	border-width: 1px;
 	border-radius: 4px;
@@ -364,6 +368,7 @@ DropdownField > Label {
 }
 
 DropdownField > VisualElement > PopupTextElement {
+	font-size: 14px;
 	color: black;
 }
 
@@ -391,6 +396,7 @@ PopupField > Label {
 }
 
 PopupField	 > VisualElement > PopupTextElement {
+	font-size: 14px;
 	color: black;
 }
 
@@ -1049,4 +1055,48 @@ RadioButton * {
 	width: 100%;
 	justify-content: center;
 	align-items: center;
+}
+
+/* Modal Styles */
+.modal__container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background-color: rgba(0,0,0, 0.3);
+	justify-content: center;
+	align-items: center;
+}
+
+.modal__shadow {
+	min-width: 320px;
+	max-width: 80%;
+	max-height: 80%;
+}
+
+.modal {
+	padding: 16px;
+	background-color: white;
+	border-radius: 14px;
+}
+
+.modal__title {
+	font-size: 18px;
+	-unity-font-style: bold;
+	margin-bottom: 16px;
+}
+
+.modal__footer {
+		flex-direction: row;
+	justify-content: flex-end;
+}
+
+.modal__button {
+	margin-left: 8px;
+}
+
+.modal__content {
+	font-size: 16px;
+	padding-bottom: 16px;
 }

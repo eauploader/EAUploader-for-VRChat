@@ -6,6 +6,9 @@ using UnityEngine.UIElements;
 
 namespace EAUploader.CustomPrefabUtility
 {
+    /// <summary>
+    /// Avatar Setting追加に伴いRenamePrefabWindowはv1.4.4よりサポートを終了します
+    /// </summary>
     public class RenamePrefabWindow : EditorWindow
     {
         public string FilePath;

@@ -1,17 +1,18 @@
 ﻿using EAUploader.Components;
 using EAUploader.CustomPrefabUtility;
 using EAUploader.UI.Components;
+using EAUploader.UI.Modals;
 using EAUploader.UI.Windows;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-
-using Debug = UnityEngine.Debug;
+using Object = UnityEngine.Object;
 
 namespace EAUploader.UI.ImportSettings
 {
@@ -22,6 +23,9 @@ namespace EAUploader.UI.ImportSettings
         private static ScrollView modelList;
         private static SortOrder sortOrder = SortOrder.LastModifiedDescending;
         private static FilterOrder filterOrder = FilterOrder.NotShowHiddenModels;
+        private static GenreFilter selectedGenreFilter = GenreFilter.Avatar; // デフォルトをAvatarに設定
+        private static CancellationTokenSource cts;
+
         public enum SortOrder
         {
             LastModifiedDescending,
@@ -29,11 +33,21 @@ namespace EAUploader.UI.ImportSettings
             NameDescending,
             NameAscending
         }
+
         public enum FilterOrder
         {
             NotShowHiddenModels,
             ShowHiddenModels,
             ShowOnlyHiddenModels
+        }
+
+        // 新しくGenreフィルタを追加
+        public enum GenreFilter
+        {
+            Avatar,
+            Cloth,
+            Accessory,
+            Other
         }
 
         public static void ShowContent(VisualElement rootElement)
@@ -47,9 +61,8 @@ namespace EAUploader.UI.ImportSettings
             BuildUI();
         }
 
-        internal static async void BuildUI()
+        internal static void BuildUI()
         {
-            await Task.Yield();
             var searchButton = root.Q<ShadowButton>("searchButton");
             searchButton.clicked += UpdateModelList;
 
@@ -71,28 +84,29 @@ namespace EAUploader.UI.ImportSettings
 
             var filterDropdown = new DropdownField("", new List<string>
             {
-                T7e.Get("Do not show hidden models"),
-                T7e.Get("Show hidden models"),
-                T7e.Get("Show only hidden models")
+                "Avatar",
+                "Cloth",
+                "Accessory",
+                "Other"
             }, 0);
+
             filterDropdown.RegisterValueChangedCallback(evt =>
             {
-                filterOrder = (FilterOrder)filterDropdown.index;
+                selectedGenreFilter = (GenreFilter)filterDropdown.index;
                 UpdateModelList();
-            });
-
-            var libraryFoldButoton = root.Q<VisualElement>("library_fold_button");
-            var icon = libraryFoldButoton.Q<MaterialIcon>();
-            icon.icon = Main.isLibraryOpen ? "chevron_right" : "chevron_left";
-            libraryFoldButoton.RegisterCallback<MouseUpEvent>(evt =>
-            {
-                Main.ToggleLibrary();
-                icon.icon = Main.isLibraryOpen ? "chevron_right" : "chevron_left";
             });
 
             var filterbar = root.Q<VisualElement>("filterbar");
             filterbar.Add(filterDropdown);
 
+            var libraryFoldButton = root.Q<VisualElement>("library_fold_button");
+            var icon = libraryFoldButton.Q<MaterialIcon>();
+            icon.icon = Main.isLibraryOpen ? "chevron_right" : "chevron_left";
+            libraryFoldButton.RegisterCallback<MouseUpEvent>(evt =>
+            {
+                Main.ToggleLibrary();
+                icon.icon = Main.isLibraryOpen ? "chevron_right" : "chevron_left";
+            });
 
             if (EAUploaderCore.HasVRM)
             {
@@ -107,25 +121,21 @@ namespace EAUploader.UI.ImportSettings
             UpdateModelList();
         }
 
-        // This method runs if a user brings the pointer over the target while a drag is in progress.
         static void OnDragEnter(DragEnterEvent _)
         {
             root.Q<VisualElement>("drop_model").EnableInClassList("hidden", false);
         }
 
-        // This method runs if a user makes the pointer leave the bounds of the target while a drag is in progress.
         static void OnDragLeave(DragLeaveEvent _)
         {
             root.Q<VisualElement>("drop_model").EnableInClassList("hidden", true);
         }
 
-        // This method runs every frame while a drag is in progress.
         static void OnDragUpdate(DragUpdatedEvent _)
         {
             DragAndDrop.visualMode = DragAndDropVisualMode.Generic;
         }
 
-        // This method runs when a user drops a dragged object onto the target.
         static void OnDragPerform(DragPerformEvent _)
         {
             root.Q<VisualElement>("drop_model").EnableInClassList("hidden", true);
@@ -175,18 +185,32 @@ namespace EAUploader.UI.ImportSettings
             UpdatePrefabsWithPreview(searchQuery);
 
             modelList.Clear();
-            AddPrefabsToModelListAsync();
+
+            // 既存のオペレーションをキャンセル
+            cts?.Cancel();
+            cts = new CancellationTokenSource();
+
+            try
+            {
+                await AddPrefabsToModelListAsync(cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                // キャンセルされた場合は何もしない
+            }
         }
 
         private static void UpdatePrefabsWithPreview(string searchValue = "")
         {
             prefabsWithPreview = PrefabManager.GetAllPrefabsIncludingHidden();
 
+            // 検索条件に基づくフィルタリング
             if (!string.IsNullOrEmpty(searchValue))
             {
                 prefabsWithPreview = prefabsWithPreview.Where(prefab => prefab.Name.Contains(searchValue)).ToList();
             }
 
+            // ソート条件に基づくフィルタリング
             switch (sortOrder)
             {
                 case SortOrder.LastModifiedDescending:
@@ -203,26 +227,49 @@ namespace EAUploader.UI.ImportSettings
                     break;
             }
 
+            // フィルター条件に基づくフィルタリング
             switch (filterOrder)
             {
                 case FilterOrder.NotShowHiddenModels:
                     prefabsWithPreview = prefabsWithPreview.Where(p => p.Status != EAUploaderMeta.PrefabStatus.Hidden).ToList();
                     break;
                 case FilterOrder.ShowHiddenModels:
-                    // フィルタリングは不要
+                    // 何もする必要がない
                     break;
                 case FilterOrder.ShowOnlyHiddenModels:
                     prefabsWithPreview = prefabsWithPreview.Where(p => p.Status == EAUploaderMeta.PrefabStatus.Hidden).ToList();
                     break;
             }
+
+            // **ジャンルフィルタに基づくフィルタリングのみを行う**
+            prefabsWithPreview = prefabsWithPreview.Where(p => p.Genre == GetSelectedGenre()).ToList();
         }
 
-        private static async void AddPrefabsToModelListAsync()
+        // ジャンルフィルタの選択を直接返す関数
+        private static EAUploaderMeta.PrefabGenre GetSelectedGenre()
+        {
+            switch (selectedGenreFilter)
+            {
+                case GenreFilter.Avatar:
+                    return EAUploaderMeta.PrefabGenre.Avatar;
+                case GenreFilter.Cloth:
+                    return EAUploaderMeta.PrefabGenre.Cloth;
+                case GenreFilter.Accessory:
+                    return EAUploaderMeta.PrefabGenre.Accessory;
+                case GenreFilter.Other:
+                    return EAUploaderMeta.PrefabGenre.Other;
+                default:
+                    return EAUploaderMeta.PrefabGenre.Other; // デフォルトはOtherにしておく
+            }
+        }
+
+        private static async Task AddPrefabsToModelListAsync(CancellationToken cancellationToken)
         {
             foreach (var prefab in prefabsWithPreview)
             {
-                var item = CreatePrefabItem(prefab);
+                cancellationToken.ThrowIfCancellationRequested();
 
+                var item = CreatePrefabItem(prefab);
                 modelList.Add(item);
                 await Task.Yield();
             }
@@ -241,7 +288,6 @@ namespace EAUploader.UI.ImportSettings
             if (prefab != null)
             {
                 prefab.Status = EAUploaderMeta.PrefabStatus.Hidden;
-                Debug.Log($"Hide prefab to {prefab.Status}");
                 PrefabManager.SavePrefabsInfo(allPrefabs);
                 ManageModels.UpdateModelList();
             }
@@ -258,8 +304,8 @@ namespace EAUploader.UI.ImportSettings
                 ManageModels.UpdateModelList();
             }
         }
-
     }
+
 
     internal class PrefabItem : VisualElement
     {
@@ -282,108 +328,8 @@ namespace EAUploader.UI.ImportSettings
             var lastModified = this.Q<Label>("lastModifiedLabel");
             lastModified.text = prefab.LastModified.ToString("yyyy/MM/dd HH:mm:ss");
 
-            var miscellaneous = this.Q<VisualElement>("miscellaneous");
-
-            var prefabObject = PrefabManager.GetPrefab(prefab.Path);
-            var hasDescriptor = Utility.CheckAvatarHasVRCAvatarDescriptor(prefabObject);
-            var hasShader = ShaderChecker.CheckAvatarHasShader(prefabObject);
-            var isVRM = Utility.CheckAvatarIsVRM(prefabObject);
-
-            if (!hasDescriptor)
-            {
-                if (isVRM)
-                {
-                    var warning = new VisualElement()
-                    {
-                        style =
-                            {
-                                flexDirection = FlexDirection.Row,
-                                alignItems = Align.Center,
-                                marginBottom = 4,
-                            }
-                    };
-                    warning.AddToClassList("warning");
-                    var warningIcon = new MaterialIcon { icon = "warning" };
-                    var warningLabel = new Label(T7e.Get("VRM Avatar needs to convert to VRChat Avatar"));
-                    warning.Add(warningIcon);
-                    warning.Add(warningLabel);
-                    miscellaneous.Add(warning);
-                }
-                else
-                {
-                    var warning = new VisualElement()
-                    {
-                        style =
-                            {
-                                flexDirection = FlexDirection.Row,
-                                alignItems = Align.Center,
-                                marginBottom = 4,
-                            }
-                    };
-                    warning.AddToClassList("warning");
-                    var warningIcon = new MaterialIcon { icon = "warning" };
-                    var warningLabel = new Label(T7e.Get("Can't be uploaded"));
-                    warning.Add(warningIcon);
-                    warning.Add(warningLabel);
-                    miscellaneous.Add(warning);
-                }
-            }
-
-            if (!hasShader)
-            {
-                var warning = new VisualElement()
-                {
-                    style =
-                        {
-                            flexDirection = FlexDirection.Row,
-                            alignItems = Align.Center,
-                            marginBottom = 4,
-                        }
-                };
-                warning.AddToClassList("warning");
-                var warningIcon = new MaterialIcon { icon = "warning" };
-                var warningLabel = new Label(T7e.Get("Cannot find the configured shader."));
-                warning.Add(warningIcon);
-                warning.Add(warningLabel);
-                miscellaneous.Add(warning);
-            }
-
-            if (!hasDescriptor || !hasShader)
-            {
-                if (prefab.Status == EAUploaderMeta.PrefabStatus.Hidden)
-                {
-                    var unhideButton = new Button(() => ManageModels.ShowPrefab(prefab.Path))
-                    {
-                        text = T7e.Get("Show"),
-                        style =
-                        {
-                            marginBottom = 4,
-                            fontSize = 10,
-                        }
-                    };
-                    miscellaneous.Add(unhideButton);
-                }
-                else
-                {
-                    var hideButton = new Button(() => ManageModels.HidePrefab(prefab.Path))
-                    {
-                        text = T7e.Get("Hide"),
-                        style =
-                        {
-                            marginBottom = 4,
-                            fontSize = 10,
-                        }
-                    };
-                    miscellaneous.Add(hideButton);
-                }
-            }
-
-            var controls = this.Q<VisualElement>("controls");
-            var changeNameButton = this.Q<Button>("changeNameButton");
-            changeNameButton.clicked += () => ChangePrefabName(prefab.Path);
-
-            var copyAsNewNameButton = this.Q<Button>("copyAsNewNameButton");
-            copyAsNewNameButton.clicked += () => CopyPrefabAsNewName(prefab.Path);
+            var settingsButton = this.Q<Button>("settingsButton");
+            settingsButton.clicked += () => OpenSettings(prefab.Path, prefab.Preview);
 
             var deleteButton = this.Q<Button>("deleteButton");
             deleteButton.clicked += () => DeletePrefab(prefab.Path);
@@ -394,34 +340,14 @@ namespace EAUploader.UI.ImportSettings
             PrefabPreviewer.ShowLargeImage(prefab.Path, prefab.Preview);
         }
 
-        internal static void ChangePrefabName(string prefabPath)
+        private static void OpenSettings(string prefabPath, Texture2D preview)
         {
-            var renameWindow = ScriptableObject.CreateInstance<RenamePrefabWindow>();
-            if (renameWindow.ShowWindow(prefabPath)) ManageModels.UpdateModelList();
+            var settingsModal = new AvatarSettingsModal(prefabPath, preview);
+            settingsModal.OnSave += () => ManageModels.UpdateModelList();
+            settingsModal.Open();
         }
 
-        internal static void CopyPrefabAsNewName(string prefabPath)
-        {
-            string assetName = Path.GetFileNameWithoutExtension(prefabPath);
-            string directoryPath = Path.GetDirectoryName(prefabPath);
-            string newAssetName = assetName + "_Copy";
-            string newPrefabPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(directoryPath, newAssetName + ".prefab"));
-
-            UnityEngine.Object originalPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-            if (originalPrefab != null)
-            {
-                UnityEngine.Object prefabCopy = UnityEngine.Object.Instantiate(originalPrefab);
-                PrefabUtility.SaveAsPrefabAsset((GameObject)prefabCopy, newPrefabPath);
-                UnityEngine.Object.DestroyImmediate(prefabCopy);
-
-                var renameWindow = ScriptableObject.CreateInstance<RenamePrefabWindow>();
-                renameWindow.ShowWindow(newPrefabPath);
-
-                ManageModels.UpdateModelList();
-            }
-        }
-
-        internal static void DeletePrefab(string prefabPath)
+        private static void DeletePrefab(string prefabPath)
         {
             if (PrefabManager.ShowDeletePrefabDialog(prefabPath))
             {

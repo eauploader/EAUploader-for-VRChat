@@ -47,6 +47,7 @@ namespace EAUploader.UI
         private string currentTab = "settings";
         public static StyleSheet styles;
         public static StyleSheet tailwind;
+        public static Modal modal;
 
         public void CreateGUI()
         {
@@ -61,6 +62,11 @@ namespace EAUploader.UI
             var visualTree = Resources.Load<VisualTreeAsset>("UI/MainWindow");
             visualTree.CloneTree(rootVisualElement);
 
+            // Setup Modal
+            modal = new Modal();
+            rootVisualElement.Add(modal); 
+            
+            // Localization
             rootVisualElement.schedule.Execute(() =>
             {
                 LanguageUtility.Localization(rootVisualElement);

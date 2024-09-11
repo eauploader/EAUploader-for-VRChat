@@ -13,7 +13,20 @@ namespace EAUploader.CustomPrefabUtility
         public DateTime LastModified;
         public EAUploaderMeta.PrefabType Type;
         public EAUploaderMeta.PrefabStatus Status;
+        public EAUploaderMeta.PrefabGenre Genre;
         public Texture2D Preview { get; internal set; }
+
+        // プレハブのタイプを設定
+        public void SetType(EAUploaderMeta.PrefabType newType)
+        {
+            Type = newType;
+        }
+
+        // プレハブのジャンルを設定
+        public void SetGenre(EAUploaderMeta.PrefabGenre newGenre)
+        {
+            Genre = newGenre;
+        }
     }
 
     [Serializable]
