@@ -137,5 +137,26 @@ namespace EAUploader.UI
         {
             rootVisualElement.MarkDirtyRepaint();
         }
+
+        public void ChangeContentToSetupTab()
+        {
+            if (currentTab == "setup") return;
+
+            currentTab = "setup";
+            contentRoot.Clear();
+
+            rootVisualElement.Query<Button>().ForEach((b) => {
+                b.EnableInClassList("tab-button__selected", false);
+            });
+            var setupButton = rootVisualElement.Q<Button>("setup");
+            if (setupButton != null)
+            {
+                setupButton.EnableInClassList("tab-button__selected", true);
+            }
+
+            Setup.Main.ShowContent(contentRoot);
+            LanguageUtility.Localization(rootVisualElement);
+        }
+
     }
 }

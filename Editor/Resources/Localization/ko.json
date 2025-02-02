@@ -772,6 +772,14 @@
     {
       "key": "The folder where the log files are stored is opened.",
       "value": "로그 파일이 저장된 폴더를 열었습니다."
+    },
+    {
+      "key": "Click to Setup",
+      "value": "설정하려면 클릭"
+    },
+    {
+      "key": "Pastel",
+      "value": "파스텔"
     }
   ]
 }

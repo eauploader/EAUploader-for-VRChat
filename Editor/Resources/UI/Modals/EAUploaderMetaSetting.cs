@@ -20,8 +20,6 @@ namespace EAUploader.UI.Modals
         private Image previewImageElement;
         private DropdownField genreDropdown;
         private PrefabInfo prefabInfo;
-
-        // Create event when save button is clicked
         public event Action OnSave;
 
         public AvatarSettingsModal(string prefabPath, Texture2D preview)
@@ -47,7 +45,7 @@ namespace EAUploader.UI.Modals
                 // 選択肢を動的に設定
                 genreDropdown.choices = new List<string> { "Avatar", "Cloth", "Accessory", "Other" };
                 var genre = PrefabManager.GetPrefabGenre(prefabPath);
-                
+
                 genreDropdown.value = genre.ToString();
             }
         }
@@ -108,13 +106,12 @@ namespace EAUploader.UI.Modals
 
             EAUploader.modal.setFooter(actionButtons);
 
-
             EAUploader.modal.Show();
         }
 
         private void SavePrefab()
         {
-            if (prefabInfo.Name != nameTextField.value)
+            if (prefabInfo != null && prefabInfo.Name != nameTextField.value)
             {
                 var newName = nameTextField.value;
                 if (string.IsNullOrEmpty(newName))
@@ -131,10 +128,9 @@ namespace EAUploader.UI.Modals
 
                 PrefabManager.RenamePrefab(prefabPath, newName);
             }
-            
 
             // Update PrefabGenre
-            if (genreDropdown.value != prefabInfo.Genre.ToString())
+            if (prefabInfo != null && genreDropdown.value != prefabInfo.Genre.ToString())
             {
                 ChangePrefabGenre(genreDropdown.value);
             }
@@ -160,6 +156,8 @@ namespace EAUploader.UI.Modals
         {
             if (Enum.TryParse(newGenre, out EAUploaderMeta.PrefabGenre genre))
             {
+                // 旧実装では ChangePrefabGenre(...) を呼んでいた
+                // 代わりに SetPrefabGenre(...) へ置き換えるか、あるいはラッパメソッドにする
                 PrefabManager.ChangePrefabGenre(prefabPath, genre);
             }
             else

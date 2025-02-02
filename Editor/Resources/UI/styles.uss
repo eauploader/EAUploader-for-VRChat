@@ -58,6 +58,7 @@ Button {
 	justify-content: center;
     border-width: 0px;
     border-radius: 4px;
+	border-right-color: var(--default);
 	background-color: var(--primary);
 	color: white;
     -unity-font-style: bold; 
@@ -327,7 +328,7 @@ ArticleRenderer {
 }
 
 .tag-button > Label {
-    color: black;
+    color: var(--button-text);
 	margin-left: 4px;
 }
 
@@ -1099,4 +1100,94 @@ RadioButton * {
 .modal__content {
 	font-size: 16px;
 	padding-bottom: 16px;
+}
+
+/* Pastel Theme */
+.pastel {
+    /* 全体の背景色 (エディタ背景) */
+    background-color: #fdf8f5; /* やや薄いクリーム色 */
+
+    --primary: #F28CA7;
+    --primary-hover: #F7ABC2;
+    --primary-active: #FFD9E4;
+    --primary-selected: #D97087;
+
+    --secondary: #A3D6CC;
+    --secondary-hover: #C3E3DD;
+    --secondary-active: #E2F2EF;
+    --secondary-selected: #81B6AD;
+
+    --default: #d4d4d8;
+    --default-hover: #dddde0;
+    --default-active: #e4e4e7;
+    --default-selected: #a1a1aa;
+
+    --warning: #F4B257;
+    --warning-hover: #F7C180;
+    --warning-active: #FAD1A9;
+    --warning-selected: #C98E43;
+
+    --success: #9ADCA5;
+    --success-hover: #B3E2BB;
+    --success-active: #DAF0DD;
+    --success-selected: #7FB48A;
+
+    --danger: #E28288;
+    --danger-hover: #EEA1A6;
+    --danger-active: #FCD4D6;
+    --danger-selected: #C66064;
+
+    /* テキストのメインカラー */
+    color: #8b4513; /* 黒に近いダークグレー */
+}
+
+.pastel #header-text {
+    color: #8b4513; /* ヘッダー文字 */
+}
+
+.pastel Button {
+    background-color: var(--primary);
+	border-color: #FCD4D6;
+}
+
+.pastel Button:hover {
+    background-color: var(--primary-hover);
+}
+
+.pastel Button:active {
+    background-color: var(--primary-active);
+}
+
+.pastel Button:label {
+    color: #faebd7;
+}
+
+.pastel MaterialIcon {
+    color: #faebd7;
+}
+
+.pastel .selected {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.pastel .selected Label {
+    color: white;
+}
+
+.pastel .selected:hover {
+    background-color: var(--primary-hover);
+}
+
+.pastel .pinned {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+}
+
+.pastel .pinned:hover {
+    background-color: var(--default-hover);
+}
+
+.pastel .selected.pinned {
+    background-color: var(--secondary);
 }
