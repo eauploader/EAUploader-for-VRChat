@@ -147,11 +147,7 @@ namespace EAUploader.UI.ImportSettings
                 }
                 */
                 // ウィンドウを閉じる処理
-                var dialogProWindow = EditorWindow.GetWindow<DialogPro>();
-                if (dialogProWindow != null)
-                {
-                    dialogProWindow.Close();
-                }
+                DialogPro.CloseDialog(); 
             };
 
             DialogPro.Show(DialogPro.DialogType.Info, T7e.Get("Open log report"), T7e.Get("The folder where the log files are stored is opened."), "OK", action, true);
@@ -276,11 +272,12 @@ namespace EAUploader.UI.ImportSettings
             var root = EAUploader.Instance.rootVisualElement;
             root.RemoveFromClassList("white");
             root.RemoveFromClassList("dark");
+            root.RemoveFromClassList("pastel");
             root.AddToClassList(theme);
         }
     }
 
-    internal class ThemeInfo
+    public class ThemeInfo
     {
         public string name;
         public string display;
@@ -292,12 +289,13 @@ namespace EAUploader.UI.ImportSettings
         }
     }
 
-    internal class ThemeUtility
+    public class ThemeUtility
     {
         private static List<ThemeInfo> availableThemes = new List<ThemeInfo>
         {
             new ThemeInfo("white", T7e.Get("Light")),
-            new ThemeInfo("dark", T7e.Get("Dark"))
+            new ThemeInfo("dark", T7e.Get("Dark")),
+            new ThemeInfo("pastel", T7e.Get("Pastel"))
         };
 
         public static List<ThemeInfo> GetAvailableThemes() => availableThemes;

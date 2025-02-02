@@ -788,6 +788,14 @@
     {
       "key": "The folder where the log files are stored is opened.",
       "value": "ログファイルが保存されているフォルダを開きました。"
+    },
+    {
+      "key": "Click to Setup",
+      "value": "クリックしてセットアップ"
+    },
+    {
+      "key": "Pastel",
+      "value": "パステル"
     }
   ]
 }

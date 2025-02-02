@@ -241,7 +241,7 @@ namespace EAUploader.UI.ImportSettings
                     break;
             }
 
-            // **ジャンルフィルタに基づくフィルタリングのみを行う**
+            // ジャンルフィルタに基づくフィルタリング
             prefabsWithPreview = prefabsWithPreview.Where(p => p.Genre == GetSelectedGenre()).ToList();
         }
 
@@ -283,61 +283,121 @@ namespace EAUploader.UI.ImportSettings
 
         internal static void HidePrefab(string prefabPath)
         {
-            var allPrefabs = PrefabManager.LoadPrefabsInfo();
-            var prefab = allPrefabs.FirstOrDefault(p => p.Path == prefabPath);
-            if (prefab != null)
+            var go = PrefabManager.GetPrefab(prefabPath);
+            if (go != null)
             {
-                prefab.Status = EAUploaderMeta.PrefabStatus.Hidden;
-                PrefabManager.SavePrefabsInfo(allPrefabs);
-                ManageModels.UpdateModelList();
+                var meta = Utility.GetEAUploaderMeta(go);
+                if (meta != null)
+                {
+                    meta.status = EAUploaderMeta.PrefabStatus.Hidden;
+                    EditorUtility.SetDirty(meta);
+                    AssetDatabase.SaveAssets();
+                }
             }
+            ManageModels.UpdateModelList();
         }
 
         internal static void ShowPrefab(string prefabPath)
         {
-            var allPrefabs = PrefabManager.LoadPrefabsInfo();
-            var prefab = allPrefabs.FirstOrDefault(p => p.Path == prefabPath);
-            if (prefab != null)
+            var go = PrefabManager.GetPrefab(prefabPath);
+            if (go != null)
             {
-                prefab.Status = EAUploaderMeta.PrefabStatus.Show;
-                PrefabManager.SavePrefabsInfo(allPrefabs);
-                ManageModels.UpdateModelList();
+                var meta = Utility.GetEAUploaderMeta(go);
+                if (meta != null)
+                {
+                    meta.status = EAUploaderMeta.PrefabStatus.Show;
+                    EditorUtility.SetDirty(meta);
+                    AssetDatabase.SaveAssets();
+                }
             }
+            ManageModels.UpdateModelList();
         }
     }
 
-
     internal class PrefabItem : VisualElement
     {
+        private Button settingsButton;
+        private Button deleteButton;
+        private PrefabInfo _prefabInfo;
+        private Image previewImage;
+        private Label nameLabel;
+        private Label lastModified;
+        private Label tipsLabel;
+
         public PrefabItem(PrefabInfo prefab)
         {
+            _prefabInfo = prefab;
+
             var visualTree = Resources.Load<VisualTreeAsset>("UI/TabContents/ImportSettings/Contents/PrefabItem");
             visualTree.CloneTree(this);
 
-            var previewImage = this.Q<Image>("previewImage");
+            // プレビュー画像
+            previewImage = this.Q<Image>("previewImage");
             if (prefab.Preview != null)
             {
                 previewImage.image = prefab.Preview;
             }
-
             previewImage.RegisterCallback<MouseUpEvent>(evt => ShowLargeImage(prefab));
 
-            var name = this.Q<Label>("nameLabel");
-            name.text = prefab.Name;
+            // 名前と最終更新
+            nameLabel = this.Q<Label>("nameLabel");
+            nameLabel.text = prefab.Name;
 
-            var lastModified = this.Q<Label>("lastModifiedLabel");
+            lastModified = this.Q<Label>("lastModifiedLabel");
             lastModified.text = prefab.LastModified.ToString("yyyy/MM/dd HH:mm:ss");
 
-            var settingsButton = this.Q<Button>("settingsButton");
-            settingsButton.clicked += () => OpenSettings(prefab.Path, prefab.Preview);
+            //セットアップ案内表示
+            tipsLabel = this.Q<Label>("tipsLabel");
 
-            var deleteButton = this.Q<Button>("deleteButton");
+            // 設定ボタン・削除ボタン
+            settingsButton = this.Q<Button>("settingsButton");
+            deleteButton = this.Q<Button>("deleteButton");
+
+            // ボタンのクリックイベント
+            settingsButton.clicked += () => OpenSettings(prefab.Path, prefab.Preview);
             deleteButton.clicked += () => DeletePrefab(prefab.Path);
+
+            // 初期状態で非表示
+            settingsButton.style.display = DisplayStyle.None;
+            deleteButton.style.display = DisplayStyle.None;
+            tipsLabel.style.display = DisplayStyle.None;
+
+            // マウスがこのPrefabItem上に入った時に表示
+            this.RegisterCallback<MouseEnterEvent>((evt) =>
+            {
+                settingsButton.style.display = DisplayStyle.Flex;
+                deleteButton.style.display = DisplayStyle.Flex;
+                tipsLabel.style.display = DisplayStyle.Flex;
+            });
+
+            // マウスがこのPrefabItem上から出た時に非表示
+            this.RegisterCallback<MouseLeaveEvent>((evt) =>
+            {
+                settingsButton.style.display = DisplayStyle.None;
+                deleteButton.style.display = DisplayStyle.None;
+                tipsLabel.style.display = DisplayStyle.None;
+            });
+
+            // 選択中Prefabを更新し、Setupタブへ移動
+            this.RegisterCallback<PointerUpEvent>((evt) =>
+            {
+                // クリックした要素がプレビュー画像またはボタンならスルー
+                if (evt.target == previewImage || evt.target == settingsButton || evt.target == deleteButton)
+                {
+                    return;
+                }
+                // Prefabを選択中に設定
+                EAUploaderCore.selectedPrefabPath = _prefabInfo.Path;
+
+                // EAUploaderインスタンスのメソッドを呼んで Setupタブへ移動
+                EAUploader.Instance.ChangeContentToSetupTab();
+            });
         }
 
         private static void ShowLargeImage(PrefabInfo prefab)
         {
-            PrefabPreviewer.ShowLargeImage(prefab.Path, prefab.Preview);
+            var modal = new PrefabPreviewModal(prefab.Path, prefab.Preview);
+            modal.Open();
         }
 
         private static void OpenSettings(string prefabPath, Texture2D preview)

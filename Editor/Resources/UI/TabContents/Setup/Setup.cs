@@ -434,7 +434,7 @@ namespace EAUploader.UI.Setup
                     flexGrow = 1,
                     borderBottomRightRadius = 0,
                     borderTopRightRadius = 0,
-                    borderRightColor = new StyleColor(new Color(0.0784313725f , 0.3921568627f, 0.7058823529f,1)),
+                    // borderRightColor = new StyleColor(new Color(0.0784313725f , 0.3921568627f, 0.7058823529f,1)),
                     borderRightWidth = 1,
                 },
             };

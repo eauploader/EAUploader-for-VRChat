@@ -1,13 +1,12 @@
-using EAUploader.CustomPrefabUtility;
-using EAUploader.UI.Components;
 using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using EAUploader.UI.Components; // ★ 追加
 
 namespace EAUploader.UI.Windows
 {
-    public class DialogPro : EditorWindow
+    public static class DialogPro
     {
         public enum DialogType
         {
@@ -17,151 +16,179 @@ namespace EAUploader.UI.Windows
             Success
         }
 
+        private static bool isOpen = false;
+
         public static void Show(DialogType dialogType, string title, string message, bool isOkButtonClickedDialogClose = true)
         {
-            Action action = () =>
-            {
-                // 何もしない
-            };
-
+            Action action = () => { };
             Show(dialogType, title, message, "OK", action, isOkButtonClickedDialogClose);
-
         }
-        /// <summary>
-        /// ダイアログを表示する。OKボタンのテキストとOKボタン押下時の動作を指定できる。
-        /// </summary>
-        /// <param name="dialogType">ダイアログ種別</param>
-        /// <param name="title">ダイアログタイトル</param>
-        /// <param name="message">ダイアログメッセージ本体</param>
-        /// <param name="okButtonText">OKボタンテキスト</param>
-        /// <param name="okButtonAction">OKボタン押下時の処理</param>
-        /// <param name="isOkButtonClickedDialogClose">OKボタン押下時にダイアログを閉じるか。true:閉じる、false:閉じない。規定値はtrue。</param>
-        public static void Show(DialogType dialogType, string title, string message, string okButtonText, Action okButtonAction, bool isOkButtonClickedDialogClose = true)
+
+        public static void Show(
+            DialogType dialogType,
+            string title,
+            string message,
+            string okButtonText,
+            Action okButtonAction,
+            bool isOkButtonClickedDialogClose = true
+        )
         {
-            if (HasOpenInstances<DialogPro>())
+            if (isOpen) return;
+            isOpen = true;
+
+            EAUploader.modal.Initialize();
+            EAUploader.modal.setTitle(title);
+
+            var container = new VisualElement();
+            container.styleSheets.Add(EAUploader.styles);
+            container.styleSheets.Add(EAUploader.tailwind);
+
+            var visualTree = Resources.Load<VisualTreeAsset>("UI/Windows/DialogPro");
+            visualTree.CloneTree(container);
+
+            LanguageUtility.Localization(container);
+
+            var titleLabel = container.Q<Label>("title");
+            var messageLabel = container.Q<Label>("message");
+            // ★ MaterialIcon は EAUploader.UI.Components.MaterialIcon
+            //   -> using EAUploader.UI.Components; を追加しておけば↓でOK
+            var icon = container.Q<MaterialIcon>("icon");
+
+            var copyButton = container.Q<Button>("copy");
+            var okButton = container.Q<Button>("ok");
+
+            if (titleLabel != null) titleLabel.text = title;
+            if (messageLabel != null) messageLabel.text = message;
+            if (okButton != null) okButton.text = okButtonText;
+
+            if (copyButton != null)
             {
-                return; // 既にウィンドウが開いている場合は新しいウィンドウを開かない
+                copyButton.clicked += () =>
+                {
+                    EditorGUIUtility.systemCopyBuffer = message;
+                };
             }
 
-            var eauWindow = EAUploader.Instance;
-            DialogPro wnd = CreateInstance<DialogPro>();
-            wnd.titleContent = new GUIContent(title);
-            wnd.position = new Rect(eauWindow.position.x + eauWindow.position.width / 2 - 200, eauWindow.position.y + eauWindow.position.height / 2 - 100, 400, 200);
-            wnd.minSize = new Vector2(400, 200);
-
-            wnd.rootVisualElement.styleSheets.Add(EAUploader.styles);
-            wnd.rootVisualElement.styleSheets.Add(EAUploader.tailwind);
-
-            wnd.rootVisualElement.Clear();
-            var visualTree = Resources.Load<VisualTreeAsset>("UI/Windows/DialogPro");
-            visualTree.CloneTree(wnd.rootVisualElement);
-
-            LanguageUtility.Localization(wnd.rootVisualElement);
-
-            wnd.rootVisualElement.Q<Label>("title").text = title;
-            wnd.rootVisualElement.Q<Label>("message").text = message;
-
-            var icon = wnd.rootVisualElement.Q<MaterialIcon>("icon");
-
-            var copyButton = wnd.rootVisualElement.Q<Button>("copy");
-            var okButton = wnd.rootVisualElement.Q<Button>("ok");
-
-            okButton.text = okButtonText;
-
-            copyButton.clickable.clicked += () =>
+            if (okButton != null)
             {
-                EditorGUIUtility.systemCopyBuffer = message;
-            };
-
-            okButton.clickable.clicked += okButtonAction;
-
-            if (isOkButtonClickedDialogClose)
-            {
-                okButton.clickable.clicked += () => wnd.Close();
+                okButton.clicked += okButtonAction;
+                if (isOkButtonClickedDialogClose)
+                {
+                    okButton.clicked += CloseDialog;
+                }
             }
 
             switch (dialogType)
             {
                 case DialogType.Info:
-                    icon.icon = "info";
-                    copyButton.style.display = DisplayStyle.None;
+                    if (icon != null) icon.icon = "info";
+                    if (copyButton != null) copyButton.style.display = DisplayStyle.None;
                     break;
                 case DialogType.Warning:
-                    icon.icon = "warning";
-                    icon.AddToClassList("warning");
+                    if (icon != null)
+                    {
+                        icon.icon = "warning";
+                        icon.AddToClassList("warning");
+                    }
                     break;
                 case DialogType.Error:
-                    icon.icon = "error";
-                    icon.AddToClassList("danger");
+                    if (icon != null)
+                    {
+                        icon.icon = "error";
+                        icon.AddToClassList("danger");
+                    }
                     break;
                 case DialogType.Success:
-                    icon.icon = "check_circle";
-                    icon.AddToClassList("success");
-                    copyButton.style.display = DisplayStyle.None;
+                    if (icon != null)
+                    {
+                        icon.icon = "check_circle";
+                        icon.AddToClassList("success");
+                    }
+                    if (copyButton != null) copyButton.style.display = DisplayStyle.None;
                     break;
             }
-            wnd.Show();
+
+            EAUploader.modal.setContent(container);
+            EAUploader.modal.Show();
         }
 
         public static void Show(DialogType dialogType, string title, string message)
         {
-            if (HasOpenInstances<DialogPro>())
-            {
-                return; // 既にウィンドウが開いている場合は新しいウィンドウを開かない
-            }
+            if (isOpen) return;
+            isOpen = true;
 
-            var eauWindow = EAUploader.Instance;
-            DialogPro wnd = CreateInstance<DialogPro>();
-            wnd.titleContent = new GUIContent(title);
-            wnd.position = new Rect(eauWindow.position.x + eauWindow.position.width / 2 - 200, eauWindow.position.y + eauWindow.position.height / 2 - 100, 400, 200);
-            wnd.minSize = new Vector2(400, 200);
+            EAUploader.modal.Initialize();
+            EAUploader.modal.setTitle(title);
 
-            wnd.rootVisualElement.styleSheets.Add(EAUploader.styles);
-            wnd.rootVisualElement.styleSheets.Add(EAUploader.tailwind);
+            var container = new VisualElement();
+            container.styleSheets.Add(EAUploader.styles);
+            container.styleSheets.Add(EAUploader.tailwind);
 
-            wnd.rootVisualElement.Clear();
             var visualTree = Resources.Load<VisualTreeAsset>("UI/Windows/DialogPro");
-            visualTree.CloneTree(wnd.rootVisualElement);
+            visualTree.CloneTree(container);
 
-            LanguageUtility.Localization(wnd.rootVisualElement);
+            LanguageUtility.Localization(container);
 
-            wnd.rootVisualElement.Q<Label>("title").text = title;
-            wnd.rootVisualElement.Q<Label>("message").text = message;
+            var titleLabel = container.Q<Label>("title");
+            var messageLabel = container.Q<Label>("message");
+            var icon = container.Q<MaterialIcon>("icon");
 
-            var icon = wnd.rootVisualElement.Q<MaterialIcon>("icon");
+            var copyButton = container.Q<Button>("copy");
+            var okButton = container.Q<Button>("ok");
 
-            var copyButton = wnd.rootVisualElement.Q<Button>("copy");
-            var okButton = wnd.rootVisualElement.Q<Button>("ok");
+            if (titleLabel != null) titleLabel.text = title;
+            if (messageLabel != null) messageLabel.text = message;
 
-            copyButton.clickable.clicked += () => EditorGUIUtility.systemCopyBuffer = message;
-            okButton.clickable.clicked += () => wnd.Close();
+            if (copyButton != null)
+            {
+                copyButton.clicked += () =>
+                {
+                    EditorGUIUtility.systemCopyBuffer = message;
+                };
+            }
+            if (okButton != null)
+            {
+                okButton.clicked += CloseDialog;
+            }
 
             switch (dialogType)
             {
                 case DialogType.Info:
-                    icon.icon = "info";
-                    copyButton.style.display = DisplayStyle.None;
+                    if (icon != null) icon.icon = "info";
+                    if (copyButton != null) copyButton.style.display = DisplayStyle.None;
                     break;
                 case DialogType.Warning:
-                    icon.icon = "warning";
-                    icon.AddToClassList("warning");
+                    if (icon != null)
+                    {
+                        icon.icon = "warning";
+                        icon.AddToClassList("warning");
+                    }
                     break;
                 case DialogType.Error:
-                    icon.icon = "error";
-                    icon.AddToClassList("danger");
+                    if (icon != null)
+                    {
+                        icon.icon = "error";
+                        icon.AddToClassList("danger");
+                    }
                     break;
                 case DialogType.Success:
-                    icon.icon = "check_circle";
-                    icon.AddToClassList("success");
-                    copyButton.style.display = DisplayStyle.None;
-                    break;
-                default:
-                    // 何もしない
+                    if (icon != null)
+                    {
+                        icon.icon = "check_circle";
+                        icon.AddToClassList("success");
+                    }
+                    if (copyButton != null) copyButton.style.display = DisplayStyle.None;
                     break;
             }
 
-            wnd.Show();
-            wnd.Focus();
+            EAUploader.modal.setContent(container);
+            EAUploader.modal.Show();
+        }
+
+        public static void CloseDialog()
+        {
+            isOpen = false;
+            EAUploader.modal.Hide();
         }
     }
 }

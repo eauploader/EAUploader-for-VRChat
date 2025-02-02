@@ -11,34 +11,12 @@ using UnityEngine.UIElements;
 
 namespace EAUploader.UI.Windows
 {
-    public class Logger : EditorWindow
+    /// <summary>
+    /// EAUploaderのログ管理クラス。
+    /// エラーが発生した際に、EditorWindow ではなくモーダルで表示するよう変更。
+    /// </summary>
+    public static class Logger
     {
-        private static Logger instance;
-
-        public static Logger Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = GetWindow<Logger>();
-                }
-                return instance;
-            }
-        }
-
-        internal void OnEnable()
-        {
-            instance = this;
-            _stringBuilder = new StringBuilder();
-        }
-
-        private void OnDisable()
-        {
-            instance = null;
-        }
-
-
         /// <summary>
         /// EAUploaderのログ出力において使用するログ種別。
         /// </summary>
@@ -50,13 +28,12 @@ namespace EAUploader.UI.Windows
             Log,
             Exception,
             EAUploader // EAUploaderの操作を出力する場合に用いる。
-        } 
+        }
+
         private static StringBuilder _stringBuilder;
 
         /// <summary>
         /// 出力を行うログファイルの名前。
-        /// EAUplaoder起動単位でログファイルを出力するため、本変数の値は
-        /// EAUploader起動時に一度設定したら、以降は変更を行わない。
         /// </summary>
         public static string OUTPUT_LOGFILE_NAME = "";
 
@@ -68,6 +45,23 @@ namespace EAUploader.UI.Windows
 
         internal const string EAULOG_PREFIX = "[EAUb1bc40d3ff764a5d8081e5cd2f48bbc7]";
 
+        [Serializable]
+        public class DependencyInfo
+        {
+            public string version;
+            public Dictionary<string, string> dependencies;
+        }
+
+        [Serializable]
+        public class VpmManifest
+        {
+            public Dictionary<string, DependencyInfo> dependencies;
+            public Dictionary<string, DependencyInfo> locked;
+        }
+
+        /// <summary>
+        /// VPMの locked パッケージを取得するユーティリティ。
+        /// </summary>
         internal static IEnumerable<(string package, string version)> VpmLockedPackages()
         {
             try
@@ -85,21 +79,6 @@ namespace EAUploader.UI.Windows
             }
         }
 
-
-        [Serializable]
-        public class DependencyInfo
-        {
-            public string version;
-            public Dictionary<string, string> dependencies;
-        }
-
-        [Serializable]
-        public class VpmManifest
-        {
-            public Dictionary<string, DependencyInfo> dependencies;
-            public Dictionary<string, DependencyInfo> locked;
-        }
-
         [MenuItem("Window/Error Report")]
         public static void MakeError()
         {
@@ -111,8 +90,15 @@ namespace EAUploader.UI.Windows
             return new DirectoryInfo(LOGFOLDER_PATH).FullName;
         }
 
+        /// <summary>
+        /// Unityのログコールバック（RegisterLogCallback 経由）から呼ばれるメソッド。
+        /// </summary>
         internal static void OnReceiveLog(string logText, string stackTrace, LogType logType)
         {
+            if (_stringBuilder == null)
+            {
+                _stringBuilder = new StringBuilder();
+            }
 
             EAULogType eAULog = new();
 
@@ -144,28 +130,34 @@ namespace EAUploader.UI.Windows
                     break;
             }
 
-            // ログ出力
+            // ログファイルへの書き込み
             writeLog(logText, stackTrace, eAULog);
 
+            // エラーor例外時にモーダル表示
             if (logType == LogType.Exception || logType == LogType.Error)
             {
-                var eauWindow = UI.EAUploader.Instance;
-                Logger wnd = Instance;
-                wnd.titleContent = new GUIContent(T7e.Get("Error Report"));
-                wnd.position = new Rect(eauWindow.position.x + eauWindow.position.width / 2 - 400, eauWindow.position.y + eauWindow.position.height / 2 - 300, 800, 600);
-                wnd.minSize = new Vector2(800, 600);
+                // メイン EAUploader ウィンドウの位置は取得しない（不要）
+                // 代わりにEAUploader.modalでモーダルを表示する
 
-                wnd.rootVisualElement.styleSheets.Add(EAUploader.styles);
-                wnd.rootVisualElement.styleSheets.Add(EAUploader.tailwind);
+                // ------------------------------------------------------------
+                // ここでモーダルを準備
+                // ------------------------------------------------------------
+                EAUploader.modal.Initialize();
+                EAUploader.modal.setTitle(T7e.Get("Error Report"));
 
-                wnd.rootVisualElement.Clear();
+                // モーダル用 VisualElement
+                var modalContent = new VisualElement();
+                modalContent.styleSheets.Add(EAUploader.styles);
+                modalContent.styleSheets.Add(EAUploader.tailwind);
+
+                // UI テンプレートを読み込み
                 var visualTree = Resources.Load<VisualTreeAsset>("UI/Windows/Logger");
-                visualTree.CloneTree(wnd.rootVisualElement);
+                visualTree.CloneTree(modalContent);
 
-                LanguageUtility.Localization(wnd.rootVisualElement);
+                LanguageUtility.Localization(modalContent);
 
+                // エラーログ文字列の構築
                 StringBuilder errorReport = new();
-
                 _stringBuilder.AppendLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 _stringBuilder.AppendLine(logText);
                 _stringBuilder.AppendLine("Stack Trace:");
@@ -181,30 +173,52 @@ namespace EAUploader.UI.Windows
                 errorReport.AppendLine("- Application-Version: " + EAUploaderCore.GetVersion(true));
                 errorReport.AppendLine("- Unity-Version: " + Application.unityVersion);
                 errorReport.AppendLine("- Editor-Platform: " + Application.platform);
-                errorReport.AppendLine("- Vpm-Dependency: \n" + String.Join("\n", VpmLockedPackages().Select(x => $"{x.package}@{x.version}")));
+                errorReport.AppendLine("- Vpm-Dependency: \n" +
+                    string.Join("\n", VpmLockedPackages().Select(x => $"{x.package}@{x.version}")));
 
-                wnd.rootVisualElement.Q<Label>("message").text = errorReport.ToString();
-
-                var copyButton = wnd.rootVisualElement.Q<Button>("copy");
-                var okButton = wnd.rootVisualElement.Q<Button>("ok");
-                var restartButton = wnd.rootVisualElement.Q<Button>("restart");
-
-                copyButton.clickable.clicked += () =>
+                // UXML 内の message ラベルへセット
+                var messageLabel = modalContent.Q<Label>("message");
+                if (messageLabel != null)
                 {
-                    EditorGUIUtility.systemCopyBuffer = errorReport.ToString();
-                };
+                    messageLabel.text = errorReport.ToString();
+                }
 
-                okButton.clickable.clicked += () =>
-                {
-                    wnd.Close();
-                };
+                // ボタンたち
+                var copyButton = modalContent.Q<Button>("copy");
+                var okButton = modalContent.Q<Button>("ok");
+                var restartButton = modalContent.Q<Button>("restart");
 
-                restartButton.clickable.clicked += () =>
+                // コピー: エラーレポートをクリップボードにコピー
+                if (copyButton != null)
                 {
-                    AssetDatabase.ImportAsset("Packages/tech.uslog.eauploader", ImportAssetOptions.ImportRecursive);
-                };
+                    copyButton.clicked += () =>
+                    {
+                        EditorGUIUtility.systemCopyBuffer = errorReport.ToString();
+                    };
+                }
+
+                // OK: モーダルを閉じる
+                if (okButton != null)
+                {
+                    okButton.clicked += () =>
+                    {
+                        EAUploader.modal.Hide();
+                    };
+                }
+
+                // 再読み込み
+                if (restartButton != null)
+                {
+                    restartButton.clicked += () =>
+                    {
+                        AssetDatabase.ImportAsset("Packages/tech.uslog.eauploader", ImportAssetOptions.ImportRecursive);
+                    };
+                }
+
+                // モーダルの内容を設定して表示
+                EAUploader.modal.setContent(modalContent);
+                EAUploader.modal.Show();
             }
-
         }
 
         /// <summary>
@@ -216,12 +230,7 @@ namespace EAUploader.UI.Windows
         /// <param name="logType"></param>
         internal static void writeLog(string logText, string stackTrace, EAULogType logType)
         {
-            // ログ出力処理
-            // ログフォルダの容量がLOGFOLDER_MAX_SIZE_IN_BYTESを超えていた場合
-            // 最も古いログファイルを削除する
-            // ディレクトリ容量の対象となるのは*.logファイルのみである。
             DirectoryInfo di = new(LOGFOLDER_PATH);
-
 
             if (!di.Exists)
             {
@@ -233,13 +242,10 @@ namespace EAUploader.UI.Windows
                 }
             }
 
-            // ディレクトリ容量取得
+            // ログフォルダサイズ確認
             long logFolderSizeInBytes = di.EnumerateFiles("*.log").Sum(fi => fi.Length);
-
-            // ディレクトリ容量が規定の容量よりも大きかった場合
             if (logFolderSizeInBytes > LOGFOLDER_MAX_SIZE_IN_BYTES)
             {
-
                 var oldestLogFile = di.EnumerateFiles("*.log")
                                       .OrderBy(fi => fi.CreationTime)
                                       .FirstOrDefault();
@@ -250,22 +256,9 @@ namespace EAUploader.UI.Windows
                 }
             }
 
-            // ログレベルがErrorかExceptionのときは、フルのトレースログを出力する
-            // それ以外のログレベルでは、ログの呼び出し箇所のみを表示する
-            // stackTraceのパース
-
             string outputStackTrace = "";
-            string outputTimeStamp = "";
-
-            // ログファイルに出力するログレベル
-            // LOG:Log Level
-            // WNG:Warning Level
-            // ERR:Error Level
-            // EXP:Exception Level
-            // AST:Assert Level
-            string outputLogLevel = "";
-
-            outputTimeStamp = DateTime.UtcNow.ToString("HH:mm:ss.fff");
+            string outputTimeStamp = DateTime.UtcNow.ToString("HH:mm:ss.fff");
+            string outputLogLevel;
 
             switch (logType)
             {
@@ -294,14 +287,12 @@ namespace EAUploader.UI.Windows
 
             if (logType == EAULogType.Exception || logType == EAULogType.Error)
             {
-                // そのままトレースログを出力すると見づらいので
-                // インデントを付ける
+                // インデント
                 string[] lines = stackTrace.Split('\n');
                 for (int i = 1; i < lines.Length; i++)
                 {
                     lines[i] = new string(' ', $"{outputTimeStamp} {outputLogLevel} {logText} ".Length) + lines[i];
                 }
-                // インデントを追加したフルのトレースログを出力
                 outputStackTrace = string.Join('\n', lines);
             }
             else if (logType == EAULogType.EAUploader)
@@ -318,64 +309,48 @@ namespace EAUploader.UI.Windows
                 outputStackTrace = lines.Length >= 2 ? lines[1] : stackTrace;
             }
 
-            // ファイルが存在しなければ作成する
+            // ファイルが存在しなければ作成
             if (!File.Exists(LOGFOLDER_PATH + OUTPUT_LOGFILE_NAME))
             {
                 File.Create(LOGFOLDER_PATH + OUTPUT_LOGFILE_NAME).Close();
             }
+
             using var writer = new StreamWriter(LOGFOLDER_PATH + OUTPUT_LOGFILE_NAME, true, Encoding.GetEncoding("UTF-8"));
-            
             writer.WriteLine($"{outputTimeStamp} {outputLogLevel} {logText} {outputStackTrace}");
-            
         }
 
         /// <summary>
         /// ログフォルダの中から、最も小さくなおかつ存在しないログファイルのログファイルナンバーを取得する。
-        /// ex)2023-01-01-1.log 2023-01-01-2.logという二つのログファイルが存在した場合
-        /// 本メソッドは3という数値を返す。初期値は1。
         /// </summary>
-        /// <returns></returns>
         internal static int FetchLogFileNumber()
         {
-            // ディレクトリ内のすべての.logファイルを取得する。
             var logFiles = Directory.GetFiles(LOGFOLDER_PATH, DateTime.UtcNow.ToString("yyyy-MM-dd") + "*.log");
 
-            // ログファイルが存在しない場合初期値である1を返す。
             if (logFiles == null)
             {
                 return 1;
             }
 
-            // YYYY-MM-DD-number.log　形式のファイル名を想定。
             var regex = new Regex(@"\d{4}-\d{2}-\d{2}-(\d+)\.log$");
-
-            // ファイル名から数値を抽出
             var numbers = logFiles.Select(path =>
             {
                 var match = regex.Match(Path.GetFileName(path));
-                // 形式に従わないファイル名を検出した場合-1を返す。
                 return match.Success ? int.Parse(match.Groups[1].Value) : -1;
             })
-                // 形式に従わないファイル名は、ソート対象から除外する。
             .Where(number => number != -1)
             .OrderBy(number => number)
             .ToList();
 
-            // 存在しない最小の数値を取得する。
             var missingNumber = Enumerable.Range(1, numbers.Count + 1).Except(numbers).FirstOrDefault();
-
             return missingNumber;
-            
         }
 
         /// <summary>
         /// EAUログをログファイルに出力する。
         /// </summary>
-        /// <param name="message">出力するメッセージ</param>
         public static void writeEAULog(string message)
         {
             Debug.Log(EAULOG_PREFIX + message);
         }
-
     }
 }

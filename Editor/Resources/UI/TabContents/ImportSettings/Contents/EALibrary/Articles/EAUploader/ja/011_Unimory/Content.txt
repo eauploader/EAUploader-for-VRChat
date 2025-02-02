@@ -7,12 +7,3 @@
 　イベントの開催はXでの告知がメインです。また、イベントカレンダーという有志が作成した情報ハブがよく利用されます。参加方法についても、各イベントの告知からご確認ください。</size>
 </txt>
 <button>VRChat イベントカレンダーを開く, Link, https://vrceve.com/</button>
-<txt>
-<size=20>新しいイベントカレンダー</size>
-<size=16>現在、新たなイベントカレンダー「Unimory」が開発されています。</size>
-</txt>
-<image>Unimory-thumbnail.png</image>
-<txt><size=12><i>Unimory は VRChat のイベントカレンダーの中でも、「便利だ！」「使いやすい！」と評価していただき、コミュニティと協力した立ち位置であり続けたいと思っています。
-by Unimory</i>
-<color=blue>Project EAUploader は Unimory を応援しています。</color></txt>
-<button>Unimoryを開く, Link, https://uni.tuki.dev/</button>

@@ -13,6 +13,7 @@
         <ui:Label name="nameLabel" class="text-lg"/>
         <ui:Label name="lastModifiedLabel" />
         <ui:VisualElement name="miscellaneous" class="flex-col items-start" />
+        <ui:Label name="tipsLabel" class="text-lg" text="Click to Setup"/>
     </ui:VisualElement>
     <ui:VisualElement name="controls" class="flex-col h-full">
         <ui:Button name="settingsButton" class="rounded-bl-none rounded-br-none group-button border-b">
