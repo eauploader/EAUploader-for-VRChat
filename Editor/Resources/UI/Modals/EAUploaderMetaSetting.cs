@@ -126,7 +126,17 @@ namespace EAUploader.UI.Modals
                     return;
                 }
 
+                var oldPath = prefabPath;
+                
+                //Rename
                 PrefabManager.RenamePrefab(prefabPath, newName);
+
+                var newPrefabPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(oldPath), newName + ".prefab").Replace("\\", "/");
+
+                if (EAUploaderCore.selectedPrefabPath == oldPath)
+                {
+                    EAUploaderCore.selectedPrefabPath = newPrefabPath;
+                }
             }
 
             // Update PrefabGenre
@@ -156,8 +166,6 @@ namespace EAUploader.UI.Modals
         {
             if (Enum.TryParse(newGenre, out EAUploaderMeta.PrefabGenre genre))
             {
-                // 旧実装では ChangePrefabGenre(...) を呼んでいた
-                // 代わりに SetPrefabGenre(...) へ置き換えるか、あるいはラッパメソッドにする
                 PrefabManager.ChangePrefabGenre(prefabPath, genre);
             }
             else
