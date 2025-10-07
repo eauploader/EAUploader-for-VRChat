@@ -1,5 +1,5 @@
 name: Easy Avatar Uplaoder
 author: USLOG
-url: https://project-eauploader.github.io/EAUploader-for-VRChat/registry.json
+url: https://eauploader.github.io/EAUploader-for-VRChat/registry.json
 id: tech.uslog.eauploader.registry
 packages: { }
