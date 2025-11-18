@@ -219,14 +219,14 @@ namespace EAUploader.UI.ImportSettings
             }
             else
             {
-                // AvatarDescriptorを持っていない場合、タイプをOtherに設定し、アバター設定ウィンドウを開く
-                PrefabManager.SetPrefabType(filePath, EAUploaderMeta.PrefabType.Other);
-                PrefabManager.SetPrefabGenre(filePath, EAUploaderMeta.PrefabGenre.Other);
-                Debug.Log($"Prefab '{filePath}' is set as Other. Opening Avatar Settings Window...");
+                Debug.Log($"Prefab '{filePath}' is set as Other, opening ClothSettingModal...");
 
-                // Avatar Settings ウィンドウを開く
-                var avatarSettingsWindow = new AvatarSettingsModal(filePath, AssetPreview.GetAssetPreview(prefab));
-                avatarSettingsWindow.Open();
+                var allPrefabs = PrefabManager.GetAllPrefabsIncludingHidden()
+                    .Where(p => p.Type != EAUploaderMeta.PrefabType.VRChat)
+                    .ToList();
+
+                var clothSettingModal = new ClothSettingModal(allPrefabs);
+                clothSettingModal.Open();
             }
         }
 

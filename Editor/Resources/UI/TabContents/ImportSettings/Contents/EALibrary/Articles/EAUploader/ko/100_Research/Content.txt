@@ -1,9 +1,0 @@
-<t>이 도구를 평가해 주세요!</t>
-<txt>
-<size=16>더 나은 툴로 개선해 나가기 위해서 꼭 툴의 평가를 부탁드립니다.연구의 평가 실험이기도 하니, 꼭 협조해 주시면 감사하겠습니다.
-</size><size=12><b>※소요시간 1분
-협조해 주시면 임의로 프로젝트의 Web이나 월드에 이름을 게재하겠습니다.</b>
-</size>
-</txt>
-<button>앙케트에 회답, Link, https://forms.gle/KKdiFRD4ZqfRt26t8</button>
-<button>평가 실험에 대해서, Link, https://www.uslog.tech/research</button>

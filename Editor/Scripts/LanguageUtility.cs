@@ -23,13 +23,13 @@ namespace EAUploader
         {
             if (!File.Exists(SETTINGS_PATH))
             {
-                CreateDefaultSettings();
+                Config.CreateDefaultSettings();  // Config.を追加
             }
 
             try
             {
                 string jsonContent = File.ReadAllText(SETTINGS_PATH);
-                var settings = JsonUtility.FromJson<ConfigData>(jsonContent);
+                var settings = JsonUtility.FromJson<Config.ConfigData>(jsonContent);  // Config.ConfigDataに変更
                 return settings.language;
             }
             catch (IOException ex)
@@ -128,7 +128,7 @@ namespace EAUploader
         {
             var settings = Config.LoadSettings();
             settings.language = language;
-            SaveSettings(settings);
+            Config.SaveSettings(settings);  // Config.を追加
         }
 
         public static List<LanguageInfo> GetAvailableLanguages()
@@ -159,17 +159,6 @@ namespace EAUploader
             return languages;
         }
 
-        private static void SaveSettings(ConfigData settings)
-        {
-            try
-            {
-                string jsonContent = JsonUtility.ToJson(settings);
-                File.WriteAllText(SETTINGS_PATH, jsonContent);
-            }
-            catch (IOException ex)
-            {
-                Debug.LogError($"Error saving language settings: {ex.Message}");
-            }
-        }
+        // SaveSettingsメソッドを削除（Config.SaveSettingsを使用するため）
     }
 }
