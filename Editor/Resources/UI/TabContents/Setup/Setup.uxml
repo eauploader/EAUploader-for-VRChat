@@ -7,53 +7,120 @@
     editor="UnityEditor.UIElements"
     noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd"
     editor-extension-mode="False">
-    <ui:VisualElement class="flex-row flex-1">
-        <ui:VisualElement name="avatar_models" class="w-one-quarter p-4 border-r border-zinc-300">
-            <ui:Label tabindex="-1" text="Select a avatar" parse-escape-sequences="true" display-tooltip-when-elided="true" class="text-xl font-bold mb-4"/>
-            <ui:VisualElement name="SearchSortContainer" class="flex flex-row items-center pb-4">
-            <ui:TextField name="searchQuery" picking-mode="Ignore" class="flex-1 mr-2" />
-            <eau:ShadowButton name="searchButton" text="Search" parse-escape-sequences="true" display-tooltip-when-elided="true" class="search-button" />
-            <ui:VisualElement name="sortbar" class="flex-1 pl-2" />
-            </ui:VisualElement>
-            <ui:ScrollView name="model_list" class="flex-1" />
+    <ui:VisualElement class="flex-1 flex-col">
+
+        <!-- Header : centered title -->
+        <ui:VisualElement class="screen-header shrink-0 p-2">
+            <ui:Label text="Edit" class="text-xl font-bold" />
         </ui:VisualElement>
-        <ui:VisualElement class="flex-1 border-r border-zinc-300">
-            <ui:VisualElement name="prefab_info" class="p-4 border-b border-b-zinc-300">
-                <ui:Label text="Select the avatar you wish to set up from the list on the left." />
+
+        <ui:VisualElement class="flex-row flex-1">
+
+            <!-- Left : edit menu -->
+            <ui:VisualElement name="edit_menu" class="w-one-quarter p-4 border-r border-zinc-300">
+                <ui:VisualElement class="flex-row items-center pb-2">
+                    <ui:Label text="Edit tool" class="text-xl font-bold" />
+                    <eau:HelpButton msg-id="103" class="ml-2" />
+                </ui:VisualElement>
+                <ui:VisualElement name="avatar_status" class="pb-4 mb-4 border-b border-b-zinc-300" />
+                <ui:ScrollView name="avatar_editor_list" class="flex-1" />
+                <ui:VisualElement name="extension_buttons" class="hidden">
+                    <eau:HelpButton msg-id="104" class="mb-2" />
+                    <eau:ShadowButton name="import_extentions" class="button-with-icons">
+                        <eau:MaterialIcon icon="download" />
+                        <ui:Label text="Import extentions" />
+                    </eau:ShadowButton>
+                    <eau:ShadowButton name="find_extentions" class="button-with-icons pt-2">
+                        <eau:MaterialIcon icon="open_in_browser" />
+                        <ui:Label text="Find extentions" />
+                    </eau:ShadowButton>
+                </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="avatar_preview" class="flex-1 border-b border-b-zinc-300"/>
-            <ui:VisualElement class="flex-row justify-between h-8 m-4">
-                <eau:ShadowButton parse-escape-sequences="true" display-tooltip-when-elided="true" name="change_name" class="text-2xl editor-icons">
-                    <eau:MaterialIcon icon="edit" />
-                </eau:ShadowButton>
-                <eau:ShadowButton parse-escape-sequences="true" display-tooltip-when-elided="true" name="pin_model" class="text-2xl editor-icons">
-                    <eau:MaterialIcon icon="push_pin" />
-                </eau:ShadowButton>
-                <eau:ShadowButton parse-escape-sequences="true" display-tooltip-when-elided="true" name="delete_model" class="text-2xl editor-icons">
-                    <eau:MaterialIcon icon="delete" />
-                </eau:ShadowButton>
+
+            <!-- Center : preview -->
+            <ui:VisualElement class="flex-1 border-r border-zinc-300">
+                <ui:VisualElement name="avatar_preview" class="flex-1" />
             </ui:VisualElement>
+
+            <!-- Right : metadata -->
+            <ui:ScrollView name="meta_panel" class="w-one-quarter p-4">
+                <ui:Label text="Item Info" class="text-xl font-bold pb-2" />
+
+                <ui:VisualElement name="meta_thumbnail_area" class="items-center pb-2">
+                    <ui:Image name="meta_thumbnail" class="meta-thumbnail" />
+                    <ui:VisualElement class="flex-row pt-2">
+                        <eau:ShadowButton name="regenerate_thumbnail" class="mr-1">
+                            <eau:MaterialIcon icon="restart_alt" />
+                        </eau:ShadowButton>
+                        <eau:ShadowButton name="change_thumbnail" class="ml-1">
+                            <eau:MaterialIcon icon="image" />
+                        </eau:ShadowButton>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="pb-2">
+                    <ui:Label text="Name" class="font-medium" />
+                    <ui:TextField name="meta_name" class="flex-1" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="pb-2">
+                    <ui:Label text="Genre" class="font-medium" />
+                    <ui:DropdownField name="meta_genre" class="flex-1" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="pb-2">
+                    <ui:Label text="Tags" class="font-medium" />
+                    <ui:VisualElement name="tag_chips" class="flex-row flex-wrap" />
+                    <ui:Label name="tag_empty" text="No tags are set." class="text-sm pb-1" />
+                    <ui:VisualElement class="flex-row items-center">
+                        <eau:TextFieldPro name="tag_input" placeholder="Add a tag" class="flex-1" />
+                        <eau:ShadowButton name="add_tag" class="ml-1">
+                            <eau:MaterialIcon icon="add" />
+                        </eau:ShadowButton>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="tag_input_suggestions" class="tag-suggestions hidden" />
+                    <ui:DropdownField name="tag_suggestions" class="mt-1" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="pb-2">
+                    <ui:Label text="Memo" class="font-medium" />
+                    <ui:TextField name="meta_memo" multiline="true" class="memo-field" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="flex-row items-center justify-between pb-1">
+                    <ui:Label text="Pin" />
+                    <eau:SlideToggle name="meta_pinned" class="w-10" />
+                </ui:VisualElement>
+                <ui:VisualElement class="flex-row items-center justify-between pb-2">
+                    <ui:Label text="Hide from list" />
+                    <eau:SlideToggle name="meta_hidden" class="w-10" />
+                </ui:VisualElement>
+
+                <ui:VisualElement name="meta_details" class="pt-2 border-t border-zinc-300" />
+
+                <ui:VisualElement class="pt-2">
+                    <eau:ShadowButton name="duplicate_prefab" class="button-with-icons">
+                        <eau:MaterialIcon icon="content_copy" />
+                        <ui:Label text="Duplicate" />
+                    </eau:ShadowButton>
+                    <eau:ShadowButton name="delete_prefab" class="button-with-icons pt-2">
+                        <eau:MaterialIcon icon="delete" />
+                        <ui:Label text="Delete" />
+                    </eau:ShadowButton>
+                </ui:VisualElement>
+            </ui:ScrollView>
         </ui:VisualElement>
-        <ui:VisualElement name="avatar_editor" class="w-one-quarter p-4"> 
-            <ui:VisualElement class="pb-4">
-                <ui:Label tabindex="-1" text="Edit tool" parse-escape-sequences="true" display-tooltip-when-elided="true" class="text-xl font-bold pb-2"/>
-                <eau:HelpButton msg-id="103" />
-            </ui:VisualElement>
-            <ui:VisualElement name="avatar_status" class="pb-4 mb-4 border-b border-b-zinc-300">
-                <ui:Label text="Select the avatar you wish to set up from the list on the left." />
-            </ui:VisualElement>
-            <ui:ScrollView name="avatar_editor_list" class="flex-1" />
-            <ui:VisualElement>
-				<eau:HelpButton msg-id="104" class="mb-2"/>
-                <eau:ShadowButton parse-escape-sequences="true" display-tooltip-when-elided="true" name="import_extentions" class="text-2xl button-with-icons">
-                    <eau:MaterialIcon icon="download" />
-                    <ui:Label text="Import extentions" />
-                </eau:ShadowButton>
-                <eau:ShadowButton parse-escape-sequences="true" display-tooltip-when-elided="true" name="find_extentions" class="text-2xl button-with-icons pt-2">
-					<eau:MaterialIcon icon="open_in_browser" />
-                    <ui:Label text="Find extentions" />
-				</eau:ShadowButton>
-            </ui:VisualElement>
+
+        <!-- Bottom navigation -->
+        <ui:VisualElement class="footer-nav">
+            <ui:Button name="back_to_list" class="footer-nav__button footer-nav__button--secondary">
+                <eau:MaterialIcon icon="arrow_back" />
+                <ui:Label text="Back to list" />
+            </ui:Button>
+            <ui:Button name="go_upload" class="footer-nav__button">
+                <eau:MaterialIcon icon="upload" />
+                <ui:Label text="Upload" />
+            </ui:Button>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

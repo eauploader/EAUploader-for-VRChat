@@ -1,9 +1,0 @@
-<t>このツールを評価してください！</t>
-<txt>
-<size=16>より良いツールへと改善していくために、是非ツールの評価をお願いします。研究の評価実験でもありますので、是非ご協力頂けますと幸いです。
-</size><size=12><b>※所要時間１分
-ご協力いただければ任意でプロジェクトのWebやワールドにて名前を掲載させていただきます。</b>
-</size>
-</txt>
-<button>アンケートに回答, Link, https://forms.gle/KKdiFRD4ZqfRt26t8</button>
-<button>評価実験について, Link, https://www.uslog.tech/research</button>

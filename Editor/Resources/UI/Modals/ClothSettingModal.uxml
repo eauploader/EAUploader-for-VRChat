@@ -1,0 +1,13 @@
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:eau="EAUploader.UI.Components"
+    xmlns:uie="UnityEditor.UIElements"
+    xsi="http://www.w3.org/2001/XMLSchema-instance"
+    engine="UnityEngine.UIElements"
+    editor="UnityEditor.UIElements"
+    noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd"
+    editor-extension-mode="False"
+>
+    <ui:Label name="descriptionLabel" text="Here you can configure non-Avatar prefabs (Cloth, Accessory, etc.)" class="text-lg pb-4" />
+    <ui:ScrollView name="prefabList" style="flex-grow:1; flex-direction: column;" class="border border-gray-400 p-2" />
+</ui:UXML>

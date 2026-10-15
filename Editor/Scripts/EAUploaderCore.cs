@@ -40,6 +40,8 @@ namespace EAUploader
         private static bool initializationPerformed = false;
         public static bool HasVRM = false;
         public static bool HasAAO = false;
+        public static bool HasMA = false;
+
         internal static IEnumerable<(string package, string version)> VpmLockedPackages()
         {
             try
@@ -88,6 +90,9 @@ namespace EAUploader
             try
             {
                 InitializeEAUploader();
+                // プラットフォーム切り替えを伴うアップロードの途中でドメインリロードが挟まると、
+                // ビルド用の一時インスタンスがシーンに残ることがあるため取り除く
+                AvatarUploader.CleanupLeftoverBuildInstances();
                 EAUploaderEditorManager.OnEditorManagerLoad();
                 ShaderChecker.CheckShaders();
                 PrefabManager.Initialize();
@@ -136,6 +141,11 @@ namespace EAUploader
                     {
                         Debug.Log("HasAAO");
                     }
+                    HasMA = manifestContent.Contains("\"nadena.dev.modular-avatar\"");
+                    if(HasMA)
+                    {
+                        Debug.Log("HasMA");
+                    }
                 }
                 else
                 {
@@ -165,23 +175,9 @@ namespace EAUploader
 
         private static void OpenEAUploaderWindow()
         {
-            // 既存のウィンドウを検索
-            var windows = Resources.FindObjectsOfTypeAll<EditorWindow>()
-                .Where(window => window.GetType().Name == "EAUploader").ToList();
-
-            Debug.Log($"EAUploader windows found: {windows.Count}");
-
-            if (windows.Count == 0)
-            {
-                Debug.Log("Attempting to open EAUploader...");
-                bool result = EditorApplication.ExecuteMenuItem("EAUploader/Open EAUploader");
-                Debug.Log($"EAUploader opened: {result}");
-            }
-            else
-            {
-                Debug.Log("Focusing on existing EAUploader window.");
-                windows[0].Focus();
-            }
+            UI.EAUploader window = UI.EAUploader.Instance;
+            window.Show();
+            window.Focus();
         }
 
         public static string GetVersion(bool noText = false)

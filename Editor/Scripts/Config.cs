@@ -13,11 +13,16 @@ namespace EAUploader
         {
             public string language;
             public bool isLibraryOpen;
+            // エラー発生時にエラーレポートウィンドウ(モーダル)を表示するかどうか
+            public bool showErrorReportWindow = true;
+
+            // 旧方式(取り込んだPrefabに直接メタ情報を付ける)からVariant管理への移行が済んでいるか
+            public bool managedPrefabsMigrated;
         }
 
         public static void CreateDefaultSettings()
         {
-            var newSettings = new ConfigData() { language = "ja", isLibraryOpen = true };
+            var newSettings = new ConfigData() { language = "ja", isLibraryOpen = true, showErrorReportWindow = true };
             SaveSettings(newSettings);
         }
 
@@ -45,13 +50,13 @@ namespace EAUploader
                 }
                 else
                 {
-                    return new ConfigData(); // Return default in case of missing file
+                    return new ConfigData() { language = "ja", isLibraryOpen = true, showErrorReportWindow = true };
                 }
             }
             catch (IOException ex)
             {
                 Debug.LogError($"Error loading language settings: {ex.Message}");
-                return new ConfigData();
+                return new ConfigData() { language = "ja", isLibraryOpen = true, showErrorReportWindow = true };
             }
         }
 

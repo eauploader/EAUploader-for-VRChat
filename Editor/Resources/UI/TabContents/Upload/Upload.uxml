@@ -8,19 +8,30 @@
     noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd"
     editor-extension-mode="False"
 >
-    <ui:VisualElement class="flex-row flex-1">
-        <ui:VisualElement name="avatar_info_container" class="flex-row" style="width: 30%;">
-            <ui:VisualElement name="avatar_list" class="flex-1 border-r border-zinc-300" style="width: 100%;">
+    <ui:VisualElement class="flex-1 flex-col">
+        <ui:VisualElement class="flex-row flex-1">
+            <ui:VisualElement name="avatar_info_container" class="flex-col border-r border-zinc-300" style="width: 30%;">
                 <ui:VisualElement name="avatar_list_header" class="p-2 border-b border-b-zinc-300">
-					<ui:Label text="Select an Avatar to Upload" class="text-xl font-bold pb-2"/>
-                    <eau:HelpButton msg-id="105" />
+                    <ui:VisualElement class="flex-row items-center">
+                        <ui:Label name="selected_avatar_name" text="" class="text-xl font-bold flex-1" />
+                        <eau:HelpButton msg-id="105" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement name="avatar_preview" class="flex-1 border-b border-b-zinc-300"/>
-                <ui:ScrollView name="avatar_scroll_view" class="flex-1" style="width: 100%;">
-                    <ui:VisualElement name="prefab_list_container" class="p-2" style="height: 60%;" />
-                </ui:ScrollView>
+                <ui:VisualElement name="avatar_preview" class="flex-1" />
             </ui:VisualElement>
+            <ui:VisualElement name="upload_form" style="width: 70%;" />
         </ui:VisualElement>
-        <ui:VisualElement name="upload_form" style="width: 70%;" />
+
+        <!-- Bottom navigation -->
+        <ui:VisualElement class="footer-nav">
+            <ui:Button name="back_to_list" class="footer-nav__button footer-nav__button--secondary">
+                <eau:MaterialIcon icon="arrow_back" />
+                <ui:Label text="Back to list" />
+            </ui:Button>
+            <ui:Button name="go_setup" class="footer-nav__button">
+                <eau:MaterialIcon icon="edit" />
+                <ui:Label text="Edit" />
+            </ui:Button>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

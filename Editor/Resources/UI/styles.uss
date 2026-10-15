@@ -26,7 +26,21 @@
 	--danger-hover: #f5337f;
 	--danger-active: #f7549f;
 	--danger-selected: #c10f4e;
+	/* 入力欄のプレースホルダー文字色 */
+	--placeholder: #9ca3af;
 	font-size: 14px;
+}
+
+/* ==========================================================================
+   Placeholder (TextFieldPro)
+   ========================================================================== */
+
+/* TextFieldPro はプレースホルダーを実際の値として入れ、このクラスを付けて見分ける */
+.unity-text-field__placeholder,
+.unity-text-field__placeholder .unity-base-text-field__input,
+.unity-text-field__placeholder .unity-text-element--inner-input-field,
+.placeholder {
+	color: var(--placeholder);
 }
 
 /* Transition Styles */
@@ -58,6 +72,7 @@ Button {
 	justify-content: center;
     border-width: 0px;
     border-radius: 4px;
+	border-right-color: var(--default);
 	background-color: var(--primary);
 	color: white;
     -unity-font-style: bold; 
@@ -70,6 +85,19 @@ Button:hover {
 
 Button:active {
 	background-color: var(--primary-active);
+}
+
+Button.button__light {
+	background-color: white;
+	color: var(--primary);
+}
+
+Button.button__light:hover {
+	background-color: var(--default-hover);
+}
+
+Button.button__light:active {
+	background-color: var(--default-active);
 }
 
 /* Header Styles */
@@ -92,20 +120,11 @@ Button:active {
 .group-button {
 	flex-grow: 1;
 	justify-content: center;
+	border-color: var(--primary-active);
 }
 
 .group-button MaterialIcon {
 	font-size: 20px;
-}
-
-.group-button__center {
-	border-radius: 0px;
-	border-bottom-color: var(--primary-active);
-	border-top-color: var(--primary-active);
-	border-bottom-width: 1px;
-	border-top-width: 1px;
-	flex-grow: 1;
-	justify-content: center;
 }
 
 /* Image Button Styles */
@@ -263,7 +282,7 @@ PrefabItem > Label {
 
 /* Text Input Styles */
 TextInput {
-	font-size: 12px;
+	font-size: 14px;
 	padding: 4px 16px;
 	border-width: 1px;
 	border-radius: 4px;
@@ -323,7 +342,7 @@ ArticleRenderer {
 }
 
 .tag-button > Label {
-    color: black;
+    color: var(--button-text);
 	margin-left: 4px;
 }
 
@@ -364,6 +383,7 @@ DropdownField > Label {
 }
 
 DropdownField > VisualElement > PopupTextElement {
+	font-size: 14px;
 	color: black;
 }
 
@@ -391,6 +411,7 @@ PopupField > Label {
 }
 
 PopupField	 > VisualElement > PopupTextElement {
+	font-size: 14px;
 	color: black;
 }
 
@@ -903,6 +924,7 @@ RadioButton * {
     --success-hover: #43d589;
     --success-active: #6ee1ae;
     --success-selected: #0faa4d;
+    --placeholder: #8b8b8b;
     color: white;
 }
 
@@ -1049,4 +1071,493 @@ RadioButton * {
 	width: 100%;
 	justify-content: center;
 	align-items: center;
+}
+
+/* Modal Styles */
+.modal__container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background-color: rgba(0,0,0, 0.3);
+	justify-content: center;
+	align-items: center;
+}
+
+.modal__shadow {
+	min-width: 320px;
+	max-width: 80%;
+	max-height: 80%;
+}
+
+.modal {
+	padding: 16px;
+	background-color: white;
+	border-radius: 14px;
+}
+
+.modal__title {
+	font-size: 18px;
+	-unity-font-style: bold;
+	margin-bottom: 16px;
+}
+
+.modal__footer {
+		flex-direction: row;
+	justify-content: flex-end;
+}
+
+.modal__button {
+	margin-left: 8px;
+}
+
+.modal__content {
+	font-size: 16px;
+	padding-bottom: 16px;
+}
+
+/* Pastel Theme */
+.pastel {
+    /* 全体の背景色 (エディタ背景) */
+    background-color: #fdf8f5; /* やや薄いクリーム色 */
+
+    --primary: #F28CA7;
+    --primary-hover: #F7ABC2;
+    --primary-active: #FFD9E4;
+    --primary-selected: #D97087;
+
+    --secondary: #A3D6CC;
+    --secondary-hover: #C3E3DD;
+    --secondary-active: #E2F2EF;
+    --secondary-selected: #81B6AD;
+
+    --default: #d4d4d8;
+    --default-hover: #dddde0;
+    --default-active: #e4e4e7;
+    --default-selected: #a1a1aa;
+
+    --warning: #F4B257;
+    --warning-hover: #F7C180;
+    --warning-active: #FAD1A9;
+    --warning-selected: #C98E43;
+
+    --success: #9ADCA5;
+    --success-hover: #B3E2BB;
+    --success-active: #DAF0DD;
+    --success-selected: #7FB48A;
+
+    --danger: #E28288;
+    --danger-hover: #EEA1A6;
+    --danger-active: #FCD4D6;
+    --danger-selected: #C66064;
+
+    --placeholder: #c2a496;
+
+    /* テキストのメインカラー */
+    color: #8b4513; /* 黒に近いダークグレー */
+}
+
+.pastel #header-text {
+    color: #8b4513; /* ヘッダー文字 */
+}
+
+.pastel Button {
+    background-color: var(--primary);
+	border-color: #FCD4D6;
+}
+
+.pastel Button:hover {
+    background-color: var(--primary-hover);
+}
+
+.pastel Button:active {
+    background-color: var(--primary-active);
+}
+
+.pastel Button:label {
+    color: #faebd7;
+}
+
+.pastel MaterialIcon {
+    color: #faebd7;
+}
+
+.pastel .selected {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.pastel .selected Label {
+    color: white;
+}
+
+.pastel .selected:hover {
+    background-color: var(--primary-hover);
+}
+
+.pastel .pinned {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+}
+
+.pastel .pinned:hover {
+    background-color: var(--default-hover);
+}
+
+.pastel .selected.pinned {
+    background-color: var(--secondary);
+}
+
+/* ==========================================================================
+   Avatar list (grid of cards)
+   ========================================================================== */
+
+.avatar-grid {
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: flex-start;
+}
+
+.avatar-card {
+	width: 180px;
+	margin: 8px;
+	border-width: 1px;
+	border-color: var(--default);
+	border-radius: 8px;
+	background-color: rgba(255, 255, 255, 0.6);
+	overflow: hidden;
+}
+
+.avatar-card:hover {
+	border-color: var(--primary);
+}
+
+.avatar-card__thumbnail {
+	height: 135px;
+	background-color: rgba(0, 0, 0, 0.04);
+}
+
+.avatar-card__image {
+	flex-grow: 1;
+	height: 135px;
+}
+
+.avatar-card__actions {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	flex-direction: row;
+}
+
+.avatar-card__action {
+	width: 28px;
+	height: 28px;
+	margin-left: 2px;
+	padding: 0;
+	justify-content: center;
+	align-items: center;
+	border-radius: 4px;
+}
+
+.avatar-card__action--danger {
+	background-color: var(--warning);
+}
+
+.avatar-card__badges {
+	position: absolute;
+	top: 4px;
+	left: 4px;
+	flex-direction: row;
+}
+
+.avatar-card__badge {
+	font-size: 16px;
+	margin-right: 2px;
+}
+
+.avatar-card__body {
+	padding: 8px;
+}
+
+.avatar-card__title {
+	-unity-font-style: bold;
+	font-size: 13px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.avatar-card__meta {
+	font-size: 11px;
+	opacity: 0.7;
+}
+
+.avatar-card__warning {
+	font-size: 11px;
+}
+
+/* サムネイル画像の上に重ねて表示する */
+.avatar-card__tags {
+	position: absolute;
+	left: 4px;
+	right: 4px;
+	bottom: 4px;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+}
+
+/* ==========================================================================
+   Tags
+   ========================================================================== */
+
+/* 一覧のカードに並べる読み取り専用のタグ */
+/* 画像の上に重なるので、背景を敷いて読めるようにする */
+.tag-chip {
+	font-size: 10px;
+	padding: 0 6px;
+	margin-right: 4px;
+	margin-bottom: 2px;
+	border-width: 1px;
+	border-color: rgba(255, 255, 255, 0.6);
+	border-radius: 8px;
+	background-color: rgba(255, 255, 255, 0.85);
+	color: #27272a;
+}
+
+/* 入力欄の下に出す候補リスト */
+.tag-suggestions {
+	margin-top: 2px;
+	padding: 2px;
+	border-width: 1px;
+	border-color: var(--default);
+	border-radius: 4px;
+	background-color: white;
+}
+
+.tag-suggestion {
+	font-size: 12px;
+	padding: 2px 8px;
+	margin: 0;
+	border-radius: 2px;
+	justify-content: flex-start;
+	background-color: rgba(0, 0, 0, 0);
+	color: black;
+	-unity-font-style: normal;
+	-unity-text-align: middle-left;
+}
+
+.tag-suggestion:hover {
+	background-color: var(--default-hover);
+}
+
+.dark .tag-suggestions {
+	background-color: #333333;
+	border-color: #4a4a4a;
+}
+
+.dark .tag-suggestion {
+	color: white;
+}
+
+.pastel .tag-suggestions {
+	background-color: #fffdfc;
+	border-color: #f7d9e1;
+}
+
+/* タグ絞り込みモーダルのグリッド */
+.tag-filter-grid {
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.tag-filter-cell {
+	width: 170px;
+	padding: 2px 4px;
+}
+
+/* 編集画面で表示する、削除できるタグ */
+.tag-chip--removable {
+	flex-direction: row;
+	align-items: center;
+	font-size: 11px;
+	height: 20px;
+	padding: 0 4px 0 8px;
+	margin-right: 4px;
+	margin-bottom: 4px;
+	border-width: 1px;
+	border-color: var(--default);
+	border-radius: 10px;
+	background-color: rgba(0, 0, 0, 0.04);
+}
+
+.tag-chip--removable:hover {
+	border-color: var(--primary);
+}
+
+.tag-chip__remove {
+	font-size: 14px;
+	margin-left: 2px;
+	opacity: 0.6;
+}
+
+.dark .tag-chip {
+	background-color: rgba(30, 30, 30, 0.85);
+	border-color: rgba(255, 255, 255, 0.25);
+	color: #f4f4f5;
+}
+
+.dark .tag-chip--removable {
+	background-color: #3a3a3a;
+	border-color: #4a4a4a;
+}
+
+.pastel .tag-chip {
+	background-color: rgba(255, 253, 252, 0.9);
+	border-color: #f7d9e1;
+	color: #8b4513;
+}
+
+.pastel .tag-chip--removable {
+	background-color: #fdf3f6;
+	border-color: #f7d9e1;
+}
+
+/* ==========================================================================
+   Screen header (title centered, actions on the right)
+   ========================================================================== */
+
+.screen-header {
+	position: relative;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+.screen-header__actions {
+	position: absolute;
+	right: 0;
+}
+
+/* Setup screen : metadata panel */
+.meta-thumbnail {
+	width: 100%;
+	height: 160px;
+}
+
+.memo-field {
+	min-height: 72px;
+}
+
+.memo-field .unity-base-text-field__input {
+	min-height: 72px;
+	white-space: normal;
+}
+
+/* Dark / pastel variants */
+.dark .avatar-card {
+	background-color: #333333;
+	border-color: #4a4a4a;
+}
+
+.dark .avatar-card__thumbnail {
+	background-color: #2b2b2b;
+}
+
+.pastel .avatar-card {
+	background-color: #fffdfc;
+	border-color: #f7d9e1;
+}
+
+.pastel .avatar-card__thumbnail {
+	background-color: #fdf3f6;
+}
+
+/* ==========================================================================
+   Screen header title (help button does not affect centering)
+   ========================================================================== */
+
+.screen-header__title {
+	flex-direction: row;
+	align-items: center;
+}
+
+.screen-header__title-help {
+	position: absolute;
+	left: 100%;
+	margin-left: 8px;
+}
+
+/* ==========================================================================
+   Footer navigation (split into two full-size halves)
+   ========================================================================== */
+
+.footer-nav {
+	flex-direction: row;
+	flex-shrink: 0;
+	height: 52px;
+	border-top-width: 1px;
+	border-top-color: var(--default);
+}
+
+.footer-nav__button {
+	flex-grow: 1;
+	flex-basis: 0;
+	height: 100%;
+	margin: 0;
+	border-radius: 0;
+	border-width: 0;
+}
+
+.footer-nav__button > Label {
+	font-size: 16px;
+}
+
+.footer-nav__button > MaterialIcon {
+	margin-right: 6px;
+}
+
+.footer-nav__button--secondary {
+	background-color: var(--default-active);
+}
+
+.footer-nav__button--secondary > Label,
+.footer-nav__button--secondary > MaterialIcon {
+	color: var(--primary);
+}
+
+.footer-nav__button--secondary:hover {
+	background-color: var(--default-hover);
+}
+
+/* ==========================================================================
+   Edit tool modal
+   ========================================================================== */
+
+.edit-tool-modal__container {
+	padding: 24px;
+	align-items: stretch;
+	justify-content: flex-start;
+}
+
+.edit-tool-modal {
+	flex-grow: 1;
+	background-color: white;
+	border-radius: 14px;
+	overflow: hidden;
+}
+
+.dark .edit-tool-modal {
+	background-color: #292929;
+}
+
+.pastel .edit-tool-modal {
+	background-color: #fdf8f5;
+}
+
+.edit-tool-modal Button {
+	margin-right: 6px;
+	margin-bottom: 4px;
 }

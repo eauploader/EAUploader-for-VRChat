@@ -8,12 +8,6 @@ using static EAUploader.T7e;
 
 namespace EAUploader
 {
-    public class LanguageInfo
-    {
-        public string name { get; set; }
-        public string display { get; set; }
-    }
-
     public static class LanguageUtility
     {
         private const string SETTINGS_PATH = "Assets/EAUploader/settings.json";
@@ -23,13 +17,13 @@ namespace EAUploader
         {
             if (!File.Exists(SETTINGS_PATH))
             {
-                CreateDefaultSettings();
+                Config.CreateDefaultSettings();  // Config.を追加
             }
 
             try
             {
                 string jsonContent = File.ReadAllText(SETTINGS_PATH);
-                var settings = JsonUtility.FromJson<ConfigData>(jsonContent);
+                var settings = JsonUtility.FromJson<Config.ConfigData>(jsonContent);  // Config.ConfigDataに変更
                 return settings.language;
             }
             catch (IOException ex)
@@ -39,16 +33,62 @@ namespace EAUploader
             }
         }
 
+        /// <summary>
+        /// このクラスを付けた要素は翻訳しない。
+        /// Prefab名やタグ名など、ユーザーが入力した文字列に使う。
+        /// </summary>
+        private const string NO_TRANSLATE_CLASS = "no-translate";
+
         public static void Localization(VisualElement root)
         {
             root.Query<TextElement>().ForEach((e) =>
             {
-                if (e.parent.name == "unity-text-input")
+                if (ShouldSkipTranslation(e))
                 {
                     return;
                 }
                 e.text = T7e.Get(e.text);
             });
+        }
+
+        /// <summary>
+        /// 翻訳の対象外かどうかを判定する。
+        /// </summary>
+        private static bool ShouldSkipTranslation(TextElement element)
+        {
+            if (element.ClassListContains(NO_TRANSLATE_CLASS))
+            {
+                return true;
+            }
+
+            return IsTextInput(element);
+        }
+
+        /// <summary>
+        /// 入力欄の中身かどうかを判定する。
+        /// この処理は一定間隔で走るため、入力中のテキストを翻訳して書き換えてしまうと
+        /// 文字が打てなくなる。ラベル部分は翻訳したいので、入力部分だけを除外する。
+        /// </summary>
+        private static bool IsTextInput(TextElement element)
+        {
+            if (element.parent?.name == "unity-text-input")
+            {
+                return true;
+            }
+
+            // Unity 2022.2 以降、入力欄の中身のTextElementにはこのクラスが付く
+            if (element.ClassListContains("unity-text-element--inner-input-field"))
+            {
+                return true;
+            }
+
+            // Labelは項目名なので翻訳対象。それ以外でTextField配下にあるものは入力欄とみなす。
+            if (element is not Label && element.GetFirstAncestorOfType<TextField>() != null)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public static void LocalizationFromJsonFile(VisualElement root, string LocalizationFolderPath)
@@ -77,6 +117,11 @@ namespace EAUploader
 
             root.Query<TextElement>().ForEach((e) =>
             {
+                if (ShouldSkipTranslation(e))
+                {
+                    return;
+                }
+
                 string key = e.text;
                 if (allTranslations != null && allTranslations.ContainsKey(currentLanguage) && allTranslations[currentLanguage].ContainsKey(key))
                 {
@@ -128,7 +173,7 @@ namespace EAUploader
         {
             var settings = Config.LoadSettings();
             settings.language = language;
-            SaveSettings(settings);
+            Config.SaveSettings(settings);  // Config.を追加
         }
 
         public static List<LanguageInfo> GetAvailableLanguages()
@@ -159,17 +204,6 @@ namespace EAUploader
             return languages;
         }
 
-        private static void SaveSettings(ConfigData settings)
-        {
-            try
-            {
-                string jsonContent = JsonUtility.ToJson(settings);
-                File.WriteAllText(SETTINGS_PATH, jsonContent);
-            }
-            catch (IOException ex)
-            {
-                Debug.LogError($"Error saving language settings: {ex.Message}");
-            }
-        }
+        // SaveSettingsメソッドを削除（Config.SaveSettingsを使用するため）
     }
 }

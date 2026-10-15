@@ -29,12 +29,9 @@ namespace EAUploader.UI.Upload
         private static bool Has_AAO = EAUploaderCore.HasAAO;
         private static bool isUploaded = false;
 
-        private static readonly Dictionary<string, string> BUILD_TARGET_ICONS = new Dictionary<string, string>
-        {
-            { "Windows", "fab fa-windows" },
-            { "Android", "fab fa-android" },
-            { "iOS", "fab fa-apple" }
-        };
+        // 追加アップロード先。Windowsは常に対象なのでフラグを持たない。
+        private static bool uploadForQuest = false;
+        private static bool uploadForIOS = false;
 
         public static void ShowContent(VisualElement rootContainer)
         {
@@ -44,6 +41,7 @@ namespace EAUploader.UI.Upload
 
             root.styleSheets.Add(Resources.Load<StyleSheet>("UI/TabContents/Upload/Contents/UploadForm"));
 
+            EAUploaderCore.SelectedPrefabPathChanged -= OnSelectedPrefabPathChanged;
             EAUploaderCore.SelectedPrefabPathChanged += OnSelectedPrefabPathChanged;
 
             root.schedule.Execute(() =>
@@ -113,7 +111,7 @@ namespace EAUploader.UI.Upload
                     cantUpload.Add(vrmLabel);
                 }
 
-                root.Q("upload_form").Add(cantUpload);
+                root.Add(cantUpload);
 
                 return;
             }
@@ -145,6 +143,15 @@ namespace EAUploader.UI.Upload
         {
             root.Q<ShadowButton>("buildandtest").clicked += async () => await BuildAndTestAsync();
             root.Q<ShadowButton>("upload").clicked += async () => await UploadAsync();
+            root.Q<ShadowButton>("cancel_upload").clicked += () => AvatarUploader.CancelUpload();
+
+            SetupPlatformTargets();
+
+            // アップロード中はボタンを操作させず、キャンセルだけ出す
+            AvatarUploader.UploadingStateChanged -= OnUploadingStateChanged;
+            AvatarUploader.UploadingStateChanged += OnUploadingStateChanged;
+            OnUploadingStateChanged(null, AvatarUploader.IsUploading);
+
             root.Q<ShadowButton>("add_thumbnail").clicked += AddThumbnail;
             root.Q<ShadowButton>("remove_thumbnail").clicked += RemoveThumbnail;
             root.Q<TextFieldPro>("content-name").RegisterValueChangedCallback(evt =>
@@ -167,11 +174,11 @@ namespace EAUploader.UI.Upload
 
             root.Q<SlideToggle>("avatar_optimize").RegisterValueChangedCallback(evt =>
             {
+#if HAS_AAO
                 var selectedPrefabPath = EAUploaderCore.selectedPrefabPath;
                 var prefab = PrefabManager.GetPrefab(selectedPrefabPath);
                 var avatarRoot = prefab.transform.root.gameObject;
 
-#if HAS_AAO
                 if (evt.newValue) 
                 {
                     // Add TraceAndOptimize Component
@@ -202,15 +209,11 @@ namespace EAUploader.UI.Upload
 
         private static void CheckCanUpload()
         {
-            var uploadButton = root.Q<ShadowButton>("upload");
-            if (isFormNull || !isConfirmTerm)
-            {
-                uploadButton.SetEnabled(false);
-            }
-            else
-            {
-                uploadButton.SetEnabled(true);
-            }
+            var uploadButton = root?.Q<ShadowButton>("upload");
+            if (uploadButton == null) return;
+
+            // アップロード中は入力状態に関わらず押させない
+            uploadButton.SetEnabled(!AvatarUploader.IsUploading && !isFormNull && isConfirmTerm);
         }
 
         private static async Task CheckIsUploaded()
@@ -225,7 +228,7 @@ namespace EAUploader.UI.Upload
             var saveButton = root.Q<VisualElement>("save-info");
             var vrcInfo = root.Q<VisualElement>("vrc-info");
 
-            var avatar = await AvatarUploader.GetVRCAvatar(EAUploaderCore.selectedPrefabPath);
+            var avatar = await AvatarUploader.GetVRCAvatarAsync(EAUploaderCore.selectedPrefabPath);
             if (avatar == null)
             {
                 contentName.ClearValue();
@@ -287,7 +290,7 @@ namespace EAUploader.UI.Upload
                     if (EditorUtility.DisplayDialog(T7e.Get("Unlink VRChat from this avatar"), T7e.Get("Are you sure you want to unlink VRChat from this avatar?"), T7e.Get("Yes"), T7e.Get("No")))
                     {
                         pipelineManager.AssignId();
-                        Main.CreatePrefabList();
+                        Main.RefreshSelectedAvatar();
                     }
                 }
 
@@ -352,8 +355,8 @@ namespace EAUploader.UI.Upload
             async void SaveChanges(ClickEvent evt)
             {
                 if (!isUploaded) return;
-                await AvatarUploader.UpdateVRCAvatar(EAUploaderCore.selectedPrefabPath, contentName.GetValue(), contentDescription.GetValue(), releaseStatus.value.ToLower(), tags.Tags, thumbnailUrl);
-                Main.CreatePrefabList();
+                await AvatarUploader.UpdateVRCAvatarAsync(EAUploaderCore.selectedPrefabPath, contentName.GetValue(), contentDescription.GetValue(), releaseStatus.value.ToLower(), tags.Tags, thumbnailUrl);
+                Main.RefreshSelectedAvatar();
                 updateButton.EnableInClassList("hidden", true);
             };
         }
@@ -421,77 +424,6 @@ namespace EAUploader.UI.Upload
                 Validate();
                 UpdateStatus();
 
-                var switcherBlock = root.Q("platform-switcher");
-                if (switcherBlock.Q("platform-switcher-popup") == null)
-                {
-                    var options = GetBuildTargetOptions();
-                    var currentTarget = GetCurrentBuildTarget();
-                    var selectedIndex = options.IndexOf(currentTarget);
-
-                    var popup = new PopupField<string>(T7e.Get("Selected Platform"), options, selectedIndex)
-                    {
-                        name = "platform-switcher-popup"
-                    };
-                    popup.schedule.Execute(() =>
-                    {
-                        currentTarget = GetCurrentBuildTarget();
-                        popup.SetValueWithoutNotify(currentTarget);
-                    }).Every(500);
-                    popup.RegisterValueChangedCallback(evt =>
-                    {
-                        switch (evt.newValue)
-                        {
-                            case "Windows":
-                                {
-                                    if (EditorUtility.DisplayDialog(T7e.Get("Build Target Switcher"), T7e.Get("Are you sure you want to switch your build target to Windows? This could take a while."), T7e.Get("Confirm"), T7e.Get("Cancel")))
-                                    {
-                                        EditorUserBuildSettings.selectedBuildTargetGroup = BuildTargetGroup.Standalone;
-                                        EditorUserBuildSettings.SwitchActiveBuildTargetAsync(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
-                                    }
-
-                                    break;
-                                }
-                            case "Android":
-                                {
-                                    if (!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Android, BuildTarget.Android))
-                                    {
-                                        if (EditorUtility.DisplayDialog(T7e.Get("Android Build Support Required"), T7e.Get("Android Build Support is required to switch to Android build target. Would you like to download it now?"), T7e.Get("Download"), T7e.Get("Cancel")))
-                                        {
-                                            Application.OpenURL(BuildPlayerWindow.GetPlaybackEngineDownloadURL("Android"));
-                                        }
-                                        return;
-                                    }
-
-                                    if (EditorUtility.DisplayDialog(T7e.Get("Build Target Switcher"), T7e.Get("Are you sure you want to switch your build target to Android? This could take a while."), T7e.Get("Confirm"), T7e.Get("Cancel")))
-                                    {
-                                        EditorUserBuildSettings.selectedBuildTargetGroup = BuildTargetGroup.Android;
-                                        EditorUserBuildSettings.SwitchActiveBuildTargetAsync(BuildTargetGroup.Android, BuildTarget.Android);
-                                    }
-
-                                    break;
-                                }
-                            case "iOS":
-                                {
-                                    if (ApiUserPlatforms.CurrentUserPlatforms?.SupportsiOS != true) return;
-                                    if (EditorUtility.DisplayDialog(T7e.Get("Build Target Switcher"), T7e.Get("Are you sure you want to switch your build target to iOS? This could take a while."), T7e.Get("Confirm"), T7e.Get("Cancel")))
-                                    {
-                                        EditorUserBuildSettings.selectedBuildTargetGroup = BuildTargetGroup.iOS;
-                                        EditorUserBuildSettings.SwitchActiveBuildTargetAsync(BuildTargetGroup.iOS, BuildTarget.iOS);
-                                    }
-
-                                    break;
-                                }
-                            default:
-                                {
-                                    // Unsupported platform
-                                    break;
-                                }
-                        }
-                    });
-                    popup.AddToClassList("flex-1");
-                    switcherBlock.Add(popup);
-                }
-
 #if HAS_AAO
                 var prefab = PrefabManager.GetPrefab(path);
                 var avatarRoot = prefab.transform.root.gameObject;
@@ -501,19 +433,132 @@ namespace EAUploader.UI.Upload
             }
         }
 
-        private static List<string> GetBuildTargetOptions()
+        /// <summary>
+        /// アップロード先プラットフォームの選択UIを組み立てる。
+        ///
+        /// Quest等のモバイル向けアバターもWindowsビルドが前提のため、Windowsは常に対象。
+        /// ここでは「追加でどのプラットフォームにもアップロードするか」だけを選ばせる。
+        /// 実際のプラットフォーム切り替えとWindowsへの復帰はVRCSDKのマルチプラットフォームビルドが行う。
+        /// </summary>
+        private static void SetupPlatformTargets()
         {
-            var options = new List<string>
-        {
-            "Windows",
-            "Android"
-        };
-            if (ApiUserPlatforms.CurrentUserPlatforms?.SupportsiOS == true)
+            var questToggle = root.Q<SlideToggle>("upload_for_quest");
+            if (questToggle != null)
             {
-                options.Add("iOS");
+                questToggle.SetValueWithoutNotify(uploadForQuest);
+                questToggle.RegisterValueChangedCallback(evt =>
+                {
+                    if (evt.newValue &&
+                        !BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Android, BuildTarget.Android))
+                    {
+                        if (EditorUtility.DisplayDialog(
+                                T7e.Get("Android Build Support Required"),
+                                T7e.Get("Android Build Support is required to upload for Quest. Would you like to download it now?"),
+                                T7e.Get("Download"), T7e.Get("Cancel")))
+                        {
+                            Application.OpenURL(BuildPlayerWindow.GetPlaybackEngineDownloadURL("Android"));
+                        }
+
+                        questToggle.SetValueWithoutNotify(false);
+                        uploadForQuest = false;
+                        return;
+                    }
+
+                    uploadForQuest = evt.newValue;
+                    UpdatePlatformNote();
+                });
             }
 
-            return options;
+            // iOSはアカウントが対応している場合のみ選択できる
+            var iosOption = root.Q<VisualElement>("ios-option");
+            var iosToggle = root.Q<SlideToggle>("upload_for_ios");
+            var iosSupported = ApiUserPlatforms.CurrentUserPlatforms?.SupportsiOS == true;
+
+            if (iosOption != null)
+            {
+                iosOption.EnableInClassList("hidden", !iosSupported);
+            }
+
+            if (iosToggle != null)
+            {
+                if (!iosSupported)
+                {
+                    uploadForIOS = false;
+                }
+
+                iosToggle.SetValueWithoutNotify(uploadForIOS);
+                iosToggle.RegisterValueChangedCallback(evt =>
+                {
+                    if (evt.newValue &&
+                        !BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.iOS, BuildTarget.iOS))
+                    {
+                        if (EditorUtility.DisplayDialog(
+                                T7e.Get("iOS Build Support Required"),
+                                T7e.Get("iOS Build Support is required to upload for iOS. Would you like to download it now?"),
+                                T7e.Get("Download"), T7e.Get("Cancel")))
+                        {
+                            Application.OpenURL(BuildPlayerWindow.GetPlaybackEngineDownloadURL("iOS"));
+                        }
+
+                        iosToggle.SetValueWithoutNotify(false);
+                        uploadForIOS = false;
+                        return;
+                    }
+
+                    uploadForIOS = evt.newValue;
+                    UpdatePlatformNote();
+                });
+            }
+
+            UpdatePlatformNote();
+        }
+
+        private static void UpdatePlatformNote()
+        {
+            var note = root?.Q<Label>("platform-note");
+            if (note == null) return;
+
+            if (uploadForQuest || uploadForIOS)
+            {
+                note.text = T7e.Get("The build target will be switched during the upload and restored to Windows afterwards. This can take a while.");
+                note.style.display = DisplayStyle.Flex;
+            }
+            else
+            {
+                note.text = string.Empty;
+                note.style.display = DisplayStyle.None;
+            }
+        }
+
+        private static UploadPlatforms GetSelectedPlatforms()
+        {
+            // Windowsは常に含める
+            var platforms = UploadPlatforms.Windows;
+            if (uploadForQuest) platforms |= UploadPlatforms.Android;
+            if (uploadForIOS) platforms |= UploadPlatforms.IOS;
+            return platforms;
+        }
+
+        private static void OnUploadingStateChanged(object sender, bool uploading)
+        {
+            if (root == null) return;
+
+            var cancelContainer = root.Q<VisualElement>("upload_cancel_container");
+            cancelContainer?.EnableInClassList("hidden", !uploading);
+
+            var uploadButton = root.Q<ShadowButton>("upload");
+            var buildTestButton = root.Q<ShadowButton>("buildandtest");
+
+            if (uploading)
+            {
+                uploadButton?.SetEnabled(false);
+                buildTestButton?.SetEnabled(false);
+            }
+            else
+            {
+                buildTestButton?.SetEnabled(true);
+                CheckCanUpload();
+            }
         }
 
         private static string GetCurrentBuildTarget()
@@ -682,22 +727,36 @@ namespace EAUploader.UI.Upload
             };
             uploadStatus.Add(progress);
 
-            AvatarUploader.ProgressChanged += (sender, e) =>
+            // ハンドラは毎回のアップロードで購読しなおすため、必ず解除できるよう変数に保持する
+            void OnProgressChanged(object sender, AvatarUploader.ProgressEventArgs e)
             {
                 EditorApplication.delayCall += () =>
                 {
+                    if (progress.panel == null) return;
                     progress.value = e.Percentage;
                     progress.title = e.Status;
                 };
-            };
+            }
 
-            AvatarUploader.OnComplete += (sender, e) =>
+            void OnUploadComplete(object sender, EventArgs e)
             {
                 uploadStatus.Clear();
-                Main.CreatePrefabList();
-            };
+                Main.RefreshSelectedAvatar();
+            }
 
-            await AvatarUploader.UploadAvatarAsync(selectedPrefabPath, contentName, contentDescription, releaseStatus, tags, thumbnailPath);
+            AvatarUploader.ProgressChanged += OnProgressChanged;
+            AvatarUploader.OnComplete += OnUploadComplete;
+
+            try
+            {
+                await AvatarUploader.UploadAvatarAsync(selectedPrefabPath, contentName, contentDescription,
+                    releaseStatus, tags, thumbnailPath, GetSelectedPlatforms());
+            }
+            finally
+            {
+                AvatarUploader.ProgressChanged -= OnProgressChanged;
+                AvatarUploader.OnComplete -= OnUploadComplete;
+            }
         }
     }
 }

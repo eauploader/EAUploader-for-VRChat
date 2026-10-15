@@ -1,0 +1,45 @@
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    xmlns:eau="EAUploader.UI.Components"
+    xsi="http://www.w3.org/2001/XMLSchema-instance"
+    engine="UnityEngine.UIElements"
+    editor="UnityEditor.UIElements"
+    noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
+    editor-extension-mode="False"
+>
+    <ui:VisualElement class="flex-col" style="width: 480px;">
+        <ui:VisualElement class="flex-row items-center pb-2">
+            <ui:VisualElement class="flex-row items-center">
+                <eau:MaterialIcon icon="language" />
+                <ui:Label text="Language: " />
+            </ui:VisualElement>
+            <ui:DropdownField name="language" index="0" class="flex-1" />
+        </ui:VisualElement>
+
+        <ui:VisualElement class="flex-row items-center pb-2">
+            <eau:MaterialIcon icon="bug_report" class="text-red-600" />
+            <ui:Label text="Experimental" class="text-red-600" />
+        </ui:VisualElement>
+
+        <ui:VisualElement class="flex-row items-center pb-2">
+            <ui:VisualElement class="flex-row items-center">
+                <eau:MaterialIcon icon="draw" />
+                <ui:Label text="Theme: " />
+            </ui:VisualElement>
+            <ui:DropdownField name="thema" index="0" class="flex-1" />
+        </ui:VisualElement>
+
+        <ui:VisualElement class="flex-row items-center justify-between pb-2">
+            <ui:VisualElement class="flex-row items-center">
+                <eau:MaterialIcon icon="error" />
+                <ui:Label text="Show error report window" />
+            </ui:VisualElement>
+            <eau:SlideToggle name="show_error_report_window" class="w-10" />
+        </ui:VisualElement>
+
+        <ui:Label name="version" text="Version: " class="pb-2" />
+
+        <eau:ShadowButton name="open_logreport" text="Open log report" />
+    </ui:VisualElement>
+</ui:UXML>

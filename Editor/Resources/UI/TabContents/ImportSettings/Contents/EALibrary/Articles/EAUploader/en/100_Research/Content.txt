@@ -1,9 +1,0 @@
-<t>Please rate this tool!</t>
-<txt>
-<size=16>In order to improve this tool, we would appreciate it if you could rate it. As this is also a research evaluation experiment, we would be grateful for your cooperation.
-</size><size=12><b>*Estimated time 1 minute
-If you can cooperate, we will optionally post your name on the project's Web or World.</b>
-</size>
-</txt>
-<button>Answer the questionnaire, Link, https://forms.gle/KKdiFRD4ZqfRt26t8</button>
-<button>About the evaluation experiment, Link, https://www.uslog.tech/research</button>

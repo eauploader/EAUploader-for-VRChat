@@ -1,0 +1,17 @@
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    xmlns:eau="EAUploader.UI.Components"
+    xsi="http://www.w3.org/2001/XMLSchema-instance"
+    engine="UnityEngine.UIElements"
+    editor="UnityEditor.UIElements"
+    noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
+    editor-extension-mode="True"
+>
+    <ui:VisualElement class="flex-1 flex-col">
+        <ui:Image name="preview" class="flex-1"/>
+        <ui:VisualElement class="flex-row justify-end p-2">
+            <eau:ShadowButton name="regenerate" text="Regenerate Preview" class="mr-2"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

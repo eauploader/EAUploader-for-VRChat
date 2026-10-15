@@ -1,0 +1,36 @@
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    xmlns:eau="EAUploader.UI.Components"
+    xsi="http://www.w3.org/2001/XMLSchema-instance"
+    engine="UnityEngine.UIElements"
+    editor="UnityEditor.UIElements"
+    noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
+    editor-extension-mode="False"
+>
+    <ui:VisualElement class="flex-col" style="width: 560px;">
+        <ui:Label text="Tags can be added to avatars, outfits and other items." class="pb-2" />
+
+        <!-- Add a tag -->
+        <ui:VisualElement class="flex-row items-center pb-2">
+            <eau:TextFieldPro name="new_tag" placeholder="New tag name" class="flex-1" />
+            <ui:DropdownField name="new_tag_group" class="ml-2" style="width: 160px;" />
+            <eau:ShadowButton name="add_tag" class="button-with-icons ml-2">
+                <eau:MaterialIcon icon="add" />
+                <ui:Label text="Add tag" />
+            </eau:ShadowButton>
+        </ui:VisualElement>
+
+        <!-- Add a group -->
+        <ui:VisualElement class="flex-row items-center pb-2 mb-2 border-b border-b-zinc-300">
+            <eau:TextFieldPro name="new_group" placeholder="New group name" class="flex-1" />
+            <eau:ShadowButton name="add_group" class="button-with-icons ml-2">
+                <eau:MaterialIcon icon="create_new_folder" />
+                <ui:Label text="Add group" />
+            </eau:ShadowButton>
+        </ui:VisualElement>
+
+        <ui:ScrollView name="tag_list" class="border border-gray-400 p-2" style="max-height: 360px;" />
+        <ui:Label name="tag_empty" text="No tags yet." class="p-2 hidden" />
+    </ui:VisualElement>
+</ui:UXML>

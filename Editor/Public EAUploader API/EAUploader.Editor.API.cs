@@ -164,7 +164,7 @@ namespace EAUploader.Editor.API
         /// <returns>VRCAvatarオブジェクト。取得に失敗した場合はnullを返します。</returns>
         public static Task<VRCAvatar?> GetVRCAvatar(string prefabPath)
         {
-            return AvatarUploader.GetVRCAvatar(prefabPath);
+            return AvatarUploader.GetVRCAvatarAsync(prefabPath);
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace EAUploader.Editor.API
         /// <returns>更新の非同期タスク</returns>
         public static Task UpdateVRCAvatar(string prefabPath, string contentName, string contentDescription, string releaseStatus, List<string> tags, string thumbnailPath)
         {
-            return AvatarUploader.UpdateVRCAvatar(prefabPath, contentName, contentDescription, releaseStatus, tags, thumbnailPath);
+            return AvatarUploader.UpdateVRCAvatarAsync(prefabPath, contentName, contentDescription, releaseStatus, tags, thumbnailPath);
         }
     }
 

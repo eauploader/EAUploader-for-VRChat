@@ -788,6 +788,674 @@
     {
       "key": "The folder where the log files are stored is opened.",
       "value": "ログファイルが保存されているフォルダを開きました。"
+    },
+    {
+      "key": "Click to Setup",
+      "value": "クリックしてセットアップ"
+    },
+    {
+      "key": "Pastel",
+      "value": "パステル"
+    },
+    {
+      "key": "Delete Prefab",
+      "value": "Prefabの削除"
+    },
+    {
+      "key": "Are you sure you want to delete this prefab?",
+      "value": "このPrefabを削除しますか？"
+    },
+    {
+      "key": "The following related assets are used only by this prefab and will also be deleted:",
+      "value": "次の関連アセットはこのPrefabからのみ使用されているため、併せて削除されます:"
+    },
+    {
+      "key": "Looking for related assets...",
+      "value": "関連アセットを調べています..."
+    },
+    {
+      "key": "Outfit Settings",
+      "value": "衣装・アクセサリーの設定"
+    },
+    {
+      "key": "Here you can configure non-Avatar prefabs (Cloth, Accessory, etc.)",
+      "value": "アバター以外のPrefab（衣装・アクセサリーなど）の分類を設定できます"
+    },
+    {
+      "key": "Checked prefabs will be saved with the selected genre.",
+      "value": "チェックしたPrefabに、選択したジャンルを保存します。"
+    },
+    {
+      "key": "Select all",
+      "value": "すべて選択"
+    },
+    {
+      "key": "Genre",
+      "value": "ジャンル"
+    },
+    {
+      "key": "Show error report window",
+      "value": "エラーレポートウィンドウを表示する"
+    },
+    {
+      "key": "Do not show this window again (can be re-enabled in Settings)",
+      "value": "このウィンドウを今後表示しない（設定から再度有効にできます）"
+    },
+    {
+      "key": "The log is too long to display in full. Only the latest part is shown. Use Copy to get the whole report.",
+      "value": "ログが長いため全文は表示していません。最新の部分のみ表示しています。全体はコピーで取得できます。"
+    },
+    {
+      "key": "Another build is already in progress.",
+      "value": "他のビルドが進行中です。"
+    },
+    {
+      "key": "The build was cancelled.",
+      "value": "ビルドをキャンセルしました。"
+    },
+    {
+      "key": "The upload was cancelled.",
+      "value": "アップロードをキャンセルしました。"
+    },
+    {
+      "key": "Could not get the VRChat SDK avatar builder.",
+      "value": "VRChat SDKのアバタービルダーを取得できませんでした。"
+    },
+    {
+      "key": "The following platforms are skipped because their build support is not installed:",
+      "value": "Build Supportが導入されていないため、次のプラットフォームはスキップされます:"
+    },
+    {
+      "key": "All avatars are uploaded for Windows. Enable the platforms below to additionally build and upload for them.",
+      "value": "アバターは必ずWindows向けにアップロードされます。追加でアップロードしたいプラットフォームを有効にしてください。"
+    },
+    {
+      "key": "Also upload for Quest (Android)",
+      "value": "Quest（Android）向けにもアップロードする"
+    },
+    {
+      "key": "Also upload for iOS",
+      "value": "iOS向けにもアップロードする"
+    },
+    {
+      "key": "The build target will be switched during the upload and restored to Windows afterwards. This can take a while.",
+      "value": "アップロード中にビルドターゲットが切り替わり、完了後にWindowsへ戻ります。時間がかかる場合があります。"
+    },
+    {
+      "key": "Android Build Support Required",
+      "value": "Android Build Supportが必要です"
+    },
+    {
+      "key": "Android Build Support is required to upload for Quest. Would you like to download it now?",
+      "value": "Quest向けにアップロードするにはAndroid Build Supportが必要です。今すぐダウンロードしますか？"
+    },
+    {
+      "key": "iOS Build Support Required",
+      "value": "iOS Build Supportが必要です"
+    },
+    {
+      "key": "iOS Build Support is required to upload for iOS. Would you like to download it now?",
+      "value": "iOS向けにアップロードするにはiOS Build Supportが必要です。今すぐダウンロードしますか？"
+    },
+    {
+      "key": "Cancel upload",
+      "value": "アップロードをキャンセル"
+    },
+    {
+      "key": "Build Succeed",
+      "value": "ビルド成功"
+    },
+    {
+      "key": "Avatar List",
+      "value": "アバター一覧"
+    },
+    {
+      "key": "Avatar",
+      "value": "アバター"
+    },
+    {
+      "key": "Cloth",
+      "value": "衣装"
+    },
+    {
+      "key": "Accessory",
+      "value": "アクセサリー"
+    },
+    {
+      "key": "Other",
+      "value": "その他"
+    },
+    {
+      "key": "Items and Others",
+      "value": "アイテム・その他"
+    },
+    {
+      "key": "Show hidden items",
+      "value": "非表示のアイテムも表示"
+    },
+    {
+      "key": "No items found.",
+      "value": "アイテムが見つかりません。"
+    },
+    {
+      "key": "Needs conversion",
+      "value": "変換が必要です"
+    },
+    {
+      "key": "Pin",
+      "value": "ピン留め"
+    },
+    {
+      "key": "Unpin",
+      "value": "ピン留めを解除"
+    },
+    {
+      "key": "Show in Project",
+      "value": "プロジェクトで表示"
+    },
+    {
+      "key": "Edit",
+      "value": "編集"
+    },
+    {
+      "key": "Back to list",
+      "value": "リストへ戻る"
+    },
+    {
+      "key": "Item Info",
+      "value": "アイテム情報"
+    },
+    {
+      "key": "Hide from list",
+      "value": "一覧で非表示にする"
+    },
+    {
+      "key": "Duplicate",
+      "value": "複製"
+    },
+    {
+      "key": "Last Modified: ",
+      "value": "最終更新: "
+    },
+    {
+      "key": "Path: ",
+      "value": "パス: "
+    },
+    {
+      "key": "Select an item from the list first.",
+      "value": "先にリストからアイテムを選択してください。"
+    },
+    {
+      "key": "No avatar selected",
+      "value": "アバターが未選択です"
+    },
+    {
+      "key": "A file with this name already exists.",
+      "value": "この名前のファイルは既に存在します。"
+    },
+    {
+      "key": "Error",
+      "value": "エラー"
+    },
+    {
+      "key": "Select Thumbnail",
+      "value": "サムネイルを選択"
+    },
+    {
+      "key": "Tags",
+      "value": "タグ"
+    },
+    {
+      "key": "Memo",
+      "value": "メモ"
+    },
+    {
+      "key": "Tag Settings",
+      "value": "タグの設定"
+    },
+    {
+      "key": "Add tag",
+      "value": "タグを追加"
+    },
+    {
+      "key": "Tags can be added to avatars, outfits and other items.",
+      "value": "アバターや衣装、アイテムにタグを付けられます。"
+    },
+    {
+      "key": "No tags yet.",
+      "value": "タグがまだありません。"
+    },
+    {
+      "key": "Are you sure you want to delete this tag?",
+      "value": "このタグを削除しますか？"
+    },
+    {
+      "key": "This tag will also be removed from the items using it.",
+      "value": "このタグが付いているアイテムからも取り除かれます。"
+    },
+    {
+      "key": "Select from existing tags",
+      "value": "既存のタグから選択"
+    },
+    {
+      "key": "Card Size",
+      "value": "カードサイズ"
+    },
+    {
+      "key": "Search by name or tag",
+      "value": "名前やタグで検索"
+    },
+    {
+      "key": "No tags are set.",
+      "value": "タグ付けされていません。"
+    },
+    {
+      "key": "Add a tag",
+      "value": "タグを追加"
+    },
+    {
+      "key": "Filter by tag",
+      "value": "タグで絞り込み"
+    },
+    {
+      "key": "Items having all of the selected tags are shown.",
+      "value": "選択したタグをすべて持つアイテムだけを表示します。"
+    },
+    {
+      "key": "Clear selection",
+      "value": "選択を解除"
+    },
+    {
+      "key": "Ungrouped",
+      "value": "グループなし"
+    },
+    {
+      "key": "New tag name",
+      "value": "新しいタグ名"
+    },
+    {
+      "key": "New group name",
+      "value": "新しいグループ名"
+    },
+    {
+      "key": "Add group",
+      "value": "グループを追加"
+    },
+    {
+      "key": "No tags in this group.",
+      "value": "このグループにタグはありません。"
+    },
+    {
+      "key": "Are you sure you want to delete this group?",
+      "value": "このグループを削除しますか？"
+    },
+    {
+      "key": "Tags in this group are kept and become ungrouped.",
+      "value": "グループ内のタグは削除されず、グループなしになります。"
+    },
+    {
+      "key": "Migrate",
+      "value": "移行する"
+    },
+    {
+      "key": "Later",
+      "value": "あとで"
+    },
+    {
+      "key": "The imported prefab it was created from is no longer used and will also be deleted:",
+      "value": "作成元となった取り込み済みPrefabは使われなくなるため、これも削除されます:"
+    },
+    {
+      "key": "EAUploader now manages prefabs as variants in the following folder:",
+      "value": "EAUploaderは、Prefabを次のフォルダ以下のPrefab Variantとして管理するようになりました:"
+    },
+    {
+      "key": "Number of prefabs to move to the new management folder:",
+      "value": "新しい管理フォルダへ移行するPrefabの数:"
+    },
+    {
+      "key": "The original prefabs are left as they are, apart from removing the information EAUploader added to them.",
+      "value": "取り込み元のPrefabは、EAUploaderが付けた情報を取り除く以外はそのまま残ります。"
+    },
+    {
+      "key": "Add outfit",
+      "value": "衣装を追加"
+    },
+    {
+      "key": "Adjust colors",
+      "value": "色の調整"
+    },
+    {
+      "key": "Adjust the shape keys (blend shapes) of the selected item and save them as its default.",
+      "value": "選択したアイテムのシェイプキー(ブレンドシェイプ)を調整し、初期値として保存します。"
+    },
+    {
+      "key": "Apply",
+      "value": "適用"
+    },
+    {
+      "key": "Attach to",
+      "value": "取り付け先"
+    },
+    {
+      "key": "Avatar parts",
+      "value": "アバターのパーツ"
+    },
+    {
+      "key": "Avatar root",
+      "value": "アバターのルート"
+    },
+    {
+      "key": "Brightness (%)",
+      "value": "明るさ (%)"
+    },
+    {
+      "key": "Change the colors of the textures used by the selected item, or replace them with other images.",
+      "value": "選択したアイテムのテクスチャの色を変えたり、別の画像に差し替えたりします。"
+    },
+    {
+      "key": "Changed",
+      "value": "変更あり"
+    },
+    {
+      "key": "Chest",
+      "value": "胸"
+    },
+    {
+      "key": "Contrast (%)",
+      "value": "コントラスト (%)"
+    },
+    {
+      "key": "Could not find the hips bone of the avatar or the outfit.",
+      "value": "アバターまたは衣装のHipsボーンが見つかりませんでした。"
+    },
+    {
+      "key": "Could not put on this outfit.",
+      "value": "この衣装を着せられませんでした。"
+    },
+    {
+      "key": "Dress the selected avatar with outfits and accessories from the list.",
+      "value": "一覧にある衣装やアクセサリーを、選択したアバターに着せます。"
+    },
+    {
+      "key": "Edited",
+      "value": "編集済み"
+    },
+    {
+      "key": "Eyelids",
+      "value": "まぶた"
+    },
+    {
+      "key": "Focus on face",
+      "value": "顔を表示"
+    },
+    {
+      "key": "Head",
+      "value": "頭"
+    },
+    {
+      "key": "Hips",
+      "value": "腰"
+    },
+    {
+      "key": "Hue",
+      "value": "色相"
+    },
+    {
+      "key": "Left foot",
+      "value": "左足"
+    },
+    {
+      "key": "Left hand",
+      "value": "左手"
+    },
+    {
+      "key": "Left lower arm",
+      "value": "左前腕"
+    },
+    {
+      "key": "Lip sync",
+      "value": "リップシンク"
+    },
+    {
+      "key": "Materials",
+      "value": "マテリアル"
+    },
+    {
+      "key": "Mesh",
+      "value": "メッシュ"
+    },
+    {
+      "key": "Modular Avatar is installed. Outfits are set up without changing the avatar's bones.",
+      "value": "Modular Avatarが導入されています。アバターのボーンを変更せずに衣装を設定します。"
+    },
+    {
+      "key": "Modular Avatar is not installed. Outfit bones are merged directly into the avatar.",
+      "value": "Modular Avatarが導入されていません。衣装のボーンをアバターに直接統合します。"
+    },
+    {
+      "key": "Neck",
+      "value": "首"
+    },
+    {
+      "key": "No outfits are worn yet. Choose one below.",
+      "value": "まだ衣装を着ていません。下から選んでください。"
+    },
+    {
+      "key": "No outfits or accessories found. Import them from the list screen first.",
+      "value": "衣装・アクセサリーがありません。先に一覧画面からインポートしてください。"
+    },
+    {
+      "key": "Outfit",
+      "value": "衣装"
+    },
+    {
+      "key": "Outfit Tool",
+      "value": "着せ替えツール"
+    },
+    {
+      "key": "Replace image...",
+      "value": "画像を差し替え..."
+    },
+    {
+      "key": "Reset adjustments",
+      "value": "調整をリセット"
+    },
+    {
+      "key": "Reset this mesh",
+      "value": "このメッシュをリセット"
+    },
+    {
+      "key": "Restore original material",
+      "value": "元のマテリアルに戻す"
+    },
+    {
+      "key": "Revert",
+      "value": "元に戻す"
+    },
+    {
+      "key": "Right foot",
+      "value": "右足"
+    },
+    {
+      "key": "Right hand",
+      "value": "右手"
+    },
+    {
+      "key": "Right lower arm",
+      "value": "右前腕"
+    },
+    {
+      "key": "Saturation (%)",
+      "value": "彩度 (%)"
+    },
+    {
+      "key": "Save as new avatar",
+      "value": "新しいアバターとして保存"
+    },
+    {
+      "key": "Search outfits",
+      "value": "衣装を検索"
+    },
+    {
+      "key": "Search shape keys",
+      "value": "シェイプキーを検索"
+    },
+    {
+      "key": "Set all to 0",
+      "value": "すべて0にする"
+    },
+    {
+      "key": "Shape Key Editor",
+      "value": "シェイプキー編集"
+    },
+    {
+      "key": "Shape Keys",
+      "value": "シェイプキー"
+    },
+    {
+      "key": "Shape keys used for lip sync or blinking are controlled by VRChat while playing. Changing their default value may look wrong in game.",
+      "value": "リップシンクやまばたきに使われるシェイプキーはVRChat内で自動的に動かされます。初期値を変えるとゲーム内で正しく表示されないことがあります。"
+    },
+    {
+      "key": "Show changed only",
+      "value": "変更したものだけ表示"
+    },
+    {
+      "key": "Spine",
+      "value": "背骨"
+    },
+    {
+      "key": "Take off",
+      "value": "脱がせる"
+    },
+    {
+      "key": "Take off this outfit?",
+      "value": "この衣装を脱がせますか?"
+    },
+    {
+      "key": "Texture",
+      "value": "テクスチャ"
+    },
+    {
+      "key": "Texture Editor",
+      "value": "テクスチャ編集"
+    },
+    {
+      "key": "The original textures and materials are not changed. Edited copies are saved in the item folder when you apply.",
+      "value": "元のテクスチャやマテリアルは変更されません。適用すると、編集したコピーがアイテムのフォルダに保存されます。"
+    },
+    {
+      "key": "The selected item must be an avatar with a VRCAvatarDescriptor.",
+      "value": "VRCAvatarDescriptorを持つアバターを選択してください。"
+    },
+    {
+      "key": "The selected item must have a material with a texture.",
+      "value": "テクスチャを使ったマテリアルを持つアイテムを選択してください。"
+    },
+    {
+      "key": "The selected item must have a mesh with shape keys.",
+      "value": "シェイプキーを持つメッシュがあるアイテムを選択してください。"
+    },
+    {
+      "key": "This avatar does not have that bone.",
+      "value": "このアバターにはそのボーンがありません。"
+    },
+    {
+      "key": "This material has no texture in the selected slot.",
+      "value": "このマテリアルの選択した項目にはテクスチャがありません。"
+    },
+    {
+      "key": "This tool has unsaved changes. Do you want to save them?",
+      "value": "保存されていない変更があります。保存しますか?"
+    },
+    {
+      "key": "Tint",
+      "value": "色合い"
+    },
+    {
+      "key": "Turn off parts such as the original clothes that should not be shown with the outfit.",
+      "value": "元の服など、衣装と一緒に表示したくないパーツをオフにします。"
+    },
+    {
+      "key": "Unsaved changes",
+      "value": "未保存の変更あり"
+    },
+    {
+      "key": "Wearing",
+      "value": "着用中"
+    },
+    {
+      "key": "Whole body",
+      "value": "全身を表示"
+    },
+    {
+      "key": "Dress Up (Compatible Outfits)",
+      "value": "着せ替え（対応衣装）"
+    },
+    {
+      "key": "Modular Avatar is not installed. Outfit bones are merged only into the uploaded copy, so the avatar itself is not changed.",
+      "value": "Modular Avatarが導入されていません。衣装のボーンはアップロード用のコピーにだけ統合されるため、アバター本体は変更されません。"
+    },
+    {
+      "key": "No matching shape keys.",
+      "value": "一致するシェイプキーがありません。"
+    },
+    {
+      "key": "Main texture",
+      "value": "メインテクスチャ"
+    },
+    {
+      "key": "2nd texture",
+      "value": "2nd テクスチャ"
+    },
+    {
+      "key": "3rd texture",
+      "value": "3rd テクスチャ"
+    },
+    {
+      "key": "Shadow color",
+      "value": "影の色"
+    },
+    {
+      "key": "2nd shadow color",
+      "value": "2影の色"
+    },
+    {
+      "key": "3rd shadow color",
+      "value": "3影の色"
+    },
+    {
+      "key": "Emission",
+      "value": "発光"
+    },
+    {
+      "key": "2nd emission",
+      "value": "発光 2nd"
+    },
+    {
+      "key": "Outline",
+      "value": "輪郭線"
+    },
+    {
+      "key": "MatCap",
+      "value": "マットキャップ"
+    },
+    {
+      "key": "2nd MatCap",
+      "value": "マットキャップ 2nd"
+    },
+    {
+      "key": "Rim light",
+      "value": "リムライト"
+    },
+    {
+      "key": "Restore original visibility",
+      "value": "表示を元に戻す"
+    },
+    {
+      "key": "Back",
+      "value": "戻る"
     }
   ]
 }

@@ -113,7 +113,20 @@
                     <ui:Label text="Platform" class="text-xl font-bold" name="platformLabel" />
                     <eau:HelpButton msg-id="114" class="ml-4 self-center" />
                 </ui:VisualElement>
-                <ui:VisualElement name="platform-switcher" class="pb-2" />
+                <ui:VisualElement name="platform-targets" class="pb-2">
+                    <ui:Label
+                        text="All avatars are uploaded for Windows. Enable the platforms below to additionally build and upload for them."
+                        class="text-sm pb-2" />
+                    <ui:VisualElement class="flex-row items-center justify-between pb-1">
+                        <ui:Label text="Also upload for Quest (Android)" />
+                        <eau:SlideToggle name="upload_for_quest" class="w-10" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="ios-option" class="flex-row items-center justify-between hidden">
+                        <ui:Label text="Also upload for iOS" />
+                        <eau:SlideToggle name="upload_for_ios" class="w-10" />
+                    </ui:VisualElement>
+                    <ui:Label name="platform-note" text="" class="text-sm warning" />
+                </ui:VisualElement>
                 <ui:VisualElement class="flex-row">
                     <ui:VisualElement class="w-one-half justify-between pr-2">
                         <ui:VisualElement class="flex-row mb-2">
@@ -139,6 +152,9 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="upload_status" class="mt-2" />
+            <ui:VisualElement name="upload_cancel_container" class="mt-2 hidden">
+                <eau:ShadowButton text="Cancel upload" name="cancel_upload" />
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
