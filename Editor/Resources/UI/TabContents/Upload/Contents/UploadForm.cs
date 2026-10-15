@@ -174,11 +174,11 @@ namespace EAUploader.UI.Upload
 
             root.Q<SlideToggle>("avatar_optimize").RegisterValueChangedCallback(evt =>
             {
+#if HAS_AAO
                 var selectedPrefabPath = EAUploaderCore.selectedPrefabPath;
                 var prefab = PrefabManager.GetPrefab(selectedPrefabPath);
                 var avatarRoot = prefab.transform.root.gameObject;
 
-#if HAS_AAO
                 if (evt.newValue) 
                 {
                     // Add TraceAndOptimize Component
@@ -228,7 +228,7 @@ namespace EAUploader.UI.Upload
             var saveButton = root.Q<VisualElement>("save-info");
             var vrcInfo = root.Q<VisualElement>("vrc-info");
 
-            var avatar = await AvatarUploader.GetVRCAvatar(EAUploaderCore.selectedPrefabPath);
+            var avatar = await AvatarUploader.GetVRCAvatarAsync(EAUploaderCore.selectedPrefabPath);
             if (avatar == null)
             {
                 contentName.ClearValue();
@@ -355,7 +355,7 @@ namespace EAUploader.UI.Upload
             async void SaveChanges(ClickEvent evt)
             {
                 if (!isUploaded) return;
-                await AvatarUploader.UpdateVRCAvatar(EAUploaderCore.selectedPrefabPath, contentName.GetValue(), contentDescription.GetValue(), releaseStatus.value.ToLower(), tags.Tags, thumbnailUrl);
+                await AvatarUploader.UpdateVRCAvatarAsync(EAUploaderCore.selectedPrefabPath, contentName.GetValue(), contentDescription.GetValue(), releaseStatus.value.ToLower(), tags.Tags, thumbnailUrl);
                 Main.RefreshSelectedAvatar();
                 updateButton.EnableInClassList("hidden", true);
             };

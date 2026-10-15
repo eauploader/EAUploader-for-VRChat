@@ -12,9 +12,9 @@ namespace EAUploader.UI.Modals
 {
     public class AvatarSettingsModal
     {
-        private string prefabPath;
-        private Texture2D previewImage;
-        private VisualElement modalContent = new VisualElement();
+        private readonly string prefabPath;
+        private readonly Texture2D previewImage;
+        private readonly VisualElement modalContent = new();
         private TextField nameTextField;
         private ShadowButton duplicateButton;
         private Image previewImageElement;
@@ -34,7 +34,7 @@ namespace EAUploader.UI.Modals
         {
             if (previewImageElement != null)
             {
-                previewImageElement.image = previewImage != null ? previewImage : null;
+                previewImageElement.image = previewImage ? previewImage : null;
             }
         }
 
@@ -90,12 +90,9 @@ namespace EAUploader.UI.Modals
 
             EAUploader.modal.setContent(modalContent);
 
-            Modal.ActionButton[] actionButtons = new Modal.ActionButton[]
+            Modal.ActionButton[] actionButtons =
             {
-                new Modal.ActionButton("Close", () =>
-                {
-                    EAUploader.modal.Hide();
-                }),
+                new Modal.ActionButton("Close", () => EAUploader.modal.Hide()),
                 new Modal.ActionButton("Save", () =>
                 {
                     SavePrefab();
@@ -111,7 +108,9 @@ namespace EAUploader.UI.Modals
 
         private void SavePrefab()
         {
-            if (prefabInfo != null && prefabInfo.Name != nameTextField.value)
+            if (prefabInfo == null) return;
+
+            if (prefabInfo.Name != nameTextField.value)
             {
                 var newName = nameTextField.value;
                 if (string.IsNullOrEmpty(newName))
@@ -140,7 +139,7 @@ namespace EAUploader.UI.Modals
             }
 
             // Update PrefabGenre
-            if (prefabInfo != null && genreDropdown.value != prefabInfo.Genre.ToString())
+            if (genreDropdown.value != prefabInfo.Genre.ToString())
             {
                 ChangePrefabGenre(genreDropdown.value);
             }

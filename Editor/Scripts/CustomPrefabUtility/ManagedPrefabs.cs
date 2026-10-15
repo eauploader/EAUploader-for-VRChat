@@ -26,8 +26,10 @@ namespace EAUploader.CustomPrefabUtility
         private const string EAUPLOADER_ROOT = "Assets/EAUploader";
 
         // Windowsのファイル名に使えない文字
+        private static readonly char[] PATH_SEPARATOR_CHARS = { '/', '\\' };
+
         private static readonly char[] INVALID_NAME_CHARS =
-            Path.GetInvalidFileNameChars().Concat(new[] { '/', '\\' }).Distinct().ToArray();
+            Path.GetInvalidFileNameChars().Concat(PATH_SEPARATOR_CHARS).Distinct().ToArray();
 
         /// <summary>
         /// EAUploaderの管理下にあるPrefabかどうか。

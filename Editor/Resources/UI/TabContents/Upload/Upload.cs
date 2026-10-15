@@ -49,7 +49,7 @@ namespace EAUploader.UI.Upload
         /// </summary>
         internal static void RefreshSelectedAvatar()
         {
-            if (root == null || root.panel == null) return;
+            if (root?.panel == null) return;
 
             var selectedPrefabPath = EAUploaderCore.selectedPrefabPath;
             var label = root.Q<Label>("selected_avatar_name");

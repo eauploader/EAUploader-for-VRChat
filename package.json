@@ -1,6 +1,6 @@
 {
   "name": "tech.uslog.eauploader",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "displayName": "Easy Avatar Uploader for VRChat",
   "description": "Tools for more concise and easier uploading of avatars.\nアバターを簡単に管理し、VRChatへアップロードするためのUnity簡易化ツールです。",
   "unity": "2022.3",

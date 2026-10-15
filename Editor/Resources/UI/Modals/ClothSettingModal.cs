@@ -73,14 +73,11 @@ namespace EAUploader.UI.Modals
             EAUploader.modal.setContent(modalContent);
 
             // フッタのボタン (Close, Save)
-            Modal.ActionButton[] actionButtons = new Modal.ActionButton[]
+            // 選択せずに閉じた場合はジャンルを確定させない。
+            // デフォルトの衣装のまま残り、次回インポート時に再度確認する。
+            Modal.ActionButton[] actionButtons =
             {
-                new Modal.ActionButton(T7e.Get("Close"), () =>
-                {
-                    // 選択せずに閉じた場合はジャンルを確定させない。
-                    // デフォルトの衣装のまま残り、次回インポート時に再度確認する。
-                    EAUploader.modal.Hide();
-                }),
+                new Modal.ActionButton(T7e.Get("Close"), () => EAUploader.modal.Hide()),
                 new Modal.ActionButton(T7e.Get("Save"), () =>
                 {
                     SaveSettings();

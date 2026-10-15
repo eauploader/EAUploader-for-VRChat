@@ -8,7 +8,7 @@ namespace EAUploader.UI.Components
     public class Modal : VisualElement
     {
         // State  
-        private VisualTreeAsset visualTree;
+        private readonly VisualTreeAsset visualTree;
         public string Title;
         public VisualElement Content;
         public ActionButton[] Actions;
@@ -79,10 +79,7 @@ namespace EAUploader.UI.Components
 
                 button.AddToClassList("modal__button");
 
-                button.clicked += () =>
-                {
-                    action.Callback();
-                };
+                button.clicked += () => action.Callback();
 
                 footerContainer.Add(button);
             }

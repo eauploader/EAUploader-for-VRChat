@@ -93,7 +93,7 @@ namespace EAUploader.UI.AvatarList
         {
             // rootは全画面で共有しているコンテナなので、一覧固有の要素が
             // まだパネルに載っているかどうかで表示中か判定する
-            if (cardGrid == null || cardGrid.panel == null) return;
+            if (cardGrid?.panel == null) return;
             UpdateCards();
         }
 
@@ -273,20 +273,20 @@ namespace EAUploader.UI.AvatarList
                 {
                     var fileExtension = Path.GetExtension(path)?.ToLower();
 
-                    switch (fileExtension)
+                    if (fileExtension == ".prefab")
                     {
-                        case ".prefab":
-                            AssetDatabase.ImportAsset(path, ImportAssetOptions.Default);
-                            break;
-                        case ".unitypackage":
-                            AssetDatabase.ImportPackage(path, false);
-                            break;
-#if HAS_VRM
-                        case ".vrm":
-                            VRMImporter.ImportVRM(path);
-                            break;
-#endif
+                        AssetDatabase.ImportAsset(path, ImportAssetOptions.Default);
                     }
+                    else if (fileExtension == ".unitypackage")
+                    {
+                        AssetDatabase.ImportPackage(path, false);
+                    }
+#if HAS_VRM
+                    else if (fileExtension == ".vrm")
+                    {
+                        VRMImporter.ImportVRM(path);
+                    }
+#endif
                 }
             }
             else
@@ -301,11 +301,28 @@ namespace EAUploader.UI.AvatarList
 
         #region Card list
 
-        internal static async void UpdateCards()
+        internal static void UpdateCards()
+        {
+            _ = UpdateCardsAsync();
+        }
+
+        private static async Task UpdateCardsAsync()
+        {
+            try
+            {
+                await RebuildCardsAsync();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+
+        private static async Task RebuildCardsAsync()
         {
             await Task.Yield();
 
-            if (root == null || cardGrid == null || cardGrid.panel == null) return;
+            if (root == null || cardGrid?.panel == null) return;
 
             var items = GetFilteredPrefabs();
 
@@ -336,8 +353,8 @@ namespace EAUploader.UI.AvatarList
                 // 名前だけでなくタグも検索対象にする
                 prefabs = prefabs.Where(p =>
                         p.Name.IndexOf(searchQuery, StringComparison.OrdinalIgnoreCase) >= 0
-                        || (p.Tags != null && p.Tags.Any(
-                            t => t.IndexOf(searchQuery, StringComparison.OrdinalIgnoreCase) >= 0)))
+                        || p.Tags?.Any(
+                            t => t.IndexOf(searchQuery, StringComparison.OrdinalIgnoreCase) >= 0) == true)
                     .ToList();
             }
 
@@ -369,6 +386,8 @@ namespace EAUploader.UI.AvatarList
                     break;
                 case SortOrder.NameAscending:
                     prefabs = prefabs.OrderBy(p => p.Name).ToList();
+                    break;
+                default:
                     break;
             }
 

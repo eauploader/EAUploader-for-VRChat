@@ -9,19 +9,6 @@ using UnityEngine;
 namespace EAUploader.CustomPrefabUtility
 {
     /// <summary>
-    /// タググループ1つ分の情報。<see cref="TagManager.GetGroupedTags"/> が返す。
-    /// </summary>
-    public class TagGroupInfo
-    {
-        /// <summary>グループ名。どのグループにも属さないタグの場合はnull。</summary>
-        public string Name;
-
-        public List<string> Tags = new List<string>();
-
-        public bool IsUngrouped => Name == null;
-    }
-
-    /// <summary>
     /// ユーザーが自由に作れるタグを管理する。
     ///
     /// 「どんなタグ名が存在するか」「どのグループに属するか」はプロジェクト内のJSONに保存し、
@@ -282,7 +269,7 @@ namespace EAUploader.CustomPrefabUtility
         public static List<string> GetTags(string prefabPath)
         {
             var meta = GetMeta(prefabPath);
-            if (meta == null || meta.tags == null) return new List<string>();
+            if (!meta || meta.tags == null) return new List<string>();
 
             return meta.tags.Where(t => !string.IsNullOrEmpty(t)).ToList();
         }
@@ -313,7 +300,7 @@ namespace EAUploader.CustomPrefabUtility
             if (normalized == null) return;
 
             var meta = GetMeta(prefabPath);
-            if (meta == null || meta.tags == null) return;
+            if (!meta || meta.tags == null) return;
 
             var removed = meta.tags.RemoveAll(
                 t => string.Equals(t, normalized, StringComparison.OrdinalIgnoreCase));

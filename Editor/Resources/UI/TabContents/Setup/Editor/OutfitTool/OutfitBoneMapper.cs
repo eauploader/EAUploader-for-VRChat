@@ -18,7 +18,7 @@ namespace EAUploader.UI.Setup.EditTools
             if (root == null) return null;
 
             var animator = root.GetComponent<Animator>();
-            if (animator != null && animator.avatar != null && animator.avatar.isHuman)
+            if (animator && animator.avatar && animator.avatar.isHuman)
             {
                 var humanBone = animator.avatar.humanDescription.human
                     .FirstOrDefault(h => h.humanName == HumanName(bone));
@@ -40,7 +40,7 @@ namespace EAUploader.UI.Setup.EditTools
         public static Transform FindOutfitHips(GameObject avatarRoot, GameObject outfitRoot)
         {
             var hips = FindHumanBone(outfitRoot, HumanBodyBones.Hips);
-            if (hips != null && hips.parent != outfitRoot.transform) return hips;
+            if (hips && hips.parent != outfitRoot.transform) return hips;
 
             var avatarHips = FindHumanBone(avatarRoot, HumanBodyBones.Hips);
             if (avatarHips == null) return null;

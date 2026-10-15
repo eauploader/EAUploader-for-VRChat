@@ -27,10 +27,11 @@ namespace EAUploader.UI.Setup.EditTools
         protected virtual float SidePanelWidth => 380f;
 
         protected abstract void BuildSidePanel(VisualElement panel);
-        protected virtual void BuildFooterActions(VisualElement footer) { }
-        protected virtual void OnBeforeSave() { }
-        protected virtual void OnAfterSave() { }
-        protected virtual void OnClose() { }
+        // Optional hooks
+        protected virtual void BuildFooterActions(VisualElement footer) { } // skipcq: CS-R1093
+        protected virtual void OnBeforeSave() { } // skipcq: CS-R1093
+        protected virtual void OnAfterSave() { } // skipcq: CS-R1093
+        protected virtual void OnClose() { } // skipcq: CS-R1093
 
         #region Opening
 
@@ -65,7 +66,7 @@ namespace EAUploader.UI.Setup.EditTools
         public void SetTarget(string prefabPath)
         {
             if (string.IsNullOrEmpty(prefabPath)) return;
-            if (Session != null && Session.PrefabPath == prefabPath) return;
+            if (Session?.PrefabPath == prefabPath) return;
             if (!ConfirmLeave()) return;
 
             TargetPrefabPath = prefabPath;

@@ -13,7 +13,7 @@ namespace EAUploader.UI.Modals
     /// </summary>
     public class PrefabPreviewModal
     {
-        private string prefabPath;
+        private readonly string prefabPath;
         private Texture2D previewImage;
         private VisualElement modalContent;
         private Image previewElement;
@@ -70,12 +70,9 @@ namespace EAUploader.UI.Modals
             EAUploader.modal.setContent(modalContent);
 
             // フッタのボタン（例としてCloseだけ）
-            Modal.ActionButton[] actionButtons = new Modal.ActionButton[]
+            Modal.ActionButton[] actionButtons =
             {
-                new Modal.ActionButton("Close", () =>
-                {
-                    EAUploader.modal.Hide();
-                }),
+                new Modal.ActionButton("Close", () => EAUploader.modal.Hide()),
             };
             EAUploader.modal.setFooter(actionButtons);
 

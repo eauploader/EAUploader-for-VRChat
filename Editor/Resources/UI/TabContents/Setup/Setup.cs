@@ -360,10 +360,7 @@ namespace EAUploader.UI.Setup
                 var blueprintRow = new VisualElement { style = { flexDirection = FlexDirection.Row } };
                 blueprintRow.Add(new Label("Blueprint") { style = { flexGrow = 1 } });
 
-                var copyButton = new Button(() =>
-                {
-                    EditorGUIUtility.systemCopyBuffer = pipelineManager.blueprintId;
-                })
+                var copyButton = new Button(() => EditorGUIUtility.systemCopyBuffer = pipelineManager.blueprintId)
                 { text = T7e.Get("Copy") };
                 blueprintRow.Add(copyButton);
 
@@ -648,10 +645,7 @@ namespace EAUploader.UI.Setup
                 }
             };
 
-            var item_button = new Button(() =>
-            {
-                EditorApplication.ExecuteMenuItem(editor.MenuName);
-            })
+            var item_button = new Button(() => EditorApplication.ExecuteMenuItem(editor.MenuName))
             {
                 text = T7e.Get(editor.EditorName),
                 style =

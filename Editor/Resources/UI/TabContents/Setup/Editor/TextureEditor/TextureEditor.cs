@@ -23,7 +23,7 @@ namespace EAUploader.UI.Setup.EditTools
             public TextureEditRecord Record;
             public string Property;
             public Texture Source;
-            public TextureAdjustment Adjustment = new TextureAdjustment();
+            public TextureAdjustment Adjustment = new();
             public Material PreviewMaterial;
             public RenderTexture PreviewTexture;
             public bool Changed;
@@ -307,7 +307,7 @@ namespace EAUploader.UI.Setup.EditTools
             edit = new MaterialEdit
             {
                 Current = material,
-                Original = original != null ? original : material,
+                Original = original ? original : material,
                 Record = record,
             };
 
@@ -325,11 +325,11 @@ namespace EAUploader.UI.Setup.EditTools
         {
             edit.Property = property;
 
-            if (edit.Record != null && edit.Record.property == property)
+            if (edit.Record is { } editRecord && editRecord.property == property)
             {
-                var source = LoadByGuid<Texture>(edit.Record.sourceTexture);
-                edit.Source = source != null ? source : edit.Current.GetTexture(property);
-                edit.Adjustment = edit.Record.adjustment != null ? edit.Record.adjustment.Clone() : new TextureAdjustment();
+                var source = LoadByGuid<Texture>(editRecord.sourceTexture);
+                edit.Source = source ? source : edit.Current.GetTexture(property);
+                edit.Adjustment = editRecord.adjustment != null ? editRecord.adjustment.Clone() : new TextureAdjustment();
             }
             else
             {
@@ -473,8 +473,8 @@ namespace EAUploader.UI.Setup.EditTools
             var materialFolder = EditToolUtility.GetGeneratedFolder(TargetPrefabPath, MATERIAL_FOLDER);
             var baseName = EditToolUtility.SanitizeFileName(edit.Original.name);
 
-            var texturePath = edit.Record != null && edit.Record.property == edit.Property
-                ? AssetDatabase.GUIDToAssetPath(edit.Record.generatedTexture)
+            var texturePath = edit.Record is { } editRecord && editRecord.property == edit.Property
+                ? AssetDatabase.GUIDToAssetPath(editRecord.generatedTexture)
                 : null;
             if (string.IsNullOrEmpty(texturePath) || !texturePath.StartsWith(textureFolder + "/")
                 || IsUsedByOtherPrefabs(texturePath))
@@ -587,7 +587,7 @@ namespace EAUploader.UI.Setup.EditTools
         private static bool IsNormalMap(Texture texture)
         {
             var importer = AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(texture)) as TextureImporter;
-            return importer != null && importer.textureType == TextureImporterType.NormalMap;
+            return importer && importer.textureType == TextureImporterType.NormalMap;
         }
 
         private static T LoadByGuid<T>(string guid) where T : Object

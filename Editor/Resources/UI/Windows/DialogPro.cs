@@ -63,10 +63,7 @@ namespace EAUploader.UI.Windows
 
             if (copyButton != null)
             {
-                copyButton.clicked += () =>
-                {
-                    EditorGUIUtility.systemCopyBuffer = message;
-                };
+                copyButton.clicked += () => EditorGUIUtility.systemCopyBuffer = message;
             }
 
             if (okButton != null)
@@ -106,6 +103,8 @@ namespace EAUploader.UI.Windows
                     }
                     if (copyButton != null) copyButton.style.display = DisplayStyle.None;
                     break;
+                default:
+                    break;
             }
 
             EAUploader.modal.setContent(container);
@@ -141,10 +140,7 @@ namespace EAUploader.UI.Windows
 
             if (copyButton != null)
             {
-                copyButton.clicked += () =>
-                {
-                    EditorGUIUtility.systemCopyBuffer = message;
-                };
+                copyButton.clicked += () => EditorGUIUtility.systemCopyBuffer = message;
             }
             if (okButton != null)
             {
@@ -178,6 +174,8 @@ namespace EAUploader.UI.Windows
                         icon.AddToClassList("success");
                     }
                     if (copyButton != null) copyButton.style.display = DisplayStyle.None;
+                    break;
+                default:
                     break;
             }
 

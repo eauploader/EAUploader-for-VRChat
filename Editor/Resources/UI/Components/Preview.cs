@@ -154,7 +154,7 @@ namespace EAUploader.UI.Components
 
         Texture2D MakeBackgroundTexture(int width, int height, Color color)
         {
-            Texture2D tex = new Texture2D(width, height);
+            var tex = new Texture2D(width, height);
             Color[] pixels = new Color[width * height];
             for (int i = 0; i < pixels.Length; i++)
             {
@@ -436,7 +436,7 @@ namespace EAUploader.UI.Components
             if (liveInstance == null) return;
 
             var renderers = liveInstance.GetComponentsInChildren<Renderer>()
-                .Where(r => !(r is ParticleSystemRenderer) && !(r is TrailRenderer) && !(r is LineRenderer))
+                .Where(r => r is not ParticleSystemRenderer && r is not TrailRenderer && r is not LineRenderer)
                 .ToList();
             if (renderers.Count == 0)
             {
@@ -495,6 +495,9 @@ namespace EAUploader.UI.Components
                     liveDistance = Mathf.Clamp(liveDistance * (1f + e.delta.y * LIVE_ZOOM_SPEED), 0.05f, 100f);
                     e.Use();
                     Repaint();
+                    break;
+
+                default:
                     break;
             }
         }

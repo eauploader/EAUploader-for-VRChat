@@ -10,7 +10,7 @@ EAUploader is a Unity Editor extension that lets users who are new to Unity mana
 | --- | --- |
 | Package name | `tech.uslog.eauploader` |
 | Display name | Easy Avatar Uploader for VRChat |
-| Version | `1.4.6` |
+| Version | `1.5.1` |
 | Unity | `2022.3` |
 | Distribution | VPM (VRChat Creator Companion / ALCOM) |
 | License | See `LICENSE` |

@@ -1,6 +1,6 @@
 # EAUploader Specification
 
-Specification of **Easy Avatar Uploader for VRChat** (`tech.uslog.eauploader`), describing the implementation as of package version `1.4.6` on the `beta` branch (including the in-progress single-window UI redesign).
+Specification of **Easy Avatar Uploader for VRChat** (`tech.uslog.eauploader`), describing the implementation as of package version `1.5.1` on the `beta` branch.
 
 | Document | Contents |
 | --- | --- |

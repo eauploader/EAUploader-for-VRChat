@@ -66,7 +66,7 @@ namespace EAUploader.UI.Setup.EditTools
         {
             var prefab = EditToolUtility.LoadPrefab(prefabPath);
             return prefab != null && prefab.GetComponentsInChildren<SkinnedMeshRenderer>(true)
-                .Any(r => r.sharedMesh != null && r.sharedMesh.blendShapeCount > 0);
+                .Any(r => r.sharedMesh && r.sharedMesh.blendShapeCount > 0);
         }
 
         #endregion
@@ -155,7 +155,7 @@ namespace EAUploader.UI.Setup.EditTools
         private void CollectRenderers()
         {
             renderers = Session.Root.GetComponentsInChildren<SkinnedMeshRenderer>(true)
-                .Where(r => r.sharedMesh != null && r.sharedMesh.blendShapeCount > 0)
+                .Where(r => r.sharedMesh && r.sharedMesh.blendShapeCount > 0)
                 .ToList();
 
             var previous = originalWeights.Keys.ToList();
@@ -180,7 +180,7 @@ namespace EAUploader.UI.Setup.EditTools
         private SkinnedMeshRenderer PickDefaultRenderer()
         {
             var descriptor = Session.Root.GetComponent<VRCAvatarDescriptor>();
-            if (descriptor != null && descriptor.VisemeSkinnedMesh != null && renderers.Contains(descriptor.VisemeSkinnedMesh))
+            if (descriptor && descriptor.VisemeSkinnedMesh && renderers.Contains(descriptor.VisemeSkinnedMesh))
             {
                 return descriptor.VisemeSkinnedMesh;
             }
@@ -336,7 +336,7 @@ namespace EAUploader.UI.Setup.EditTools
 
         private void SetWeight(VisualElement row, float value)
         {
-            if (!(row.userData is ShapeKeyEntry entry) || currentRenderer == null) return;
+            if (row.userData is not ShapeKeyEntry entry || currentRenderer == null) return;
 
             var clamped = Mathf.Clamp(value, 0f, entry.Max);
             ApplyWeight(entry.Index, clamped);
@@ -402,7 +402,7 @@ namespace EAUploader.UI.Setup.EditTools
         private Transform FindHead()
         {
             var animator = Session.Root.GetComponent<Animator>();
-            if (animator != null && animator.avatar != null && animator.avatar.isHuman)
+            if (animator && animator.avatar && animator.avatar.isHuman)
             {
                 var humanBone = animator.avatar.humanDescription.human
                     .FirstOrDefault(h => h.humanName == HumanBodyBones.Head.ToString());

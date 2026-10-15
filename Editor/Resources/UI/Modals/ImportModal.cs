@@ -95,15 +95,13 @@ namespace EAUploader.UI.Modals
 
             var fileExtension = Path.GetExtension(filePath)?.ToLower();
 
-            switch (fileExtension)
+            if (fileExtension == ".prefab")
             {
-                case ".prefab":
-                    AssetDatabase.ImportAsset(filePath, ImportAssetOptions.Default);
-                    break;
-
-                case ".unitypackage":
-                    AssetDatabase.ImportPackage(filePath, false);
-                    break;
+                AssetDatabase.ImportAsset(filePath, ImportAssetOptions.Default);
+            }
+            else if (fileExtension == ".unitypackage")
+            {
+                AssetDatabase.ImportPackage(filePath, false);
             }
             AssetDatabase.Refresh();
         }

@@ -67,7 +67,7 @@ namespace EAUploader.UI.Components
             {
                 try
                 {
-                    var avatar = await AvatarUploader.GetVRCAvatar(prefab.Path);
+                    var avatar = await AvatarUploader.GetVRCAvatarAsync(prefab.Path);
 
                     if (avatar.HasValue)
                     {

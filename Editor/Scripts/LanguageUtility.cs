@@ -8,12 +8,6 @@ using static EAUploader.T7e;
 
 namespace EAUploader
 {
-    public class LanguageInfo
-    {
-        public string name { get; set; }
-        public string display { get; set; }
-    }
-
     public static class LanguageUtility
     {
         private const string SETTINGS_PATH = "Assets/EAUploader/settings.json";
@@ -77,7 +71,7 @@ namespace EAUploader
         /// </summary>
         private static bool IsTextInput(TextElement element)
         {
-            if (element.parent != null && element.parent.name == "unity-text-input")
+            if (element.parent?.name == "unity-text-input")
             {
                 return true;
             }
@@ -89,7 +83,7 @@ namespace EAUploader
             }
 
             // Labelは項目名なので翻訳対象。それ以外でTextField配下にあるものは入力欄とみなす。
-            if (!(element is Label) && element.GetFirstAncestorOfType<TextField>() != null)
+            if (element is not Label && element.GetFirstAncestorOfType<TextField>() != null)
             {
                 return true;
             }

@@ -4,18 +4,6 @@ using UnityEngine.UIElements;
 
 namespace EAUploader.UI
 {
-    public class ThemeInfo
-    {
-        public string name;
-        public string display;
-
-        public ThemeInfo(string name, string display)
-        {
-            this.name = name;
-            this.display = display;
-        }
-    }
-
     public static class ThemeUtility
     {
         private static readonly string[] THEME_CLASSES = { "white", "dark", "pastel" };

@@ -51,7 +51,7 @@ Static methods marked with `[EAUPlugin]` (either `EAUploader.EAUPluginAttribute`
 | `LanguageAPI` | `GetCurrentLanguage()`, `Localize(root)`, `LocalizeFromJsonFile(root, folder)`, `GetLocalizedTextFromJsonFile(key, folder)`, `ChangeLanguage(lang)`, `GetAvailableLanguages()` |
 | `UploadAPI` | `OnUploadComplete`, `UploadProgressChanged`, `BuildAndTestAsync(path)`, `GetVRCAvatar(path)`, `UploadAvatarAsync(...)`, `UpdateVRCAvatar(...)` |
 
-### `EAUploader.Editor.Prefab.API` (`EAUploader.Editor.Prefab.API.cs`)
+### `EAUploader.Editor.Prefab.API` (one file per class: `EAUploader.Editor.Prefab.API.cs`, `.PrefabPreview.API.cs`, `.Shader.API.cs`, `.VRM.API.cs`, `.PrefabUtility.API.cs`)
 
 | Class | Members |
 | --- | --- |
@@ -72,3 +72,7 @@ Static methods marked with `[EAUPlugin]` (either `EAUploader.EAUPluginAttribute`
 | `PrefabItemButtonAPI` | `CreatePrefabItemButton(prefabInfo, onClick, disabled)` |
 | `ShadowButtonAPI` | `CreateShadowButton(text, onClick)` |
 | `PreviewAPI` | `CreatePreview(root, path)`, `ShowContent`, `UpdatePreview`, `ResetPreview` |
+
+## Internal API changes in 1.5.1
+
+`AvatarUploader.GetVRCAvatar` and `AvatarUploader.UpdateVRCAvatar` were renamed to `GetVRCAvatarAsync` and `UpdateVRCAvatarAsync`. The old names still exist and are marked `[Obsolete]`. Plugins should keep using `UploadAPI`, whose method names did not change.

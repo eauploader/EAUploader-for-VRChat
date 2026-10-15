@@ -283,7 +283,7 @@ namespace EAUploader.CustomPrefabUtility
         /// </summary>
         private static DateTime GetLastModified(string path, EAUploaderMeta meta)
         {
-            if (meta != null && meta.lastModifiedTicks > 0)
+            if (meta && meta.lastModifiedTicks > 0)
             {
                 return new DateTime(meta.lastModifiedTicks, DateTimeKind.Utc).ToLocalTime();
             }
@@ -341,7 +341,9 @@ namespace EAUploader.CustomPrefabUtility
         {
             var all = GetAllPrefabs();
             var info = all.Find(p => p.Path == path);
-            if (info != null && info.Preview == null)
+            if (info == null) return null;
+
+            if (info.Preview == null)
             {
                 info.Preview = TryLoadPreview(path);
             }

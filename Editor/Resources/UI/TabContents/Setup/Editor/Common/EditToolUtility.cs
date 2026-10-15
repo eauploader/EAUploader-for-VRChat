@@ -67,7 +67,7 @@ namespace EAUploader.UI.Setup.EditTools
             AvatarList.Main.RequestRefresh();
 
             var window = EAUploader.InstanceOrNull;
-            if (window != null && window.CurrentScreen == EAUploaderScreen.Setup
+            if (window && window.CurrentScreen == EAUploaderScreen.Setup
                 && EAUploaderCore.selectedPrefabPath == prefabPath)
             {
                 EAUploader.RefreshCurrentScreen();
@@ -94,7 +94,7 @@ namespace EAUploader.UI.Setup.EditTools
         public static Bounds CalculateBounds(GameObject target)
         {
             var renderers = target.GetComponentsInChildren<Renderer>(true)
-                .Where(r => !(r is ParticleSystemRenderer) && !(r is TrailRenderer) && !(r is LineRenderer))
+                .Where(r => r is not ParticleSystemRenderer && r is not TrailRenderer && r is not LineRenderer)
                 .ToList();
 
             if (renderers.Count == 0) return new Bounds(target.transform.position, Vector3.one);

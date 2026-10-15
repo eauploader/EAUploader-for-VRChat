@@ -132,7 +132,7 @@ namespace EAUploader.UI
         internal static void RefreshCurrentScreen()
         {
             var window = InstanceOrNull;
-            if (window == null || window.contentRoot == null) return;
+            if (!window || window.contentRoot == null) return;
             window.ShowScreen(window.currentScreen, force: true);
         }
 
@@ -157,6 +157,8 @@ namespace EAUploader.UI
                 case EAUploaderScreen.Upload:
                     EAULogger.writeEAULog("Opened upload screen.");
                     Upload.Main.ShowContent(contentRoot);
+                    break;
+                default:
                     break;
             }
 

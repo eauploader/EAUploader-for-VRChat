@@ -186,7 +186,7 @@ namespace EAUploader.UI.Windows
         {
             _stringBuilder ??= new StringBuilder();
 
-            _stringBuilder.AppendLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            _stringBuilder.AppendLine(DateTime.UtcNow.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss"));
             _stringBuilder.AppendLine(logText);
             _stringBuilder.AppendLine("Stack Trace:");
             _stringBuilder.AppendLine(stackTrace);
@@ -313,28 +313,20 @@ namespace EAUploader.UI.Windows
                 // コピー: エラーレポートをクリップボードにコピー
                 if (copyButton != null)
                 {
-                    copyButton.clicked += () =>
-                    {
-                        EditorGUIUtility.systemCopyBuffer = fullReport;
-                    };
+                    copyButton.clicked += () => EditorGUIUtility.systemCopyBuffer = fullReport;
                 }
 
                 // OK: モーダルを閉じる
                 if (okButton != null)
                 {
-                    okButton.clicked += () =>
-                    {
-                        EAUploader.modal.Hide();
-                    };
+                    okButton.clicked += () => EAUploader.modal.Hide();
                 }
 
                 // 再読み込み
                 if (restartButton != null)
                 {
                     restartButton.clicked += () =>
-                    {
                         AssetDatabase.ImportAsset("Packages/tech.uslog.eauploader", ImportAssetOptions.ImportRecursive);
-                    };
                 }
 
                 // モーダルの内容を設定して表示

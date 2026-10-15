@@ -34,7 +34,7 @@ namespace EAUploader.UI.Setup.EditTools
         public string sourceTexture;
         public string generatedTexture;
         public string property;
-        public TextureAdjustment adjustment = new TextureAdjustment();
+        public TextureAdjustment adjustment = new();
 
         public static TextureEditRecord Read(UnityEngine.Object asset)
         {

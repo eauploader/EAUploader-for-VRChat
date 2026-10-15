@@ -41,17 +41,11 @@ namespace EAUploader.UI.Setup.EditTools
         protected override string ToolTitle => T7e.Get("Dress Up (Compatible Outfits)");
         protected override float SidePanelWidth => 400f;
 
-        private static bool UsesModularAvatar
-        {
-            get
-            {
 #if HAS_MA
-                return true;
+        private static bool UsesModularAvatar => true;
 #else
-                return false;
+        private static bool UsesModularAvatar => false;
 #endif
-            }
-        }
 
         #region Registration
 
@@ -449,7 +443,7 @@ namespace EAUploader.UI.Setup.EditTools
             AvatarList.Main.RequestRefresh();
 
             var window = EAUploader.InstanceOrNull;
-            if (window != null && window.CurrentScreen == EAUploaderScreen.Setup)
+            if (window && window.CurrentScreen == EAUploaderScreen.Setup)
             {
                 EAUploader.RefreshCurrentScreen();
             }

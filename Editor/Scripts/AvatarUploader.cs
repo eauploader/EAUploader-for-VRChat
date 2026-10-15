@@ -252,7 +252,13 @@ namespace EAUploader
 
         #region VRChat API
 
-        public static async Task<VRCAvatar?> GetVRCAvatar(string selectedPrefabPath)
+        [Obsolete("Use GetVRCAvatarAsync instead.")]
+        public static Task<VRCAvatar?> GetVRCAvatar(string selectedPrefabPath)
+        {
+            return GetVRCAvatarAsync(selectedPrefabPath);
+        }
+
+        public static async Task<VRCAvatar?> GetVRCAvatarAsync(string selectedPrefabPath)
         {
             var selectedPrefab = PrefabManager.GetPrefab(selectedPrefabPath);
             if (selectedPrefab == null)
@@ -363,7 +369,7 @@ namespace EAUploader
 
                 token.ThrowIfCancellationRequested();
 
-                var avatarData = await GetVRCAvatar(prefabPath);
+                var avatarData = await GetVRCAvatarAsync(prefabPath);
                 VRCAvatar avatar;
 
                 if (avatarData == null)
@@ -538,10 +544,17 @@ namespace EAUploader
             }
         }
 
-        public static async Task UpdateVRCAvatar(string prefabPath, string contentName, string contentDescription,
+        [Obsolete("Use UpdateVRCAvatarAsync instead.")]
+        public static Task UpdateVRCAvatar(string prefabPath, string contentName, string contentDescription,
             string releaseStatus, List<string> tags, string thumbnailPath)
         {
-            var avatarData = await GetVRCAvatar(prefabPath);
+            return UpdateVRCAvatarAsync(prefabPath, contentName, contentDescription, releaseStatus, tags, thumbnailPath);
+        }
+
+        public static async Task UpdateVRCAvatarAsync(string prefabPath, string contentName, string contentDescription,
+            string releaseStatus, List<string> tags, string thumbnailPath)
+        {
+            var avatarData = await GetVRCAvatarAsync(prefabPath);
 
             if (avatarData == null)
             {
