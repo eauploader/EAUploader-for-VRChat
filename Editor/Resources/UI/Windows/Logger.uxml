@@ -18,11 +18,14 @@
                 <ui:Label
                     text="An error has occurred. Please try to resolve the issue based on this error or seek help from the community or other sources. However, if the error is caused by EAUploader, please report it to the developer via feedback."
                     class="text-sm pb-4" />
+                <ui:Label name="truncated_notice" text="" class="text-sm warning pb-2" />
                 <ui:VisualElement class="flex-row flex-1 pb-4">
                     <ui:ScrollView class="flex-1 border border-gray-400 rounded-md">
-                        <ui:Label name="message" class="p-4 w-full h-full" />
+                        <ui:VisualElement name="message_container" class="p-4 w-full" />
                     </ui:ScrollView>
                 </ui:VisualElement>
+                <ui:Toggle name="disable_error_window"
+                    label="Do not show this window again (can be re-enabled in Settings)" class="pb-2" />
             </ui:VisualElement>
         </ui:VisualElement>
             <ui:VisualElement class="flex-row justify-between">

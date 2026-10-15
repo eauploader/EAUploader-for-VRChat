@@ -1,0 +1,72 @@
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    xmlns:eau="EAUploader.UI.Components"
+    xsi="http://www.w3.org/2001/XMLSchema-instance"
+    engine="UnityEngine.UIElements"
+    editor="UnityEditor.UIElements"
+    noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
+    editor-extension-mode="False"
+>
+    <ui:VisualElement class="flex-1 flex-col p-4">
+
+        <!-- Header : centered title, actions pinned to the right -->
+        <ui:VisualElement class="screen-header shrink-0 pb-2">
+            <ui:VisualElement class="screen-header__title">
+                <ui:Label text="Avatar List" class="text-xl font-bold" />
+                <eau:HelpButton msg-id="116" class="screen-header__title-help" />
+            </ui:VisualElement>
+            <ui:VisualElement class="flex-row items-center screen-header__actions">
+                <eau:ShadowButton name="open_import" class="button-with-icons mr-2">
+                    <eau:MaterialIcon icon="download" />
+                    <ui:Label text="Import" />
+                </eau:ShadowButton>
+                <eau:ShadowButton name="open_settings" class="button-with-icons mr-2">
+                    <eau:MaterialIcon icon="settings" />
+                    <ui:Label text="Settings" />
+                </eau:ShadowButton>
+                <eau:ShadowButton name="exit_unity" class="button-with-icons">
+                    <eau:MaterialIcon icon="logout" />
+                    <ui:Label text="Exit Unity" />
+                </eau:ShadowButton>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Search -->
+        <ui:VisualElement class="flex-row items-center justify-center shrink-0 pb-2">
+            <eau:TextFieldPro name="searchQuery" placeholder="Search by name or tag" class="mr-2" style="width: 800px;" />
+            <eau:ShadowButton name="searchButton" text="Search" class="search-button mr-2" />
+            <eau:ShadowButton name="open_tag_settings" class="button-with-icons mr-2">
+                <eau:MaterialIcon icon="sell" />
+                <ui:Label text="Tag Settings" />
+            </eau:ShadowButton>
+        </ui:VisualElement>
+
+        <!-- Filters -->
+        <ui:VisualElement class="flex-row items-center justify-center shrink-0 pb-2">
+            <ui:VisualElement name="categorybar" class="mr-2" style="width: 200px;" />
+            <ui:VisualElement name="sortbar" class="mr-2" style="width: 200px;" />
+            <eau:ShadowButton name="open_tag_filter" class="button-with-icons mr-2">
+                <eau:MaterialIcon icon="filter_alt" />
+                <ui:Label text="Filter by tag" />
+                <ui:Label name="tag_filter_count" class="ml-1 no-translate hidden" />
+            </eau:ShadowButton>
+            <ui:Toggle name="show_hidden" label="Show hidden items" class="mr-2" />
+            <ui:VisualElement class="flex-row items-center">
+                <ui:Label text="Card Size" class="mr-2" />
+                <ui:VisualElement name="card_size_bar" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Grid -->
+        <ui:ScrollView name="card_scroll" class="flex-1">
+            <ui:VisualElement name="card_grid" class="avatar-grid" />
+            <ui:Label name="empty_label" text="No items found." class="p-4 hidden" />
+        </ui:ScrollView>
+
+        <!-- Drop area overlay -->
+        <ui:VisualElement name="drop_model" class="drop-model hidden">
+            <ui:Label name="drop_model_label" text="Drop files(.unitypackage, .prefab) to import" class="text-xl font-bold" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

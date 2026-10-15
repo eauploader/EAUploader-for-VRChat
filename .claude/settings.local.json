@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc:*)",
+      "Bash(findstr:*)",
+      "Bash(dir:*)",
+      "Bash(if not exist \"C:\\\\Users\\\\fu-su\\\\.claude\\\\plans\" mkdir \"C:\\\\Users\\\\fu-su\\\\.claude\\\\plans\")",
+      "Bash(find:*)"
+    ]
+  }
+}

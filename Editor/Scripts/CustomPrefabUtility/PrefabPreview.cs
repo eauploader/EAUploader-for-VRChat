@@ -9,10 +9,14 @@ namespace EAUploader.CustomPrefabUtility
     {
         private const string PREVIEW_SAVE_PATH = "Assets/EAUploader/PrefabPreviews";
 
+        /// <summary>プレビュー画像の解像度(横長)。カードのサムネイル比率もこれにあわせている。</summary>
+        public const int PREVIEW_WIDTH = 1200;
+        public const int PREVIEW_HEIGHT = 900;
+
         public static Texture2D GeneratePreview(GameObject prefab)
         {
             var previewRenderUtility = new PreviewRenderUtility();
-            var rect = new Rect(0, 0, 1080, 1080);
+            var rect = new Rect(0, 0, PREVIEW_WIDTH, PREVIEW_HEIGHT);
 
             var gameObject = previewRenderUtility.InstantiatePrefabInScene(prefab);
 
@@ -25,7 +29,12 @@ namespace EAUploader.CustomPrefabUtility
             previewRenderUtility.camera.backgroundColor = new UnityEngine.Color(0.9f, 0.9f, 0.9f, 1);
             previewRenderUtility.camera.clearFlags = CameraClearFlags.SolidColor;
             previewRenderUtility.camera.orthographic = true;
-            previewRenderUtility.camera.orthographicSize = Mathf.Max(bounds.size.x, bounds.size.y) / 2;
+
+            // orthographicSizeは縦方向の半分の大きさなので、
+            // 横長のフレームに収めるには横幅をアスペクト比で割って比べる。
+            float aspect = rect.width / rect.height;
+            previewRenderUtility.camera.orthographicSize =
+                Mathf.Max(bounds.size.y, bounds.size.x / aspect) / 2;
             previewRenderUtility.camera.nearClipPlane = 0.01f;
 
             Vector3 cameraPosition = bounds.center;
@@ -121,8 +130,7 @@ namespace EAUploader.CustomPrefabUtility
 
         public static void SavePrefabPreview(string prefabPath, Texture2D preview)
         {
-            string fileName = Path.GetFileNameWithoutExtension(prefabPath);
-            string savePath = Path.Combine(PREVIEW_SAVE_PATH, $"{fileName}.png");
+            string savePath = GetPreviewImagePath(prefabPath);
 
             string directoryPath = Path.GetDirectoryName(savePath);
             if (!Directory.Exists(directoryPath))
@@ -156,8 +164,22 @@ namespace EAUploader.CustomPrefabUtility
             File.WriteAllBytes(filePath, bytes);
         }
 
+        /// <summary>
+        /// プレビュー画像の保存先。
+        ///
+        /// アイテムごとのフォルダに分けて管理するようになり、別フォルダに同じ名前のPrefabが
+        /// 並ぶことがあるため、名前ではなくGUIDで保存先を決める。
+        /// GUIDはリネームしても変わらないので、名前を変えても画像を移動する必要がない。
+        /// </summary>
         public static string GetPreviewImagePath(string prefabPath)
         {
+            string guid = AssetDatabase.AssetPathToGUID(prefabPath);
+            if (!string.IsNullOrEmpty(guid))
+            {
+                return Path.Combine(PREVIEW_SAVE_PATH, $"{guid}.png");
+            }
+
+            // 削除済みなどでGUIDが引けない場合は、従来の名前による保存先を返す
             string fileName = Path.GetFileNameWithoutExtension(prefabPath);
             return Path.Combine(PREVIEW_SAVE_PATH, $"{fileName}.png");
         }

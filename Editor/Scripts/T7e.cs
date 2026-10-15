@@ -42,6 +42,11 @@ namespace EAUploader
             }
         }
 
+        internal static void ClearCache()
+        {
+            allTranslations = null;
+        }
+
         private static void LoadTranslations()
         {
             allTranslations = new Dictionary<string, Dictionary<string, string>>();

@@ -14,6 +14,13 @@ namespace EAUploader.CustomPrefabUtility
         public EAUploaderMeta.PrefabType Type;
         public EAUploaderMeta.PrefabStatus Status;
         public EAUploaderMeta.PrefabGenre Genre;
+
+        /// <summary>このPrefabに付けられているタグ。</summary>
+        public List<string> Tags = new List<string>();
+
+        /// <summary>ユーザーが記入したメモ。</summary>
+        public string Memo;
+
         public Texture2D Preview { get; internal set; }
 
         // プレハブのタイプを設定

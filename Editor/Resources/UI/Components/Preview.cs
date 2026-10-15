@@ -1,7 +1,7 @@
-﻿using UnityEditor;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using EAUploader.UI.ImportSettings;
 
 namespace EAUploader.UI.Components
 {
@@ -29,10 +29,23 @@ namespace EAUploader.UI.Components
             visualTree = Resources.Load<VisualTreeAsset>(PREVIEW_VISUAL_TREE_ASSET_PATH);
         }
 
+        public Preview(VisualElement rootElement, GameObject liveTarget)
+        {
+            root = rootElement;
+            this.liveTarget = liveTarget;
+            visualTree = Resources.Load<VisualTreeAsset>(PREVIEW_VISUAL_TREE_ASSET_PATH);
+        }
+
         // --- Public Methods ---
 
         public void ShowContent()
         {
+            if (IsLive)
+            {
+                ShowLiveContent();
+                return;
+            }
+
             if (!TryLoadPrefab(prefabPath, out prefab))
             {
                 root.Add(new Label(T7e.Get("Select a prefab to preview")));
@@ -87,6 +100,13 @@ namespace EAUploader.UI.Components
         {
             previewScale = 1.0f;
             previewOffset = Vector2.zero;
+
+            if (IsLive)
+            {
+                FrameLive();
+                return;
+            }
+
             ClearPreview();
         }
 
@@ -164,6 +184,12 @@ namespace EAUploader.UI.Components
 
         private void CreateIMGUIContainer()
         {
+            if (IsLive)
+            {
+                CreateLiveIMGUIContainer();
+                return;
+            }
+
             iMGUIContainer = new IMGUIContainer(() =>
             {
                 Color32 bgColor = GetBackgroundColorForTheme();
@@ -244,5 +270,235 @@ namespace EAUploader.UI.Components
                 isDragging = false;
             }
         }
+
+        #region Live target
+
+        private const float LIVE_FIELD_OF_VIEW = 30f;
+        private const float LIVE_ORBIT_SPEED = 0.4f;
+        private const float LIVE_ZOOM_SPEED = 0.05f;
+
+        private GameObject liveTarget;
+        private PreviewRenderUtility liveUtility;
+        private GameObject liveHolder;
+        private GameObject liveInstance;
+        private Vector3 livePivot;
+        private float liveYaw = 180f;
+        private float livePitch = 5f;
+        private float liveDistance = 2f;
+        private bool liveFramed;
+        private int liveDragButton = -1;
+
+        public bool IsLive => liveTarget != null;
+
+        public void SetLiveTarget(GameObject target)
+        {
+            liveTarget = target;
+            liveFramed = false;
+            DestroyLiveInstance();
+            Repaint();
+        }
+
+        public void Refresh()
+        {
+            DestroyLiveInstance();
+            Repaint();
+        }
+
+        public void Repaint()
+        {
+            iMGUIContainer?.MarkDirtyRepaint();
+        }
+
+        public void Frame(Vector3 center, float radius)
+        {
+            livePivot = center;
+            liveDistance = Mathf.Max(0.05f, radius / Mathf.Sin(LIVE_FIELD_OF_VIEW * 0.5f * Mathf.Deg2Rad));
+            liveYaw = 180f;
+            livePitch = 5f;
+            Repaint();
+        }
+
+        public T FindInPreview<T>(T source) where T : Component
+        {
+            if (source == null || liveTarget == null || liveInstance == null) return null;
+
+            var indices = new System.Collections.Generic.List<int>();
+            var current = source.transform;
+            while (current != null && current != liveTarget.transform)
+            {
+                indices.Add(current.GetSiblingIndex());
+                current = current.parent;
+            }
+            if (current == null) return null;
+
+            var mirrored = liveInstance.transform;
+            for (var i = indices.Count - 1; i >= 0; i--)
+            {
+                if (indices[i] >= mirrored.childCount) return null;
+                mirrored = mirrored.GetChild(indices[i]);
+            }
+
+            var index = System.Array.IndexOf(source.GetComponents<T>(), source);
+            var targets = mirrored.GetComponents<T>();
+            return index >= 0 && index < targets.Length ? targets[index] : null;
+        }
+
+        public void Dispose()
+        {
+            liveUtility?.Cleanup();
+            liveUtility = null;
+            liveHolder = null;
+            liveInstance = null;
+        }
+
+        private void ShowLiveContent()
+        {
+            root.Clear();
+            visualTree.CloneTree(root);
+            ShowPrefabPreview();
+            CreateResetButton();
+        }
+
+        private void CreateLiveIMGUIContainer()
+        {
+            iMGUIContainer = new IMGUIContainer(DrawLive) { style = { flexGrow = 1 } };
+            root.Q("preview").Add(iMGUIContainer);
+        }
+
+        private void DrawLive()
+        {
+            var size = iMGUIContainer.contentRect.size;
+            var rect = new Rect(0, 0, size.x, size.y);
+            if (rect.width < 2f || rect.height < 2f) return;
+            if (!EnsureLiveInstance()) return;
+
+            HandleLiveMouseEvents(rect);
+            if (Event.current.type != EventType.Repaint) return;
+
+            var camera = liveUtility.camera;
+            var rotation = Quaternion.Euler(livePitch, liveYaw, 0f);
+            camera.transform.rotation = rotation;
+            camera.transform.position = livePivot - rotation * Vector3.forward * liveDistance;
+            camera.nearClipPlane = 0.01f;
+            camera.farClipPlane = 100f;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = GetBackgroundColorForTheme();
+
+            liveUtility.BeginPreview(rect, GUIStyle.none);
+            liveUtility.Render(true);
+            liveUtility.EndAndDrawPreview(rect);
+        }
+
+        private bool EnsureLiveInstance()
+        {
+            if (liveTarget == null) return false;
+
+            if (liveUtility == null)
+            {
+                liveUtility = new PreviewRenderUtility();
+                liveUtility.cameraFieldOfView = LIVE_FIELD_OF_VIEW;
+                liveUtility.ambientColor = new Color(0.4f, 0.4f, 0.4f, 1f);
+                liveUtility.lights[0].intensity = 1.0f;
+                liveUtility.lights[0].transform.rotation = Quaternion.Euler(40f, 140f, 0f);
+                liveUtility.lights[1].intensity = 0.5f;
+            }
+
+            if (liveHolder == null)
+            {
+                liveHolder = EditorUtility.CreateGameObjectWithHideFlags("EAUploader Preview", HideFlags.HideAndDontSave);
+                liveUtility.AddSingleGO(liveHolder);
+            }
+
+            if (liveInstance == null)
+            {
+                liveInstance = Object.Instantiate(liveTarget, liveHolder.transform);
+                liveInstance.name = liveTarget.name;
+                liveInstance.SetActive(true);
+
+                if (!liveFramed)
+                {
+                    liveFramed = true;
+                    FrameLive();
+                }
+            }
+
+            return true;
+        }
+
+        private void DestroyLiveInstance()
+        {
+            if (liveInstance != null) Object.DestroyImmediate(liveInstance);
+            liveInstance = null;
+        }
+
+        private void FrameLive()
+        {
+            if (liveInstance == null) return;
+
+            var renderers = liveInstance.GetComponentsInChildren<Renderer>()
+                .Where(r => !(r is ParticleSystemRenderer) && !(r is TrailRenderer) && !(r is LineRenderer))
+                .ToList();
+            if (renderers.Count == 0)
+            {
+                Frame(liveInstance.transform.position, 1f);
+                return;
+            }
+
+            var bounds = renderers[0].bounds;
+            foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
+            Frame(bounds.center, bounds.extents.magnitude);
+        }
+
+        private void HandleLiveMouseEvents(Rect rect)
+        {
+            var e = Event.current;
+            var id = GUIUtility.GetControlID(FocusType.Passive);
+
+            switch (e.GetTypeForControl(id))
+            {
+                case EventType.MouseDown:
+                    if (!rect.Contains(e.mousePosition)) break;
+                    GUIUtility.hotControl = id;
+                    liveDragButton = e.button;
+                    e.Use();
+                    break;
+
+                case EventType.MouseDrag:
+                    if (GUIUtility.hotControl != id) break;
+
+                    if (liveDragButton == 0)
+                    {
+                        liveYaw += e.delta.x * LIVE_ORBIT_SPEED;
+                        livePitch = Mathf.Clamp(livePitch + e.delta.y * LIVE_ORBIT_SPEED, -89f, 89f);
+                    }
+                    else
+                    {
+                        var worldPerPixel = 2f * liveDistance * Mathf.Tan(LIVE_FIELD_OF_VIEW * 0.5f * Mathf.Deg2Rad) / rect.height;
+                        var rotation = Quaternion.Euler(livePitch, liveYaw, 0f);
+                        livePivot += rotation * Vector3.left * e.delta.x * worldPerPixel;
+                        livePivot += rotation * Vector3.up * e.delta.y * worldPerPixel;
+                    }
+
+                    e.Use();
+                    Repaint();
+                    break;
+
+                case EventType.MouseUp:
+                    if (GUIUtility.hotControl != id) break;
+                    GUIUtility.hotControl = 0;
+                    liveDragButton = -1;
+                    e.Use();
+                    break;
+
+                case EventType.ScrollWheel:
+                    if (!rect.Contains(e.mousePosition)) break;
+                    liveDistance = Mathf.Clamp(liveDistance * (1f + e.delta.y * LIVE_ZOOM_SPEED), 0.05f, 100f);
+                    e.Use();
+                    Repaint();
+                    break;
+            }
+        }
+
+        #endregion
     }
 }

@@ -6,6 +6,19 @@ using EAULogger = EAUploader.UI.Windows.Logger;
 
 namespace EAUploader.UI
 {
+    /// <summary>
+    /// EAUploaderの画面。タブではなく、1画面ずつ切り替えて表示する。
+    /// </summary>
+    public enum EAUploaderScreen
+    {
+        /// <summary>アバター/衣装/アイテムの一覧(起動時の画面)</summary>
+        AvatarList,
+        /// <summary>選択中のアイテムの編集(セットアップ)</summary>
+        Setup,
+        /// <summary>VRChatへのアップロード</summary>
+        Upload,
+    }
+
     public class EAUploader : EditorWindow
     {
         private static EAUploader instance;
@@ -22,6 +35,11 @@ namespace EAUploader.UI
             }
         }
 
+        /// <summary>
+        /// ウィンドウが開かれていない場合にnullを返す。ウィンドウを生成したくない場面で使う。
+        /// </summary>
+        internal static EAUploader InstanceOrNull => instance;
+
         private void OnEnable()
         {
             instance = this;
@@ -29,8 +47,26 @@ namespace EAUploader.UI
 
         private void OnDisable()
         {
+            Setup.EditTools.EditToolModal.CloseActiveImmediate();
+            Setup.ViewpointPositionEditor.CloseActive();
             instance = null;
         }
+
+        #region Edit tool modal
+
+        internal void SetToolUnsavedChanges(bool dirty)
+        {
+            saveChangesMessage = T7e.Get("This tool has unsaved changes. Do you want to save them?");
+            hasUnsavedChanges = dirty;
+        }
+
+        public override void SaveChanges()
+        {
+            Setup.EditTools.EditToolModal.SaveActive();
+            base.SaveChanges();
+        }
+
+        #endregion
 
         [MenuItem("EAUploader/Open EAUploader")]
         public static void ShowWindow()
@@ -44,19 +80,19 @@ namespace EAUploader.UI
         }
 
         private VisualElement contentRoot = null;
-        private string currentTab = "settings";
+        private EAUploaderScreen currentScreen = EAUploaderScreen.AvatarList;
         public static StyleSheet styles;
         public static StyleSheet tailwind;
         public static Modal modal;
+
+        internal EAUploaderScreen CurrentScreen => currentScreen;
 
         public void CreateGUI()
         {
             styles = Resources.Load<StyleSheet>("UI/styles");
             tailwind = Resources.Load<StyleSheet>("UI/tailwind");
-            currentTab = "settings";
             rootVisualElement.styleSheets.Add(styles);
             rootVisualElement.styleSheets.Add(tailwind);
-            rootVisualElement.style.flexDirection = FlexDirection.ColumnReverse;
 
             // Import UXML
             var visualTree = Resources.Load<VisualTreeAsset>("UI/MainWindow");
@@ -64,8 +100,10 @@ namespace EAUploader.UI
 
             // Setup Modal
             modal = new Modal();
-            rootVisualElement.Add(modal); 
-            
+            rootVisualElement.Add(modal);
+
+            ThemeUtility.ApplyTheme(rootVisualElement, ThemeUtility.GetCurrentTheme());
+
             // Localization
             rootVisualElement.schedule.Execute(() =>
             {
@@ -73,60 +111,52 @@ namespace EAUploader.UI
             }).Every(100);
 
             contentRoot = rootVisualElement.Q("contentRoot");
-            ImportSettings.Main.ShowContent(contentRoot);
-            rootVisualElement.Q<Button>("settings").EnableInClassList("tab-button__selected", true);
-            SetupButtonHandler();
+
+            ShowScreen(EAUploaderScreen.AvatarList);
         }
 
-        private void SetupButtonHandler()
+        /// <summary>
+        /// 画面を切り替える。ウィンドウが開いていない場合は開いてから切り替える。
+        /// </summary>
+        internal static void Navigate(EAUploaderScreen screen)
         {
-            VisualElement tabs = rootVisualElement.Q("tabs");
-            var buttons = tabs.Query<Button>();
-            buttons.ForEach(RegisterHandler);
+            var window = Instance;
+            window.Show();
+            window.Focus();
+            window.ShowScreen(screen);
         }
 
-        private void RegisterHandler(Button button)
+        /// <summary>
+        /// 現在表示中の画面を組み立て直す。
+        /// </summary>
+        internal static void RefreshCurrentScreen()
         {
-            button.RegisterCallback<ClickEvent>(ChangeContent);
+            var window = InstanceOrNull;
+            if (window == null || window.contentRoot == null) return;
+            window.ShowScreen(window.currentScreen, force: true);
         }
 
-        private void ChangeContent(ClickEvent evt)
+        internal void ShowScreen(EAUploaderScreen screen, bool force = false)
         {
-            Button button = evt.currentTarget as Button;
-            string buttonName = button.name;
+            if (contentRoot == null) return;
+            if (!force && currentScreen == screen && contentRoot.childCount > 0) return;
 
-            if (currentTab == buttonName)
-            {
-                return;
-            }
-
-            currentTab = buttonName;
-
+            currentScreen = screen;
             contentRoot.Clear();
 
-            rootVisualElement.Query<Button>().ForEach((b) =>
+            switch (screen)
             {
-                b.EnableInClassList("tab-button__selected", false);
-            });
-
-            button.EnableInClassList("tab-button__selected", true);
-
-            switch (buttonName)
-            {
-                case "settings":
-                    EAULogger.writeEAULog("Selected settings tab.");
-                    ImportSettings.Main.ShowContent(contentRoot);
+                case EAUploaderScreen.AvatarList:
+                    EAULogger.writeEAULog("Opened avatar list screen.");
+                    AvatarList.Main.ShowContent(contentRoot);
                     break;
-                case "setup":
-                    EAULogger.writeEAULog("Selected setup tab.");
+                case EAUploaderScreen.Setup:
+                    EAULogger.writeEAULog("Opened setup screen.");
                     Setup.Main.ShowContent(contentRoot);
                     break;
-                case "upload":
-                    EAULogger.writeEAULog("Selected upload tab.");
+                case EAUploaderScreen.Upload:
+                    EAULogger.writeEAULog("Opened upload screen.");
                     Upload.Main.ShowContent(contentRoot);
-                    break;
-                default:
-                    // Do Nothing
                     break;
             }
 
@@ -137,26 +167,5 @@ namespace EAUploader.UI
         {
             rootVisualElement.MarkDirtyRepaint();
         }
-
-        public void ChangeContentToSetupTab()
-        {
-            if (currentTab == "setup") return;
-
-            currentTab = "setup";
-            contentRoot.Clear();
-
-            rootVisualElement.Query<Button>().ForEach((b) => {
-                b.EnableInClassList("tab-button__selected", false);
-            });
-            var setupButton = rootVisualElement.Q<Button>("setup");
-            if (setupButton != null)
-            {
-                setupButton.EnableInClassList("tab-button__selected", true);
-            }
-
-            Setup.Main.ShowContent(contentRoot);
-            LanguageUtility.Localization(rootVisualElement);
-        }
-
     }
 }

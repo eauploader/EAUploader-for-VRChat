@@ -40,6 +40,7 @@ namespace EAUploader
         private static bool initializationPerformed = false;
         public static bool HasVRM = false;
         public static bool HasAAO = false;
+        public static bool HasMA = false;
 
         internal static IEnumerable<(string package, string version)> VpmLockedPackages()
         {
@@ -89,6 +90,9 @@ namespace EAUploader
             try
             {
                 InitializeEAUploader();
+                // プラットフォーム切り替えを伴うアップロードの途中でドメインリロードが挟まると、
+                // ビルド用の一時インスタンスがシーンに残ることがあるため取り除く
+                AvatarUploader.CleanupLeftoverBuildInstances();
                 EAUploaderEditorManager.OnEditorManagerLoad();
                 ShaderChecker.CheckShaders();
                 PrefabManager.Initialize();
@@ -136,6 +140,11 @@ namespace EAUploader
                     if(HasAAO)
                     {
                         Debug.Log("HasAAO");
+                    }
+                    HasMA = manifestContent.Contains("\"nadena.dev.modular-avatar\"");
+                    if(HasMA)
+                    {
+                        Debug.Log("HasMA");
                     }
                 }
                 else

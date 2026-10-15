@@ -39,16 +39,62 @@ namespace EAUploader
             }
         }
 
+        /// <summary>
+        /// このクラスを付けた要素は翻訳しない。
+        /// Prefab名やタグ名など、ユーザーが入力した文字列に使う。
+        /// </summary>
+        private const string NO_TRANSLATE_CLASS = "no-translate";
+
         public static void Localization(VisualElement root)
         {
             root.Query<TextElement>().ForEach((e) =>
             {
-                if (e.parent.name == "unity-text-input")
+                if (ShouldSkipTranslation(e))
                 {
                     return;
                 }
                 e.text = T7e.Get(e.text);
             });
+        }
+
+        /// <summary>
+        /// 翻訳の対象外かどうかを判定する。
+        /// </summary>
+        private static bool ShouldSkipTranslation(TextElement element)
+        {
+            if (element.ClassListContains(NO_TRANSLATE_CLASS))
+            {
+                return true;
+            }
+
+            return IsTextInput(element);
+        }
+
+        /// <summary>
+        /// 入力欄の中身かどうかを判定する。
+        /// この処理は一定間隔で走るため、入力中のテキストを翻訳して書き換えてしまうと
+        /// 文字が打てなくなる。ラベル部分は翻訳したいので、入力部分だけを除外する。
+        /// </summary>
+        private static bool IsTextInput(TextElement element)
+        {
+            if (element.parent != null && element.parent.name == "unity-text-input")
+            {
+                return true;
+            }
+
+            // Unity 2022.2 以降、入力欄の中身のTextElementにはこのクラスが付く
+            if (element.ClassListContains("unity-text-element--inner-input-field"))
+            {
+                return true;
+            }
+
+            // Labelは項目名なので翻訳対象。それ以外でTextField配下にあるものは入力欄とみなす。
+            if (!(element is Label) && element.GetFirstAncestorOfType<TextField>() != null)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public static void LocalizationFromJsonFile(VisualElement root, string LocalizationFolderPath)
@@ -77,6 +123,11 @@ namespace EAUploader
 
             root.Query<TextElement>().ForEach((e) =>
             {
+                if (ShouldSkipTranslation(e))
+                {
+                    return;
+                }
+
                 string key = e.text;
                 if (allTranslations != null && allTranslations.ContainsKey(currentLanguage) && allTranslations[currentLanguage].ContainsKey(key))
                 {

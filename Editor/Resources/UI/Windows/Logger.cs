@@ -45,6 +45,18 @@ namespace EAUploader.UI.Windows
 
         internal const string EAULOG_PREFIX = "[EAUb1bc40d3ff764a5d8081e5cd2f48bbc7]";
 
+        // UI Toolkitのテキスト描画は1つのTextElementあたりの頂点数に上限があり、
+        // 長すぎる文字列を1つのLabelに入れるとメッシュ生成に失敗して何も描画されなくなる。
+        // そのため表示は複数のLabelに分割し、全体の文字数にも上限を設ける。
+        private const int MESSAGE_CHUNK_LENGTH = 4000;
+        private const int MESSAGE_DISPLAY_MAX_LENGTH = 40000;
+
+        // 蓄積するエラーログ本文の上限。超えた分は古いものから捨てる。
+        private const int ERROR_LOG_BUFFER_MAX_LENGTH = 200000;
+
+        // エラーレポート表示中に発生したログでモーダルを再帰的に開かないためのガード
+        private static bool isReportingError = false;
+
         [Serializable]
         public class DependencyInfo
         {
@@ -136,12 +148,90 @@ namespace EAUploader.UI.Windows
             // エラーor例外時にモーダル表示
             if (logType == LogType.Exception || logType == LogType.Error)
             {
-                // メイン EAUploader ウィンドウの位置は取得しない（不要）
-                // 代わりにEAUploader.modalでモーダルを表示する
+                // レポート用の蓄積は表示可否に関わらず行う
+                AppendErrorLog(logText, stackTrace);
 
-                // ------------------------------------------------------------
-                // ここでモーダルを準備
-                // ------------------------------------------------------------
+                // 設定で無効化されている場合はログファイルへの記録のみ行う
+                if (!Config.LoadSettings().showErrorReportWindow) return;
+
+                // モーダルはEAUploaderウィンドウ内に描画されるため、
+                // ウィンドウ生成前のエラーでは表示できない
+                if (EAUploader.modal == null) return;
+
+                // モーダル構築中に発生したログで再入しないようにする
+                if (isReportingError) return;
+                isReportingError = true;
+
+                try
+                {
+                    ShowErrorReport(logText, stackTrace);
+                }
+                catch (Exception e)
+                {
+                    // 表示に失敗してもログ記録は済んでいるため、コンソール出力だけに留める
+                    UnityEngine.Debug.LogWarning("Failed to show EAUploader error report: " + e.Message);
+                }
+                finally
+                {
+                    isReportingError = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// エラーレポート用のバッファへ追記する。
+        /// 上限を超えた場合は古い内容から捨てて、メモリと描画量が際限なく増えないようにする。
+        /// </summary>
+        private static void AppendErrorLog(string logText, string stackTrace)
+        {
+            _stringBuilder ??= new StringBuilder();
+
+            _stringBuilder.AppendLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            _stringBuilder.AppendLine(logText);
+            _stringBuilder.AppendLine("Stack Trace:");
+            _stringBuilder.AppendLine(stackTrace);
+
+            if (_stringBuilder.Length > ERROR_LOG_BUFFER_MAX_LENGTH)
+            {
+                var trimmed = _stringBuilder.ToString(
+                    _stringBuilder.Length - ERROR_LOG_BUFFER_MAX_LENGTH,
+                    ERROR_LOG_BUFFER_MAX_LENGTH);
+                _stringBuilder.Clear();
+                _stringBuilder.AppendLine("(older entries omitted)");
+                _stringBuilder.Append(trimmed);
+            }
+        }
+
+        /// <summary>
+        /// 1つのTextElementに収まる長さへ文字列を分割する。
+        /// できるだけ改行位置で切って、行の途中で分断されないようにする。
+        /// </summary>
+        private static IEnumerable<string> SplitIntoChunks(string text, int chunkLength)
+        {
+            if (string.IsNullOrEmpty(text)) yield break;
+
+            int index = 0;
+            while (index < text.Length)
+            {
+                int length = Math.Min(chunkLength, text.Length - index);
+
+                if (index + length < text.Length)
+                {
+                    int lastNewLine = text.LastIndexOf('\n', index + length - 1, length);
+                    if (lastNewLine > index)
+                    {
+                        length = lastNewLine - index + 1;
+                    }
+                }
+
+                yield return text.Substring(index, length);
+                index += length;
+            }
+        }
+
+        private static void ShowErrorReport(string logText, string stackTrace)
+        {
+            {
                 EAUploader.modal.Initialize();
                 EAUploader.modal.setTitle(T7e.Get("Error Report"));
 
@@ -156,13 +246,8 @@ namespace EAUploader.UI.Windows
 
                 LanguageUtility.Localization(modalContent);
 
-                // エラーログ文字列の構築
+                // エラーログ文字列の構築(蓄積はAppendErrorLogで済ませている)
                 StringBuilder errorReport = new();
-                _stringBuilder.AppendLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
-                _stringBuilder.AppendLine(logText);
-                _stringBuilder.AppendLine("Stack Trace:");
-                _stringBuilder.AppendLine(stackTrace);
-
                 errorReport.AppendLine("Error Report");
                 errorReport.AppendLine("------------");
                 errorReport.AppendLine();
@@ -176,11 +261,35 @@ namespace EAUploader.UI.Windows
                 errorReport.AppendLine("- Vpm-Dependency: \n" +
                     string.Join("\n", VpmLockedPackages().Select(x => $"{x.package}@{x.version}")));
 
-                // UXML 内の message ラベルへセット
-                var messageLabel = modalContent.Q<Label>("message");
-                if (messageLabel != null)
+                var fullReport = errorReport.ToString();
+
+                // 長大なレポートを1つのLabelに流し込むと描画が破綻して真っ白になるため、
+                // 末尾(最新のエラー)を優先して切り詰めたうえで複数のLabelに分割して並べる
+                var displayText = fullReport;
+                bool truncated = false;
+                if (displayText.Length > MESSAGE_DISPLAY_MAX_LENGTH)
                 {
-                    messageLabel.text = errorReport.ToString();
+                    displayText = displayText.Substring(displayText.Length - MESSAGE_DISPLAY_MAX_LENGTH);
+                    truncated = true;
+                }
+
+                var messageContainer = modalContent.Q<VisualElement>("message_container");
+                if (messageContainer != null)
+                {
+                    messageContainer.Clear();
+                    foreach (var chunk in SplitIntoChunks(displayText, MESSAGE_CHUNK_LENGTH))
+                    {
+                        messageContainer.Add(new Label(chunk));
+                    }
+                }
+
+                var truncatedNotice = modalContent.Q<Label>("truncated_notice");
+                if (truncatedNotice != null)
+                {
+                    truncatedNotice.text = truncated
+                        ? T7e.Get("The log is too long to display in full. Only the latest part is shown. Use Copy to get the whole report.")
+                        : string.Empty;
+                    truncatedNotice.style.display = truncated ? DisplayStyle.Flex : DisplayStyle.None;
                 }
 
                 // ボタンたち
@@ -188,12 +297,25 @@ namespace EAUploader.UI.Windows
                 var okButton = modalContent.Q<Button>("ok");
                 var restartButton = modalContent.Q<Button>("restart");
 
+                // このウィンドウを今後表示しない
+                var disableToggle = modalContent.Q<Toggle>("disable_error_window");
+                if (disableToggle != null)
+                {
+                    disableToggle.value = false;
+                    disableToggle.RegisterValueChangedCallback(evt =>
+                    {
+                        var settings = Config.LoadSettings();
+                        settings.showErrorReportWindow = !evt.newValue;
+                        Config.SaveSettings(settings);
+                    });
+                }
+
                 // コピー: エラーレポートをクリップボードにコピー
                 if (copyButton != null)
                 {
                     copyButton.clicked += () =>
                     {
-                        EditorGUIUtility.systemCopyBuffer = errorReport.ToString();
+                        EditorGUIUtility.systemCopyBuffer = fullReport;
                     };
                 }
 

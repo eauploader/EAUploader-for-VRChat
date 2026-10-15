@@ -19,6 +19,12 @@ namespace EAUploader.UI.Modals
         private Image previewElement;
 
         /// <summary>
+        /// プレビューを再生成したときに、新しいテクスチャを通知する。
+        /// 呼び出し元(モデル一覧)がサムネイル表示を更新するために使う。
+        /// </summary>
+        public event System.Action<Texture2D> OnPreviewRegenerated;
+
+        /// <summary>
         /// コンストラクタでPrefabのパスとプレビュー画像を受け取る
         /// </summary>
         public PrefabPreviewModal(string prefabPath, Texture2D image)
@@ -97,6 +103,10 @@ namespace EAUploader.UI.Modals
 
                 // 生成したプレビューを保存
                 PrefabPreview.SavePrefabPreview(prefabPath, newPreview);
+
+                // キャッシュ済みのPrefabInfoも差し替えて、モデル一覧のサムネイルを追従させる
+                PrefabManager.UpdateCachedPreview(prefabPath, newPreview);
+                OnPreviewRegenerated?.Invoke(newPreview);
             }
         }
     }

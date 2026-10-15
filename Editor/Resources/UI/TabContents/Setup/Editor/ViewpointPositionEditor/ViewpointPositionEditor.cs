@@ -3,10 +3,11 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using EAUploader.CustomPrefabUtility;
 using System;
+using EAUploader.UI.Setup.EditTools;
 
 namespace EAUploader.UI.Setup
 {
-    public class ViewpointPositionEditor : EditorWindow
+    public class ViewpointPositionEditor
     {
         private const string LOCALIZATION_FOLDER_PATH = "Packages/tech.uslog.eauploader/Editor/Resources/UI/TabContents/Setup/Editor/ViewpointPositionEditor/Localization";
         private ViewpointPositionEditorUI _editorUI;
@@ -38,45 +39,61 @@ namespace EAUploader.UI.Setup
         [MenuItem("EAUploader/ViewpointPositionEditor")]
         public static void Popup()
         {
-            ViewpointPositionEditor editor = GetWindow<ViewpointPositionEditor>();
-            editor.titleContent = new GUIContent("Viewpoint Position Editor");
-            editor.minSize = new Vector2(800, 600);
-            editor.position = new Rect(100, 100, 1200, 600);
+            if (!ToolModalFrame.TryGetWindowRoot(Popup, out var windowRoot)) return;
+
+            var prefabPath = EAUploaderCore.selectedPrefabPath;
+            var gameObject = PrefabManager.GetPrefab(prefabPath);
+            if (gameObject == null) return;
+
+            if (!EditToolModal.RequestCloseActive()) return;
+            CloseActive();
+            active = new ViewpointPositionEditor();
+            active.Open(windowRoot, prefabPath, gameObject);
         }
 
-        public void OnEnable()
+        #region Modal
+
+        private static ViewpointPositionEditor active;
+        private ToolModalFrame _frame;
+
+        internal static void CloseActive()
         {
-            _gameObject = PrefabManager.GetPrefab(EAUploaderCore.selectedPrefabPath);
+            active?.Close();
+        }
 
-            if (_gameObject == null)
-            {
-                return;
-            }
-
+        private void Open(VisualElement windowRoot, string prefabPath, GameObject gameObject)
+        {
+            _gameObject = gameObject;
             _previewRenderer = new PreviewRenderer(_gameObject);
+
+            _frame = new ToolModalFrame(
+                LanguageUtility.T7eFromJsonFile("Viewpoint Position Editor", LOCALIZATION_FOLDER_PATH), Close);
+
+            _editorUI = new ViewpointPositionEditorUI(prefabPath, _previewRenderer);
+            _editorUI.Root.style.flexGrow = 1;
+            _frame.Body.Add(_editorUI.Root);
+
+            LanguageUtility.LocalizationFromJsonFile(_frame.Container, LOCALIZATION_FOLDER_PATH);
+            _frame.Attach(windowRoot);
+
+            AssemblyReloadEvents.beforeAssemblyReload += Close;
         }
 
-        public void CreateGUI()
+        private void Close()
         {
-            if (_gameObject == null)
-            {
-                Close();
-                return;
-            }
+            AssemblyReloadEvents.beforeAssemblyReload -= Close;
 
-            _editorUI = new ViewpointPositionEditorUI(_previewRenderer);
-            rootVisualElement.Add(_editorUI.Root);
-
-            // Localization file path
-            var localizationFolderPath = "Packages/tech.uslog.eauploader/Editor/Resources/UI/TabContents/Setup/Editor/ViewpointPositionEditor/Localization";
-            LanguageUtility.LocalizationFromJsonFile(rootVisualElement, localizationFolderPath);
-        }
-
-        private void OnDisable()
-        {
+            _frame?.Detach();
+            _frame = null;
             _previewRenderer?.Dispose();
+            _previewRenderer = null;
             _editorUI?.Dispose();
+            _editorUI = null;
+
+            if (active == this) active = null;
         }
+
+        #endregion
 
         private static bool CheckAvatarHasVRCAvatarDescriptor(string prefabPath)
         {
@@ -87,13 +104,15 @@ namespace EAUploader.UI.Setup
 
     public class ViewpointPositionEditorUI : IDisposable
     {
+        private readonly string _prefabPath;
         private readonly PreviewRenderer _previewRenderer;
         private VisualElement _root;
         private PreviewImage _previewImage;
         private PreviewImage _actualView;
 
-        public ViewpointPositionEditorUI(PreviewRenderer previewRenderer)
+        public ViewpointPositionEditorUI(string prefabPath, PreviewRenderer previewRenderer)
         {
+            _prefabPath = prefabPath;
             _previewRenderer = previewRenderer;
             CreateUI();
         }
@@ -200,11 +219,44 @@ namespace EAUploader.UI.Setup
 
         private void ApplyButtonClicked()
         {
-            var avatarDescriptor = Utility.GetAvatarDescriptor(_previewRenderer.GameObject);
-            avatarDescriptor.ViewPosition = _previewRenderer.ViewpointPosition;
+            if (!SaveViewPosition(_previewRenderer.ViewpointPosition)) return;
 
             _previewRenderer.UpdatePreviousViewpointPosition(new Vector3(_previewRenderer.ViewpointPosition.x, _previewRenderer.ViewpointPosition.y, _previewRenderer.ViewpointPosition.z));
             _previewImage.UpdateView();
+
+            EditToolUtility.OnPrefabSaved(_prefabPath);
+        }
+
+        private bool SaveViewPosition(Vector3 viewPosition)
+        {
+            if (string.IsNullOrEmpty(_prefabPath)) return false;
+
+            GameObject root;
+            try
+            {
+                root = PrefabUtility.LoadPrefabContents(_prefabPath);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to open {_prefabPath}: {e.Message}");
+                return false;
+            }
+
+            try
+            {
+                var avatarDescriptor = Utility.GetAvatarDescriptor(root);
+                if (avatarDescriptor == null) return false;
+
+                avatarDescriptor.ViewPosition = viewPosition;
+
+                PrefabUtility.SaveAsPrefabAsset(root, _prefabPath, out var success);
+                if (!success) Debug.LogError($"Failed to save {_prefabPath}");
+                return success;
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(root);
+            }
         }
 
         public void Dispose()
