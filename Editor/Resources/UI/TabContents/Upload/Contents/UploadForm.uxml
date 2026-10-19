@@ -141,12 +141,8 @@
                             <ui:Label text="Upload" class="text-xl font-bold" name="uploadLabel" />
                             <eau:HelpButton msg-id="112" class="ml-4 self-center" />
                         </ui:VisualElement>
-                        <ui:VisualElement class="flex-row pb-2">
-                            <ui:Toggle name="confirm_term" class="pr-2" />
-                            <ui:Label
-                                text="The information provided above is accurate and I have the rights to upload this content to VRChat"
-                                name="uploadLabel" />
-                        </ui:VisualElement>
+                        <eau:CheckBox name="confirm_term"
+                            label="The information provided above is accurate and I have the rights to upload this content to VRChat" />
                         <eau:ShadowButton text="Upload" name="upload" />
                     </ui:VisualElement>
                 </ui:VisualElement>

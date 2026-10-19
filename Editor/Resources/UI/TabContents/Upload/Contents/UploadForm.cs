@@ -166,7 +166,7 @@ namespace EAUploader.UI.Upload
                 }
                 CheckCanUpload();
             });
-            root.Q<Toggle>("confirm_term").RegisterValueChangedCallback(evt =>
+            root.Q<CheckBox>("confirm_term").RegisterValueChangedCallback(evt =>
             {
                 isConfirmTerm = evt.newValue;
                 CheckCanUpload();
@@ -694,7 +694,7 @@ namespace EAUploader.UI.Upload
         private static async Task UploadAsync()
         {
             var selectedPrefabPath = EAUploaderCore.selectedPrefabPath;
-            if (string.IsNullOrEmpty(selectedPrefabPath) || !root.Q<Toggle>("confirm_term").value)
+            if (string.IsNullOrEmpty(selectedPrefabPath) || !root.Q<CheckBox>("confirm_term").value)
             {
                 Debug.LogError("Required fields are missing or terms not confirmed.");
                 return;

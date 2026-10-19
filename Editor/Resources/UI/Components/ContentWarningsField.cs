@@ -98,22 +98,31 @@ namespace EAUploader.UI.Components
                 };
                 tagButton.AddToClassList("tag-button");
 
-                var tagToggle = new Toggle();
+                var tagCheck = new VisualElement();
+                tagCheck.AddToClassList("tag-check");
+                tagCheck.pickingMode = PickingMode.Ignore;
+
+                var tagCheckMark = new VisualElement();
+                tagCheckMark.AddToClassList("tag-check__mark");
+                tagCheckMark.pickingMode = PickingMode.Ignore;
+                tagCheck.Add(tagCheckMark);
 
                 var tagLabel = new Label()
                 {
-                    text = GetContentWarningName(tag)
+                    text = GetContentWarningName(tag),
+                    // Let the button receive the pointer so its `cursor: link` is used over the text too.
+                    pickingMode = PickingMode.Ignore
                 };
 
-                tagButton.Add(tagToggle);
+                tagButton.Add(tagCheck);
                 tagButton.Add(tagLabel);
 
                 tagButton.RegisterCallback<ClickEvent>(evt =>
                 {
-                    tagToggle.value = !tagToggle.value;
-                    tagButton.EnableInClassList("checked", tagToggle.value);
+                    var isChecked = !tagButton.ClassListContains("checked");
+                    tagButton.EnableInClassList("checked", isChecked);
 
-                    if (tagToggle.value)
+                    if (isChecked)
                     {
                         Tags.Add(tag);
                     }
@@ -122,7 +131,7 @@ namespace EAUploader.UI.Components
                         Tags.Remove(tag);
                     }
 
-                    OnToggleTag?.Invoke(this, new Tuple<string, bool>(tag, tagToggle.value));
+                    OnToggleTag?.Invoke(this, new Tuple<string, bool>(tag, isChecked));
                 });
 
                 group.Add(tagButton);
@@ -137,9 +146,7 @@ namespace EAUploader.UI.Components
             foreach (string tag in CONTENT_WARNING_TAGS)
             {
                 var tagButton = this.Q<Button>($"tag-button:{tag}");
-                var tagToggle = tagButton.Q<Toggle>();
-                tagToggle.value = NewTags.Contains(tag);
-                tagButton.EnableInClassList("checked", tagToggle.value);
+                tagButton.EnableInClassList("checked", NewTags.Contains(tag));
             }
         }
     }

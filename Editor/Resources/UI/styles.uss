@@ -6,6 +6,7 @@
 	--primary-hover: #338ef7;
 	--primary-active: #66aaf9;
 	--primary-selected: #005bc4;
+	--primary-subtle: #e6f1fe;
 	--secondary: #7828c8;
 	--secondary-hover: #9353d3;
 	--secondary-active: #ae7ede;
@@ -327,13 +328,14 @@ ArticleRenderer {
 .tag-button {
     flex-direction: row;
 	justify-content: center;
-    padding: 2px 12px;
+    padding: 2px 8px 2px 3px;
 	margin-bottom: 4px;
 	margin-right: 4px;
 	background-color: white;
 	border-width: 1px;
 	border-radius: 12px;
 	border-color: var(--default);
+	cursor: link;
 	transition: 150ms;
 }
 
@@ -342,21 +344,52 @@ ArticleRenderer {
 }
 
 .tag-button > Label {
-    color: var(--button-text);
-	margin-left: 4px;
+    color: black;
+	margin-left: 6px;
+	-unity-font-style: normal;
+	cursor: link;
 }
 
-.checked {
+/* Round check indicator inside a tag button (white circle, blue with a tick when checked) */
+.tag-check {
+	width: 16px;
+	height: 16px;
+	align-self: center;
+	align-items: center;
+	justify-content: center;
+	cursor: link;
+	background-color: white;
+	border-width: 1px;
+	border-radius: 8px;
+	border-color: var(--default-selected);
+}
+
+.tag-check__mark {
+	display: none;
+	position: absolute;
+	left: 5px;
+	top: 2.5px;
+	width: 4px;
+	height: 8px;
+	margin: 0;
+	border-width: 0 2px 2px 0;
+	border-color: white;
+	rotate: 45deg;
+}
+
+.checked > .tag-check {
 	background-color: var(--primary);
-	color: white;
+	border-color: var(--primary);
 }
 
+.checked > .tag-check > .tag-check__mark {
+	display: flex;
+}
+
+.checked,
 .checked:hover {
-	background-color: var(--primary-hover);
-}
-
-.checked > Label {
-	color: white;
+	background-color: var(--primary-subtle);
+	border-color: var(--primary);
 }
 
 /* Dropdown Field Styles */
@@ -725,6 +758,84 @@ ValidationItem Label {
     background-color: var(--primary);
 }
 
+/* Check Box Styles */
+.check-box {
+	/* the label is the first child, so reverse the row to put the circle on the left */
+	flex-direction: row-reverse;
+	align-items: center;
+	margin: 0 0 8px 0;
+	padding: 10px 12px;
+	background-color: white;
+	border-width: 1px;
+	border-radius: 8px;
+	border-color: var(--default);
+	cursor: link;
+	transition-property: background-color, border-color;
+	transition-duration: 150ms;
+}
+
+.check-box:hover {
+	background-color: var(--default-hover);
+}
+
+.check-box--checked,
+.check-box--checked:hover {
+	background-color: var(--primary-subtle);
+	border-color: var(--primary);
+}
+
+.check-box .unity-base-field__label {
+	flex-grow: 1;
+	flex-shrink: 1;
+	min-width: 0;
+	width: auto;
+	margin: 0;
+	padding: 0;
+	white-space: normal;
+	cursor: link;
+}
+
+.check-box__input {
+	flex-grow: 0;
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+	min-height: 20px;
+	margin: 0 12px 0 0;
+	padding: 0;
+	align-items: center;
+	justify-content: center;
+	background-color: white;
+	border-width: 1px;
+	border-radius: 10px;
+	border-color: var(--default-selected);
+	transition-property: background-color, border-color;
+	transition-duration: 150ms;
+}
+
+.check-box__input--checked {
+	background-color: var(--primary);
+	border-color: var(--primary);
+}
+
+.check-box__input-mark {
+	display: none;
+	/* absolute so it doesn't depend on how the base field lays out its input; the circle's inner size is 18px */
+	position: absolute;
+	left: 6.5px;
+	top: 3px;
+	width: 5px;
+	height: 10px;
+	margin: 0;
+	border-width: 0 2px 2px 0;
+	border-color: white;
+	rotate: 45deg;
+}
+
+.check-box__input--checked > .check-box__input-mark {
+	display: flex;
+}
+
 .slide-toggle__input--checked > .slide-toggle__input-knob {
     translate: 16px 0px;
 }
@@ -882,6 +993,7 @@ RadioButton * {
     --primary-hover: #338ef7;
     --primary-active: #66aaf9;
     --primary-selected: #005bc4;
+    --primary-subtle: #e6f1fe;
     --secondary: #7828c8;
     --secondary-hover: #9353d3;
     --secondary-active: #ae7ede;
@@ -908,6 +1020,7 @@ RadioButton * {
     --primary-hover: #00cfff;
     --primary-active: #b3efff;
     --primary-selected: #005bc4;
+    --primary-subtle: #e1f4fb;
     --secondary: #7828c8;
     --secondary-hover: #9353d3;
     --secondary-active: #ae7ede;
@@ -1126,6 +1239,7 @@ RadioButton * {
     --primary-hover: #F7ABC2;
     --primary-active: #FFD9E4;
     --primary-selected: #D97087;
+    --primary-subtle: #ffeff4;
 
     --secondary: #A3D6CC;
     --secondary-hover: #C3E3DD;
