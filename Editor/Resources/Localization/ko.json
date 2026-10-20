@@ -250,8 +250,8 @@
       "value": "빌드"
     },
     {
-      "key": "Build as Test",
-      "value": "테스트용으로 빌드"
+      "key": "Test",
+      "value": "테스트"
     },
     {
       "key": "Sexually Suggestive",
@@ -912,6 +912,62 @@
     {
       "key": "Items and Others",
       "value": "아이템 · 기타"
+    },
+    {
+      "key": "How it looks on VRChat",
+      "value": "VRChat에서의 표시"
+    },
+    {
+      "key": "Private",
+      "value": "비공개"
+    },
+    {
+      "key": "Public",
+      "value": "공개"
+    },
+    {
+      "key": "Always uploaded",
+      "value": "항상 업로드됩니다"
+    },
+    {
+      "key": "Build for this platform too",
+      "value": "이 플랫폼용으로도 빌드합니다"
+    },
+    {
+      "key": "Not uploaded",
+      "value": "업로드하지 않음"
+    },
+    {
+      "key": "Quest (Android)",
+      "value": "Quest (Android)"
+    },
+    {
+      "key": "Show details",
+      "value": "자세히 보기"
+    },
+    {
+      "key": "Hide details",
+      "value": "접기"
+    },
+    {
+      "key": "Go to upload",
+      "value": "업로드로 이동"
+    },
+    {
+      "key": "Upload to VRChat",
+      "value": "VRChat에 업로드"
+    },
+    {
+      "key": "Back to edit",
+      "value": "편집으로 돌아가기"
+    },
+    {
+      "key": "Grid",
+      "value": "그리드"
+    },
+    {
+      "key": "Axes",
+      "value": "축"
     },
     {
       "key": "All",

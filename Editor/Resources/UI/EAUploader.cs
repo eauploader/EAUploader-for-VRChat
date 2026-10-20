@@ -15,7 +15,7 @@ namespace EAUploader.UI
         AvatarList,
         /// <summary>選択中のアイテムの編集(セットアップ)</summary>
         Setup,
-        /// <summary>VRChatへのアップロード</summary>
+        /// <summary>VRChatへのアップロード(編集画面でアップロードのシートを開いた状態)</summary>
         Upload,
     }
 
@@ -39,6 +39,40 @@ namespace EAUploader.UI
         /// ウィンドウが開かれていない場合にnullを返す。ウィンドウを生成したくない場面で使う。
         /// </summary>
         internal static EAUploader InstanceOrNull => instance;
+
+        // --- Smooth frames ---
+        // エディターは、何も起きていないと1秒に十数回しか画面を更新しない(測定値)。UIのアニメーションや3Dビューの
+        // 移動の間だけ、ウィンドウの再描画を要求し続けて、更新を1秒に100回以上に保つ。
+        private static double smoothFramesUntil;
+        private static bool smoothFramesRegistered;
+
+        /// <summary>
+        /// 指定した秒数のあいだ、毎フレーム再描画を要求し続ける。アニメーションを始めるときに呼ぶ。
+        /// </summary>
+        internal static void RequestSmoothFrames(double seconds)
+        {
+            smoothFramesUntil = System.Math.Max(smoothFramesUntil, EditorApplication.timeSinceStartup + seconds);
+
+            if (!smoothFramesRegistered)
+            {
+                smoothFramesRegistered = true;
+                EditorApplication.update += SmoothFramesTick;
+            }
+
+            instance?.Repaint();
+        }
+
+        private static void SmoothFramesTick()
+        {
+            if (instance == null || EditorApplication.timeSinceStartup > smoothFramesUntil)
+            {
+                smoothFramesRegistered = false;
+                EditorApplication.update -= SmoothFramesTick;
+                return;
+            }
+
+            instance.Repaint();
+        }
 
         private void OnEnable()
         {
@@ -108,7 +142,7 @@ namespace EAUploader.UI
             rootVisualElement.schedule.Execute(() =>
             {
                 LanguageUtility.Localization(rootVisualElement);
-            }).Every(100);
+            }).Every(500);
 
             contentRoot = rootVisualElement.Q("contentRoot");
 
@@ -152,22 +186,18 @@ namespace EAUploader.UI
                     break;
                 case EAUploaderScreen.Setup:
                     EAULogger.writeEAULog("Opened setup screen.");
-                    Setup.Main.ShowContent(contentRoot);
+                    Setup.Main.ShowContent(contentRoot, Setup.EditScreenMode.Edit);
                     break;
                 case EAUploaderScreen.Upload:
+                    // アップロードは編集画面のシートにまとめた
                     EAULogger.writeEAULog("Opened upload screen.");
-                    Upload.Main.ShowContent(contentRoot);
+                    Setup.Main.ShowContent(contentRoot, Setup.EditScreenMode.Upload);
                     break;
                 default:
                     break;
             }
 
             LanguageUtility.Localization(rootVisualElement);
-        }
-
-        private void OnGUI()
-        {
-            rootVisualElement.MarkDirtyRepaint();
         }
     }
 }

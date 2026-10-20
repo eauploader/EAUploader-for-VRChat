@@ -30,6 +30,24 @@ namespace EAUploader.CustomPrefabUtility
         // 移行処理などで、取り込みを検知してもVariantを作りたくない間だけtrueにする
         internal static bool SuppressAutoVariantCreation;
 
+        private static bool pendingAssetSave;
+
+        internal static void ScheduleSaveAssets(UnityEngine.Object dirtyTarget)
+        {
+            EditorUtility.SetDirty(dirtyTarget);
+            if (pendingAssetSave) return;
+
+            pendingAssetSave = true;
+            EditorApplication.delayCall += FlushPendingSave;
+        }
+
+        private static void FlushPendingSave()
+        {
+            if (!pendingAssetSave) return;
+            pendingAssetSave = false;
+            AssetDatabase.SaveAssets();
+        }
+
         public static void Initialize()
         {
             ManagedPrefabs.EnsureRoot();
@@ -612,9 +630,12 @@ namespace EAUploader.CustomPrefabUtility
 
             if (dirty)
             {
-                EditorUtility.SetDirty(meta);
-                AssetDatabase.SaveAssets();
-                InvalidateCache();
+                var info = cachedPrefabs?.Find(p => p.Path == path);
+                if (info != null)
+                {
+                    info.Genre = genre;
+                }
+                ScheduleSaveAssets(meta);
             }
         }
 

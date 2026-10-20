@@ -74,7 +74,7 @@
                 <ui:VisualElement name="card_grid" class="avatar-grid list-grid" />
                 <ui:Label name="empty_label" text="No items found." class="p-4 hidden" />
             </ui:ScrollView>
-            <eau:Shadow name="list_scroll_shadow" shadow-blur="12" shadow-offset-y="2" shadow-opacity="0.18"
+            <eau:Shadow name="list_scroll_shadow" shadow-blur="12" shadow-offset-y="2" shadow-opacity="0.1"
                 picking-mode="Ignore" class="list-scroll-shadow hidden" />
         </ui:VisualElement>
 

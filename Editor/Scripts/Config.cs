@@ -32,6 +32,7 @@ namespace EAUploader
             {
                 string jsonContent = JsonUtility.ToJson(settings);
                 File.WriteAllText(SETTINGS_PATH, jsonContent);
+                LanguageUtility.InvalidateLanguageCache();
             }
             catch (IOException ex)
             {
@@ -59,7 +60,5 @@ namespace EAUploader
                 return new ConfigData() { language = "ja", isLibraryOpen = true, showErrorReportWindow = true };
             }
         }
-
-
     }
 }

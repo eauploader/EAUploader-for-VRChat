@@ -139,6 +139,7 @@ namespace EAUploader.UI.AvatarList
             // スクロール位置が先頭でないとき、ヘッダーとツールバーの下に影を出す。
             // 先頭から SCROLL_SHADOW_RAMP_PX だけスクロールする間に、0 から UXML で指定した濃さまで徐々に濃くする。
             var cardScroll = root.Q<ScrollView>("card_scroll");
+            SmoothScroll.Enable(cardScroll);
             var scrollShadow = root.Q<Shadow>("list_scroll_shadow");
             var scrollShadowMaxOpacity = scrollShadow.shadowOpacity;
             cardScroll.verticalScroller.valueChanged += offset =>

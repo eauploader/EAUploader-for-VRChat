@@ -246,8 +246,8 @@
       "value": "ビルド"
     },
     {
-      "key": "Build as Test",
-      "value": "テストとしてビルド"
+      "key": "Test",
+      "value": "テスト"
     },
     {
       "key": "Sexually Suggestive",
@@ -928,6 +928,62 @@
     {
       "key": "Items and Others",
       "value": "アイテム・その他"
+    },
+    {
+      "key": "How it looks on VRChat",
+      "value": "VRChat での表示"
+    },
+    {
+      "key": "Private",
+      "value": "非公開"
+    },
+    {
+      "key": "Public",
+      "value": "公開"
+    },
+    {
+      "key": "Always uploaded",
+      "value": "必ずアップロードされます"
+    },
+    {
+      "key": "Build for this platform too",
+      "value": "このプラットフォーム向けにもビルドします"
+    },
+    {
+      "key": "Not uploaded",
+      "value": "アップロードしない"
+    },
+    {
+      "key": "Quest (Android)",
+      "value": "Quest（Android）"
+    },
+    {
+      "key": "Show details",
+      "value": "内訳を見る"
+    },
+    {
+      "key": "Hide details",
+      "value": "内訳を閉じる"
+    },
+    {
+      "key": "Go to upload",
+      "value": "アップロードへ進む"
+    },
+    {
+      "key": "Upload to VRChat",
+      "value": "VRChat にアップロード"
+    },
+    {
+      "key": "Back to edit",
+      "value": "編集に戻る"
+    },
+    {
+      "key": "Grid",
+      "value": "グリッド"
+    },
+    {
+      "key": "Axes",
+      "value": "軸"
     },
     {
       "key": "All",

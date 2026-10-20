@@ -12,6 +12,7 @@ namespace EAUploader.UI.Components
     // With multiSelect on, several choices can be ticked at once: the list stays open while you pick,
     // the field shows the ticked names (or the "All" text when everything is ticked), and changes are
     // reported through selectionChanged instead of the value-changed callback.
+    // With segmented on, the choices are shown side by side as a segmented control instead of a field and a list.
     // With emptyMeansAll also on, ticking nothing counts as "All" too: the field shows the "All" text and the
     // last tick can be removed.
     public class DropdownFieldPro : BaseField<string>
@@ -23,6 +24,7 @@ namespace EAUploader.UI.Components
             private readonly UxmlStringAttributeDescription m_Choices = new UxmlStringAttributeDescription { name = "choices" };
             private readonly UxmlIntAttributeDescription m_Index = new UxmlIntAttributeDescription { name = "index", defaultValue = -1 };
             private readonly UxmlBoolAttributeDescription m_MultiSelect = new UxmlBoolAttributeDescription { name = "multi-select" };
+            private readonly UxmlBoolAttributeDescription m_Segmented = new UxmlBoolAttributeDescription { name = "segmented" };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
@@ -30,6 +32,7 @@ namespace EAUploader.UI.Components
                 var field = (DropdownFieldPro)ve;
 
                 field.multiSelect = m_MultiSelect.GetValueFromBag(bag, cc);
+                field.segmented = m_Segmented.GetValueFromBag(bag, cc);
 
                 var choices = m_Choices.GetValueFromBag(bag, cc);
                 if (!string.IsNullOrEmpty(choices))
@@ -57,6 +60,10 @@ namespace EAUploader.UI.Components
         public static readonly string itemSelectedUssClassName = "dropdown-pro__item--selected";
         public static readonly string itemCheckUssClassName = "dropdown-pro__item-check";
         public static readonly string itemLabelUssClassName = "dropdown-pro__item-label";
+        public static readonly string segmentsUssClassName = "dropdown-pro__segments";
+        public static readonly string segmentIndicatorUssClassName = "dropdown-pro__segment-indicator";
+        public static readonly string segmentUssClassName = "dropdown-pro__segment";
+        public static readonly string segmentActiveUssClassName = "dropdown-pro__segment--active";
 
         // Gap between the field and the opened list, and the minimum distance kept from the window edges.
         private const float MenuGap = 4f;
@@ -77,6 +84,10 @@ namespace EAUploader.UI.Components
         private bool _emptyMeansAll;
         private string _allText = "All";
         private VisualElement _overlay;
+        private bool _segmented;
+        private VisualElement _segments;
+        private VisualElement _segmentIndicator;
+        private readonly List<VisualElement> _segmentButtons = new List<VisualElement>();
 
         /// <summary>Raised when the ticked choices change by user input (multiSelect only). Indices are in ascending order.</summary>
         public event Action<IReadOnlyList<int>> selectionChanged;
@@ -88,6 +99,7 @@ namespace EAUploader.UI.Components
             {
                 _choices = value ?? new List<string>();
                 SetValueWithoutNotify(this.value);
+                RebuildSegments();
             }
         }
 
@@ -114,6 +126,17 @@ namespace EAUploader.UI.Components
             {
                 _multiSelect = value;
                 RefreshText();
+            }
+        }
+
+        /// <summary>Shows the choices side by side as a segmented control (single select only).</summary>
+        public bool segmented
+        {
+            get => _segmented;
+            set
+            {
+                _segmented = value;
+                RebuildSegments();
             }
         }
 
@@ -187,6 +210,79 @@ namespace EAUploader.UI.Components
 
             _index = newValue == null ? -1 : _choices.IndexOf(newValue);
             RefreshText();
+            RefreshSegments();
+        }
+
+        private void RebuildSegments()
+        {
+            if (!_segmented)
+            {
+                _segments?.RemoveFromHierarchy();
+                _segments = null;
+                _segmentIndicator = null;
+                _segmentButtons.Clear();
+                _input.style.display = DisplayStyle.Flex;
+                return;
+            }
+
+            _input.style.display = DisplayStyle.None;
+            if (_segments == null)
+            {
+                _segments = new VisualElement();
+                _segments.AddToClassList(segmentsUssClassName);
+                _segments.RegisterCallback<GeometryChangedEvent>(_ => UpdateSegmentIndicator());
+                Add(_segments);
+            }
+
+            _segments.Clear();
+            _segmentButtons.Clear();
+
+            _segmentIndicator = new VisualElement { pickingMode = PickingMode.Ignore };
+            _segmentIndicator.AddToClassList(segmentIndicatorUssClassName);
+            _segments.Add(_segmentIndicator);
+            for (var i = 0; i < _choices.Count; i++)
+            {
+                var choice = i;
+                var segment = new Button(() => index = choice);
+                segment.AddToClassList(segmentUssClassName);
+                segment.Add(new Label(_choices[i]));
+                segment.RegisterCallback<GeometryChangedEvent>(_ => UpdateSegmentIndicator());
+                _segments.Add(segment);
+                _segmentButtons.Add(segment);
+            }
+
+            RefreshSegments();
+        }
+
+        private void RefreshSegments()
+        {
+            if (_segments == null) return;
+
+            for (var i = 0; i < _segmentButtons.Count; i++)
+            {
+                _segmentButtons[i].EnableInClassList(segmentActiveUssClassName, i == _index);
+            }
+            UpdateSegmentIndicator();
+        }
+
+        private void UpdateSegmentIndicator()
+        {
+            if (_segmentIndicator == null) return;
+
+            if (_index < 0 || _index >= _segmentButtons.Count)
+            {
+                _segmentIndicator.style.display = DisplayStyle.None;
+                return;
+            }
+
+            var activeBtn = _segmentButtons[_index];
+            var rect = activeBtn.layout;
+            if (float.IsNaN(rect.width) || rect.width <= 0f) return;
+
+            _segmentIndicator.style.display = DisplayStyle.Flex;
+            _segmentIndicator.style.width = rect.width;
+            _segmentIndicator.style.height = rect.height;
+            _segmentIndicator.style.translate = new Translate(rect.x, rect.y);
         }
 
         /// <summary>Ticks exactly these choices (multiSelect only) without raising selectionChanged.</summary>
@@ -248,7 +344,7 @@ namespace EAUploader.UI.Components
 
         private void ShowMenu()
         {
-            if (_overlay != null || panel == null || _choices.Count == 0)
+            if (_overlay != null || panel == null || _choices.Count == 0 || _segmented)
             {
                 return;
             }
@@ -286,7 +382,7 @@ namespace EAUploader.UI.Components
                 }
             });
 
-            var shadow = new Shadow { shadowBlur = 16, shadowOffsetY = 4, shadowOpacity = 0.2f };
+            var shadow = new Shadow { shadowBlur = 16, shadowOffsetY = 4, shadowOpacity = 0.1f };
             shadow.AddToClassList(shadowUssClassName);
 
             var menu = new ScrollView(ScrollViewMode.Vertical);

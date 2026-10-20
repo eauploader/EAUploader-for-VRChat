@@ -1235,7 +1235,7 @@ RadioButton * {
 .modal {
 	padding: 16px;
 	background-color: white;
-	border-radius: 14px;
+	border-radius: 6px;
 }
 
 .modal__title {
@@ -1617,9 +1617,9 @@ RadioButton * {
 }
 
 /* Setup screen : metadata panel */
+/* Height follows the width at 4:3 (AspectRatioFitter.Keep in Setup.cs). */
 .meta-thumbnail {
 	width: 100%;
-	height: 160px;
 }
 
 .memo-field {
@@ -1924,6 +1924,14 @@ MaterialIcon.card-size-icon {
 	height: 40px;
 }
 
+.list-scroll-shadow--bottom {
+	position: absolute;
+	left: -32px;
+	right: -32px;
+	bottom: -40px;
+	height: 40px;
+}
+
 /* ==========================================================================
    Dropdown (DropdownFieldPro): the field, and the list drawn over the window when it is opened
    ========================================================================== */
@@ -2047,4 +2055,1109 @@ Label.dropdown-pro__item-label {
 	padding: 0;
 	font-size: 14px;
 	color: black;
+}
+
+/* The scroll bar floats over the right edge instead of taking its own column, so showing or hiding it
+   never narrows the content (and never makes the layout jump). */
+#avatar_editor_list .unity-scroll-view__vertical-scroller,
+#meta_panel .unity-scroll-view__vertical-scroller,
+#upload_scroll .unity-scroll-view__vertical-scroller {
+	position: absolute;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+
+#avatar_editor_list .unity-scroll-view__content-container {
+	padding: 8px 12px 0 12px;
+}
+
+.edit-tool__card {
+	border-radius: 10px;
+	background-color: #ffffff;
+	overflow: hidden;
+}
+
+.edit-tool__group {
+	flex-direction: row;
+}
+
+/* The card's rounded corners do not clip its children, so the buttons round their own outer corners.
+   Both halves look like the light buttons elsewhere (white, primary-coloured text, pointer cursor)
+   so it is clear they can be clicked. */
+.edit-tool__group .edit-tool__main {
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+	margin: 0;
+	padding: 10px 12px;
+	border-width: 1px;
+	border-color: var(--default);
+	border-radius: 10px 0 0 10px;
+	background-color: white;
+	cursor: link;
+}
+
+/* Same states as the outlined buttons elsewhere (.button-outline). */
+.edit-tool__group .edit-tool__main:hover {
+	background-color: var(--primary-subtle);
+	border-color: var(--primary);
+}
+
+.edit-tool__group .edit-tool__main:active {
+	background-color: #cce2fc;
+	border-color: var(--primary-selected);
+}
+
+.edit-tool__group .edit-tool__main:disabled {
+	background-color: #f4f4f5;
+	opacity: 0.6;
+}
+
+.edit-tool__group Label.edit-tool__name {
+	flex-grow: 1;
+	margin: 0;
+	padding: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-size: 13px;
+	-unity-font-style: bold;
+	-unity-text-align: middle-left;
+	color: var(--primary);
+}
+
+.edit-tool__group .edit-tool__toggle {
+	width: 36px;
+	margin: 0 0 0 -1px;
+	padding: 0;
+	justify-content: center;
+	border-width: 1px;
+	border-color: var(--default);
+	border-radius: 0 10px 10px 0;
+	background-color: white;
+	cursor: link;
+}
+
+.edit-tool__group .edit-tool__toggle:hover {
+	background-color: var(--primary-subtle);
+	border-color: var(--primary);
+}
+
+.edit-tool__group .edit-tool__toggle.edit-tool__toggle--seam {
+	border-left-color: var(--primary);
+}
+
+.edit-tool__group .edit-tool__toggle:active {
+	background-color: #cce2fc;
+	border-color: var(--primary-selected);
+}
+
+/* The chevron turns over as the card opens */
+.edit-tool__group .edit-tool__toggle > MaterialIcon {
+	font-size: 20px;
+	color: var(--primary);
+	rotate: 0deg;
+	transition-property: rotate;
+	transition-duration: 180ms;
+	transition-timing-function: ease-out;
+}
+
+.edit-tool--open .edit-tool__group .edit-tool__toggle > MaterialIcon {
+	rotate: 180deg;
+}
+
+.edit-tool__warning {
+	flex-direction: row;
+	align-items: center;
+	padding: 0 12px 8px 12px;
+}
+
+/* The details sheet slides out from under the button card by animating the height and opacity of this wrapper
+   from code (see EditorItem in Setup.cs; a USS transition starts late when the editor has been idle).
+   The wrapper always tucks 10px under the button card (negative margin and a minimum height of 10px), so the
+   card's shadow falls on the sheet's top edge and nothing moves but the height. Closed, it is invisible. */
+.edit-tool__details-wrap {
+	height: 10px;
+	margin-top: -10px;
+	overflow: hidden;
+	opacity: 0;
+}
+
+/* Absolute, so its height is its content's height however short the wrapper is. */
+.edit-tool__details {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	padding: 20px 12px 12px 12px;
+	border-width: 1px;
+	border-top-width: 0;
+	border-color: #e4e4e7;
+	border-radius: 0 0 10px 10px;
+	background-color: #fafafa;
+}
+
+.edit-tool__details Label {
+	margin: 2px 0;
+	font-size: 12px;
+	opacity: 0.7;
+}
+
+.edit-tool__details .link {
+	margin-top: 6px;
+	font-size: 14px;
+	-unity-font-style: bold;
+}
+
+/* ==========================================================================
+   Item info panel (right pane of the edit screen)
+   ========================================================================== */
+
+.meta-field {
+	margin-bottom: 16px;
+}
+
+.meta-field__label {
+	margin: 0 0 6px 0;
+	padding: 0;
+	font-size: 13px;
+	-unity-font-style: bold;
+}
+
+.meta-thumbnail-actions {
+	margin-top: 8px;
+}
+
+.meta-section {
+	padding-top: 16px;
+	margin-bottom: 16px;
+	border-top-width: 1px;
+	border-top-color: var(--default);
+}
+
+/* The last section ends the panel; the panel's own padding already gives the bottom gap. */
+.meta-section.meta-actions {
+	margin-bottom: 0;
+}
+
+.meta-toggle-row {
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+}
+
+/* Secondary information (last modified, height, path ...) is quieter than the fields above it. */
+#meta_details Label {
+	margin: 2px 0;
+	font-size: 12px;
+	opacity: 0.7;
+}
+
+/* ==========================================================================
+   Studio layout (edit screen)
+   The 3D view fills the screen. The header, the tool pane and the side pane float above it as rounded cards.
+   Each card is a Shadow (the shell, which is positioned and animated) around the pane itself.
+   Selectors start with a parent class so they win over the theme blocks' `.dark Button` and similar.
+   ========================================================================== */
+
+.studio {
+	position: relative;
+}
+
+.studio__viewport {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+}
+
+/* The preview's own help badge sits in the free area between the panes. */
+.studio .studio__viewport > HelpButton {
+	left: 304px;
+	top: 72px;
+}
+
+.studio__header-shell {
+	position: absolute;
+	left: 16px;
+	top: 16px;
+}
+
+.studio__header {
+	flex-direction: row;
+	align-items: center;
+	height: 44px;
+	padding: 0 16px 0 6px;
+	border-radius: 6px;
+	background-color: rgba(255, 255, 255, 0.95);
+}
+
+.studio__shell {
+	position: absolute;
+	bottom: 16px;
+	width: 272px;
+	transition-property: opacity, translate;
+	transition-duration: 220ms;
+	transition-timing-function: ease-out;
+}
+
+.studio__shell--left {
+	left: 16px;
+	top: 72px;
+}
+
+.studio__shell--right {
+	right: 16px;
+	top: 16px;
+	width: 400px;
+}
+
+/* A closed pane fades and slides a little towards its edge before it is hidden (see Setup.SetPaneOpen). */
+.studio__shell--left.studio__shell--closed {
+	opacity: 0;
+	translate: -20px 0px;
+}
+
+.studio__shell--right.studio__shell--closed {
+	opacity: 0;
+	translate: 20px 0px;
+}
+
+.studio__pane {
+	flex-grow: 1;
+	border-width: 1px;
+	border-radius: 6px;
+	border-color: rgba(15, 23, 42, 0.08);
+	background-color: rgba(255, 255, 255, 0.97);
+	overflow: hidden;
+}
+
+.studio__pane-header {
+	flex-direction: row;
+	align-items: center;
+	flex-shrink: 0;
+	height: 44px;
+	padding: 0 6px 0 16px;
+	border-bottom-width: 1px;
+	border-bottom-color: #f0f0f2;
+}
+
+.studio__pane-body {
+	flex-grow: 1;
+	padding: 12px 0;
+}
+
+.studio .studio__icon-button {
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+	border-radius: 4px;
+	background-color: rgba(244, 244, 245, 0);
+}
+
+.studio .studio__icon-button:hover {
+	background-color: #f4f4f5;
+}
+
+.studio .studio__icon-button:active {
+	background-color: #e4e4e7;
+}
+
+.studio .studio__icon-button > MaterialIcon {
+	font-size: 20px;
+	color: #52525b;
+}
+
+/* Rails: the way back while a pane is collapsed. */
+.studio .studio__rail {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	align-items: center;
+	justify-content: center;
+}
+
+.studio .studio__rail--left {
+	left: 16px;
+	top: 72px;
+	width: 56px;
+	height: 64px;
+	flex-direction: column;
+	border-width: 1px;
+	border-radius: 6px;
+	border-color: rgba(15, 23, 42, 0.06);
+	background-color: rgba(255, 255, 255, 0.95);
+}
+
+.studio .studio__rail--left > Label {
+	font-size: 11px;
+	color: var(--primary);
+}
+
+.studio .studio__rail--left > MaterialIcon {
+	font-size: 20px;
+	color: var(--primary);
+}
+
+.studio .studio__rail--right {
+	right: 16px;
+	bottom: 16px;
+	height: 52px;
+	padding: 0 22px 0 18px;
+	flex-direction: row;
+	border-width: 0;
+	border-radius: 6px;
+}
+
+.studio .studio__rail--right > Label {
+	font-size: 15px;
+}
+
+.studio .studio__rail--right > MaterialIcon {
+	margin-right: 10px;
+	font-size: 20px;
+	color: #ffffff;
+}
+
+/* ==========================================================================
+   Upload form (inside the side pane of the edit screen)
+   ========================================================================== */
+
+.upload-card {
+	padding: 12px;
+	margin-bottom: 16px;
+	border-width: 1px;
+	border-radius: 4px;
+	border-color: var(--default);
+}
+
+.upload-section {
+	padding-bottom: 16px;
+	margin-bottom: 16px;
+	border-bottom-width: 1px;
+	border-bottom-color: var(--default);
+}
+
+.upload-footer {
+	flex-shrink: 0;
+	padding: 16px;
+	border-top-width: 1px;
+	border-top-color: #f0f0f2;
+	background-color: white;
+}
+
+/* The main action: the same blue block as the Upload tab, a little taller than other buttons. */
+.upload-primary Button {
+	padding: 10px 16px;
+}
+
+.upload-primary Button > Label {
+	font-size: 15px;
+}
+
+/* ==========================================================================
+   3D view toolbar (grid / axes toggles and the view reset), floating at the bottom center
+   ========================================================================== */
+
+.preview-toolbar-shell {
+	position: absolute;
+	bottom: 16px;
+	left: 50%;
+	translate: -50% 0px;
+}
+
+.preview-toolbar {
+	flex-direction: row;
+	align-items: center;
+	padding: 4px;
+	border-radius: 6px;
+	background-color: rgba(255, 255, 255, 0.95);
+}
+
+.preview-toolbar .preview-toolbar__button {
+	flex-direction: row;
+	height: 32px;
+	margin: 0 1px;
+	padding: 0 12px;
+	border-width: 0;
+	border-radius: 4px;
+	background-color: rgba(244, 244, 245, 0);
+}
+
+.preview-toolbar .preview-toolbar__button:hover {
+	background-color: #f4f4f5;
+}
+
+.preview-toolbar .preview-toolbar__button:active {
+	background-color: #e4e4e7;
+}
+
+.preview-toolbar .preview-toolbar__button > Label {
+	font-size: 12px;
+	color: #52525b;
+}
+
+.preview-toolbar .preview-toolbar__button > MaterialIcon {
+	margin-right: 6px;
+	font-size: 16px;
+	color: #52525b;
+}
+
+/* On: the same light blue as the other toggled-on cards. */
+.preview-toolbar .preview-toolbar__button--on,
+.preview-toolbar .preview-toolbar__button--on:hover {
+	background-color: var(--primary-subtle);
+}
+
+.preview-toolbar .preview-toolbar__button--on > Label,
+.preview-toolbar .preview-toolbar__button--on > MaterialIcon {
+	color: var(--primary);
+}
+
+.preview-toolbar .preview-toolbar__button--icon {
+	width: 32px;
+	padding: 0;
+	justify-content: center;
+}
+
+.preview-toolbar .preview-toolbar__button--icon > MaterialIcon {
+	margin-right: 0;
+}
+
+.preview-toolbar__divider {
+	width: 1px;
+	height: 20px;
+	margin: 0 4px;
+	background-color: var(--default);
+}
+
+/* ==========================================================================
+   Studio: item info footer and the upload sheet
+   ========================================================================== */
+
+.studio__pane-footer {
+	flex-shrink: 0;
+	padding: 16px;
+	border-top-width: 1px;
+	border-top-color: #f0f0f2;
+}
+
+/* The upload sheet covers about 60% of the screen from the right. */
+.studio__shell--sheet {
+	right: 16px;
+	top: 16px;
+	width: 62%;
+	min-width: 600px;
+}
+
+.studio__shell--sheet.studio__shell--closed {
+	opacity: 0;
+	translate: 48px 0px;
+}
+
+.studio__sheet-header {
+	flex-direction: row;
+	align-items: center;
+	flex-shrink: 0;
+	height: 64px;
+	padding: 0 16px 0 24px;
+	border-bottom-width: 1px;
+	border-bottom-color: #f0f0f2;
+}
+
+.studio--uploading .studio__viewport > HelpButton {
+	left: 16px;
+	top: 72px;
+}
+
+/* Collapsed item info: a small button at the top right brings it back. */
+.studio .studio__rail--info {
+	right: 16px;
+	top: 16px;
+	width: 44px;
+	height: 44px;
+	border-width: 1px;
+	border-radius: 6px;
+	border-color: rgba(15, 23, 42, 0.06);
+	background-color: rgba(255, 255, 255, 0.95);
+}
+
+.studio .studio__rail--info > MaterialIcon {
+	font-size: 20px;
+	color: #3f3f46;
+}
+
+/* Upload form inside the sheet */
+#meta_panel .unity-scroll-view__content-container {
+	padding: 16px;
+}
+
+.upload-body {
+	padding: 0;
+}
+
+.upload-body .unity-scroll-view__content-container {
+	padding: 20px 24px;
+}
+
+.upload-columns {
+	flex-direction: row;
+	align-items: flex-start;
+}
+
+.upload-column {
+	flex-grow: 1;
+	flex-basis: 0;
+	min-width: 0;
+}
+
+.upload-column--left {
+	margin-right: 32px;
+}
+
+.upload-footer {
+	padding: 24px;
+}
+
+.upload-confirm {
+	flex-grow: 1;
+	flex-shrink: 1;
+	margin: 0 16px 0 0;
+}
+
+/* The status area takes no room while it is empty, so the footer's padding is even on all sides. */
+.upload-footer #upload_status > * {
+	margin-top: 8px;
+}
+
+.upload-primary--wide {
+	width: 200px;
+}
+
+/* ==========================================================================
+   Upload form: platform cards and the performance accordion
+   Selectors start with a parent class so they win over the theme blocks' `.dark Button`.
+   ========================================================================== */
+
+.upload-column .platform-card {
+	flex-direction: row;
+	align-items: center;
+	margin: 0 0 8px 0;
+	padding: 10px 12px;
+	border-width: 1px;
+	border-radius: 4px;
+	border-color: #e4e4e7;
+	background-color: #ffffff;
+	transition: 150ms;
+}
+
+.upload-column .platform-card:hover {
+	background-color: #f4f4f5;
+}
+
+.upload-column .platform-card--on,
+.upload-column .platform-card--on:hover {
+	border-color: var(--primary);
+	background-color: var(--primary-subtle);
+}
+
+/* Windows is always uploaded, so it is shown as on but quieter and not clickable. */
+.upload-column .platform-card--locked,
+.upload-column .platform-card--locked:hover {
+	border-color: #bcd7fb;
+	background-color: #f6f9ff;
+}
+
+.platform-card__text {
+	flex-grow: 1;
+}
+
+.upload-column .platform-card Label.platform-card__name {
+	-unity-text-align: middle-left;
+	margin: 0;
+	padding: 0;
+	font-size: 13px;
+	-unity-font-style: bold;
+	color: #18181b;
+}
+
+.upload-column .platform-card Label.platform-card__note {
+	-unity-text-align: middle-left;
+	margin: 0;
+	padding: 0;
+	font-size: 12px;
+	-unity-font-style: normal;
+	color: #52525b;
+}
+
+.platform-card__check {
+	width: 20px;
+	height: 20px;
+	border-width: 1px;
+	border-radius: 10px;
+	border-color: #a1a1aa;
+	background-color: #ffffff;
+	align-items: center;
+	justify-content: center;
+}
+
+.upload-column .platform-card__check > MaterialIcon {
+	font-size: 14px;
+	color: #ffffff;
+	display: none;
+}
+
+.platform-card--on > .platform-card__check {
+	border-color: var(--primary);
+	background-color: var(--primary);
+}
+
+.upload-column .platform-card--on > .platform-card__check > MaterialIcon {
+	display: flex;
+}
+
+.perf-card {
+	border-width: 1px;
+	border-radius: 4px;
+	border-color: #e4e4e7;
+	overflow: hidden;
+}
+
+.perf-card .perf-card__summary {
+	flex-direction: row;
+	align-items: center;
+	margin: 0;
+	padding: 10px 12px;
+	border-width: 0;
+	border-radius: 0;
+	background-color: #ffffff;
+}
+
+.perf-card .perf-card__summary:hover {
+	background-color: #f4f4f5;
+}
+
+.perf-card__icon {
+	width: 28px;
+	height: 28px;
+	margin-right: 12px;
+}
+
+.perf-card__text {
+	flex-grow: 1;
+}
+
+.perf-card .perf-card__summary Label.perf-card__rating {
+	-unity-text-align: middle-left;
+	margin: 0;
+	padding: 0;
+	font-size: 15px;
+	-unity-font-style: bold;
+	color: #18181b;
+}
+
+.perf-card .perf-card__summary Label.perf-card__hint {
+	-unity-text-align: middle-left;
+	margin: 0;
+	padding: 0;
+	font-size: 12px;
+	-unity-font-style: normal;
+	color: #52525b;
+}
+
+.perf-card .perf-card__summary > MaterialIcon.perf-card__chevron {
+	font-size: 22px;
+	color: #71717a;
+}
+
+.perf-card__list {
+	padding: 4px 12px 8px 12px;
+	border-top-width: 1px;
+	border-top-color: #f0f0f2;
+}
+
+.perf-card__footer {
+	flex-direction: row;
+	align-items: center;
+	padding: 8px 12px;
+	border-top-width: 1px;
+	border-top-color: #f0f0f2;
+	background-color: #fafafa;
+}
+
+/* ==========================================================================
+   Dropdown as a segmented control (DropdownFieldPro segmented="true")
+   ========================================================================== */
+
+.dropdown-pro__segments {
+	position: relative;
+	flex-grow: 1;
+	flex-direction: row;
+	padding: 3px;
+	border-radius: 6px;
+	background-color: #f1f2f4;
+}
+
+.dropdown-pro__segment-indicator {
+	position: absolute;
+	left: 0;
+	top: 0;
+	border-width: 1px;
+	border-radius: 4px;
+	border-color: rgba(15, 23, 42, 0.08);
+	background-color: #ffffff;
+	transition-property: translate, width, height;
+	transition-duration: 180ms;
+	transition-timing-function: ease-out;
+}
+
+.dropdown-pro__segments .dropdown-pro__segment {
+	flex-grow: 1;
+	flex-basis: 0;
+	height: 30px;
+	margin: 0;
+	padding: 0 8px;
+	border-width: 1px;
+	border-radius: 4px;
+	border-color: rgba(15, 23, 42, 0);
+	background-color: rgba(255, 255, 255, 0);
+}
+
+.dropdown-pro__segments .dropdown-pro__segment:hover {
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+.dropdown-pro__segments .dropdown-pro__segment > Label {
+	white-space: nowrap;
+	font-size: 12px;
+	color: #52525b;
+	-unity-font-style: normal;
+}
+
+.dropdown-pro__segments .dropdown-pro__segment--active,
+.dropdown-pro__segments .dropdown-pro__segment--active:hover {
+	background-color: rgba(255, 255, 255, 0);
+}
+
+.dropdown-pro__segments .dropdown-pro__segment--active > Label {
+	color: #18181b;
+	-unity-font-style: bold;
+}
+
+/* ==========================================================================
+   Upload sheet: quiet headings, fields with the label above, the thumbnail and the main button
+   ========================================================================== */
+
+.upload-heading-row {
+	flex-direction: row;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+Label.upload-heading {
+	margin: 0;
+	padding: 0;
+	font-size: 13px;
+	-unity-font-style: bold;
+	color: #52525b;
+}
+
+/* Label above the field, as in the mock */
+.upload-column .upload-field {
+	flex-direction: column;
+	align-items: stretch;
+	margin: 0 0 14px 0;
+}
+
+.upload-column .upload-field > Label {
+	min-width: 0;
+	width: auto;
+	margin: 0 0 6px 0;
+	padding: 0;
+	font-size: 12px;
+	-unity-font-style: bold;
+	color: #3f3f46;
+}
+
+.upload-thumbnail {
+	margin-bottom: 16px;
+}
+
+/* The picture fills the frame at 4:3, the same as VRChat's avatar thumbnails (AspectRatioFitter.Keep in UploadForm.cs). */
+.upload-thumbnail__frame {
+	border-radius: 4px;
+}
+
+.upload-thumbnail__image {
+	width: 100%;
+}
+
+.upload-thumbnail__actions {
+	position: absolute;
+	right: 10px;
+	bottom: 10px;
+	flex-direction: row;
+	align-items: center;
+}
+
+.upload-thumbnail__icon-button Button {
+	width: 32px;
+	padding: 6px 0;
+	justify-content: center;
+}
+
+/* Account card once everything is fine: one green line */
+.upload-card__ok-icon {
+	display: none;
+}
+
+.upload-card--ok {
+	flex-direction: row;
+	align-items: center;
+	padding: 10px 12px;
+	border-color: #c9ecd8;
+	background-color: #ecf8f1;
+}
+
+.upload-card--ok .upload-card__body {
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+.upload-card--ok #loginSDKLabel,
+.upload-card--ok #checkPermissionLabel {
+	display: none;
+}
+
+.upload-card--ok #permission_status_container {
+	padding-top: 0;
+	margin-left: 12px;
+}
+
+.upload-card--ok MaterialIcon.upload-card__ok-icon {
+	display: flex;
+	margin-right: 8px;
+	font-size: 20px;
+	color: #0a7a38;
+}
+
+.upload-card--ok Label {
+	color: #0a5c2c;
+}
+
+/* Content warnings: label above the tags */
+.upload-column ContentWarningsField.upload-warnings {
+	flex-direction: column;
+}
+
+.upload-column ContentWarningsField.upload-warnings > Label {
+	margin: 0 0 10px 0;
+	padding: 0;
+	font-size: 13px;
+	-unity-font-style: bold;
+	color: #52525b;
+}
+
+/* Main button: an icon, "Upload" and where it sends, on two lines */
+.upload-primary Button {
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+.upload-primary Button > MaterialIcon {
+	margin-right: 10px;
+	font-size: 20px;
+}
+
+.upload-primary .upload-primary__text {
+	align-items: flex-start;
+}
+
+.upload-primary Label.upload-primary__title {
+	margin: 0;
+	padding: 0;
+	font-size: 15px;
+	-unity-font-style: bold;
+	color: #ffffff;
+}
+
+.upload-primary Label.upload-primary__sub {
+	margin: 0;
+	padding: 0;
+	font-size: 11px;
+	-unity-font-style: normal;
+	color: rgba(255, 255, 255, 0.9);
+}
+
+/* While the confirmation is not ticked, the main button stays blue but light, so it still reads as the main action. */
+.upload-primary:disabled Button {
+	background-color: #9cc3f5;
+}
+
+/* ==========================================================================
+   Edit screen: header item name and genre, status banners, item info pieces
+   ========================================================================== */
+
+.studio__header-divider {
+	width: 1px;
+	height: 20px;
+	margin-right: 12px;
+	background-color: #e4e4e7;
+}
+
+Label.studio__item-name {
+	margin: 0 10px 0 0;
+	padding: 0;
+	font-size: 15px;
+	-unity-font-style: bold;
+	color: #18181b;
+}
+
+Label.studio__badge {
+	height: 20px;
+	margin: 0;
+	padding: 0 8px;
+	border-width: 1px;
+	border-radius: 10px;
+	border-color: #e4e4e7;
+	background-color: #f4f4f5;
+	font-size: 11px;
+	-unity-font-style: bold;
+	-unity-text-align: middle-center;
+	color: #3f3f46;
+}
+
+/* Status rows in the tool pane read as coloured banners */
+.status-row {
+	padding: 8px 12px;
+	border-radius: 4px;
+}
+
+.status-row--success {
+	background-color: #ecf8f1;
+}
+
+.status-row--warning {
+	background-color: #fff6e5;
+}
+
+.status-row--info {
+	background-color: #eef5ff;
+}
+
+.status-row--success > Label,
+.status-row--success > MaterialIcon {
+	color: #0a5c2c;
+	-unity-font-style: bold;
+}
+
+.status-row--warning > Label,
+.status-row--warning > MaterialIcon {
+	color: #8a5300;
+}
+
+.status-row--info > Label,
+.status-row--info > MaterialIcon {
+	color: #1e4f9c;
+}
+
+/* Item info: the thumbnail frame, and the pin / hide switches in one card */
+.meta-thumbnail-frame {
+	padding: 0;
+}
+
+.meta-card {
+	margin-bottom: 16px;
+	padding: 4px 12px;
+	border-width: 1px;
+	border-radius: 4px;
+	border-color: #e4e4e7;
+}
+
+.meta-card .meta-toggle-row {
+	margin: 0;
+	padding: 6px 0;
+}
+
+/* ==========================================================================
+   Upload form: after the avatar has been uploaded (save bar, VRChat information, blueprint)
+   Selectors start with a parent class so they win over the theme blocks.
+   ========================================================================== */
+
+/* Buttons side by side, sharing the row */
+.upload-action-row {
+	flex-direction: row;
+	margin-bottom: 16px;
+}
+
+.upload-action-row .upload-action-row__button {
+	flex-grow: 1;
+	flex-basis: 0;
+}
+
+/* One height for every button in the row, whatever its outline style adds. */
+.upload-action-row .upload-action-row__button Button {
+	height: 34px;
+	margin: 0;
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+Label.upload-heading--block {
+	margin: 16px 0 10px 0;
+}
+
+.upload-info-card {
+	margin-bottom: 16px;
+	padding: 4px 12px;
+	border-width: 1px;
+	border-radius: 10px;
+	border-color: #e4e4e7;
+	background-color: #fafafa;
+}
+
+.upload-info-row {
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	padding: 6px 0;
+	border-bottom-width: 1px;
+	border-bottom-color: #f0f0f2;
+}
+
+.upload-info-row.upload-info-row--last {
+	border-bottom-width: 0;
+}
+
+.upload-info-card Label.upload-info-row__key {
+	margin: 0 12px 0 0;
+	padding: 0;
+	font-size: 12px;
+	color: #71717a;
+}
+
+.upload-info-card Label.upload-info-row__value {
+	flex-shrink: 1;
+	margin: 0;
+	padding: 0;
+	font-size: 13px;
+	-unity-font-style: bold;
+	-unity-text-align: middle-right;
+	color: #18181b;
+}
+
+.upload-info-card Label.upload-info-id {
+	margin: 4px 0;
+	padding: 0;
+	font-size: 12px;
+	color: #52525b;
+	white-space: normal;
 }

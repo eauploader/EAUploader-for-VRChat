@@ -11,13 +11,39 @@ using UnityEngine.UIElements;
 
 namespace EAUploader.UI.Setup
 {
+    /// <summary>編集画面の表示状態。</summary>
+    internal enum EditScreenMode
+    {
+        /// <summary>編集ツールとアイテム情報のペインを表示する</summary>
+        Edit,
+        /// <summary>アップロードのシートを表示する</summary>
+        Upload,
+    }
+
     /// <summary>
     /// 編集(セットアップ)画面。
-    /// 一覧から選んだアイテムを対象に、左側で編集ツールを起動し、
-    /// 右側でメタ情報をその場で編集する。
+    /// 3Dビューが画面いっぱいに広がり、その上に左の編集ツールと右のアイテム情報が浮かぶ。
+    /// アップロードは画面の右側の大部分を覆うシートで行い、その間も左にアバターが見える。
     /// </summary>
     internal class Main
     {
+        // ペインの開閉は、画面を作り直しても保つ
+        private static bool editMenuOpen = true;
+        private static bool sidePaneOpen = true;
+        private static bool uploadMode;
+        private static bool selectedIsAvatar;
+        private static bool uploadFormBuilt;
+        private static IVisualElementScheduledItem editMenuTransition;
+        private static IVisualElementScheduledItem sidePaneTransition;
+        private static IVisualElementScheduledItem uploadSheetTransition;
+
+        private const string PaneClosedClass = "studio__shell--closed";
+        private const string UploadingClass = "studio--uploading";
+        // 閉じるアニメーション(styles.uss の .studio__shell の transition)が終わるまで待つ時間
+        private const long PaneFadeMs = 220;
+        // 開くとき、透明な状態を一度描画してからクラスを外す
+        private const long PaneOpenDelayMs = 30;
+
         private static VisualElement root;
         internal static Preview preview;
         internal static Dictionary<string, bool> editorFoldouts = new Dictionary<string, bool>();
@@ -26,9 +52,10 @@ namespace EAUploader.UI.Setup
         private static readonly List<string> GENRE_CHOICES =
             new List<string> { "Avatar", "Cloth", "Accessory", "Other" };
 
-        public static void ShowContent(VisualElement rootElement)
+        public static void ShowContent(VisualElement rootElement, EditScreenMode mode = EditScreenMode.Edit)
         {
             root = rootElement;
+            uploadFormBuilt = false;
 
             var visualTree = Resources.Load<VisualTreeAsset>("UI/TabContents/Setup/Setup");
             visualTree.CloneTree(root);
@@ -45,11 +72,14 @@ namespace EAUploader.UI.Setup
 
             preview = new Preview(root.Q("avatar_preview"), selectedPrefabPath);
             preview.ShowContent();
-            preview.UpdatePreview(selectedPrefabPath);
 
             BuildMetaPanel();
             BuildEditor();
             SetupExtensionButtons();
+            SetupStudio(mode);
+
+            SmoothScroll.Enable(root.Q<ScrollView>("avatar_editor_list"));
+            SmoothScroll.Enable(root.Q<ScrollView>("meta_panel"));
         }
 
         private static void ShowNoSelection()
@@ -65,23 +95,181 @@ namespace EAUploader.UI.Setup
             };
             root.Q("avatar_preview").Add(message);
 
-            root.Q<ScrollView>("meta_panel").style.display = DisplayStyle.None;
-            root.Q("edit_menu").style.display = DisplayStyle.None;
-            root.Q<Button>("go_upload").style.display = DisplayStyle.None;
+            root.Q("side_pane_shell").style.display = DisplayStyle.None;
+            root.Q("edit_menu_shell").style.display = DisplayStyle.None;
         }
 
         #region Navigation
 
         private static void SetupNavigation()
         {
-            root.Q<Button>("back_to_list").clicked += () =>
+            root.Q<ShadowButton>("back_to_list").clicked += () =>
                 EAUploader.Navigate(EAUploaderScreen.AvatarList);
+        }
 
-            var uploadButton = root.Q<Button>("go_upload");
-            uploadButton.clicked += () => EAUploader.Navigate(EAUploaderScreen.Upload);
+        #endregion
 
-            // アップロードできるのはアバターだけ
-            uploadButton.style.display = IsSelectedAvatar() ? DisplayStyle.Flex : DisplayStyle.None;
+        #region Studio (floating panes and the upload sheet)
+
+        /// <summary>
+        /// 左右のペインとアップロードのシートを組み立てる。
+        /// </summary>
+        private static void SetupStudio(EditScreenMode mode)
+        {
+            root.Q<Button>("collapse_edit_menu").clicked += () => SetEditMenuOpen(false);
+            root.Q<Button>("open_edit_menu").clicked += () => SetEditMenuOpen(true);
+            root.Q<Button>("collapse_side_pane").clicked += () => SetSidePaneOpen(false);
+            root.Q<Button>("open_side_pane").clicked += () => SetSidePaneOpen(true);
+            root.Q<ShadowButton>("open_upload").clicked += () => SetUploadMode(true);
+            root.Q<Button>("open_upload_fab").clicked += () => SetUploadMode(true);
+            root.Q<ShadowButton>("close_upload").clicked += () => SetUploadMode(false);
+
+            UpdateHeader();
+
+            // アップロードできるのはアバターだけ。前の画面のアップロード状態は持ち越さない
+            uploadMode = false;
+            UpdateUploadAvailability(IsSelectedAvatar());
+
+            // 前回の開閉状態を、アニメーションなしで復元する
+            uploadMode = mode == EditScreenMode.Upload && selectedIsAvatar;
+            ApplyLayout(false);
+
+            // ウィンドウの大きさが変わったら、シートが覆う幅も変わる
+            root.Q("studio").RegisterCallback<GeometryChangedEvent>(_ => UpdatePreviewInset());
+        }
+
+        /// <summary>
+        /// アップロード中は、シートが覆う幅をプレビューに伝えて、アバターを左側の空いた部分に寄せる。
+        /// </summary>
+        private static void UpdatePreviewInset()
+        {
+            if (preview == null) return;
+
+            var studio = root.Q("studio");
+            var width = studio.layout.width;
+            if (float.IsNaN(width) || width <= 0f) return;
+
+            // styles.uss の .studio__shell--sheet(右16px、幅62%、最小600px)と同じ計算
+            var sheetWidth = Mathf.Max(width * 0.62f, 600f);
+            preview.SetRightInset(uploadMode ? sheetWidth + 16f : 0f);
+        }
+
+        /// <summary>
+        /// ヘッダーに、開いているアイテムの名前とジャンルを出す。
+        /// </summary>
+        private static void UpdateHeader()
+        {
+            var path = EAUploaderCore.selectedPrefabPath;
+            var info = PrefabManager.GetPrefabInfo(path);
+            var genre = PrefabManager.GetPrefabGenre(path);
+            root.Q<Label>("studio_item_name").text = info != null ? info.Name : Path.GetFileNameWithoutExtension(path);
+            root.Q<Label>("studio_genre_badge").text = T7e.Get(genre.ToString());
+        }
+
+        /// <summary>
+        /// アップロードのボタンを、アイテムの種類にあわせて出し分ける。
+        /// </summary>
+        private static void UpdateUploadAvailability(bool isAvatar)
+        {
+            selectedIsAvatar = isAvatar;
+            root.Q("side_pane_footer").style.display = isAvatar ? DisplayStyle.Flex : DisplayStyle.None;
+
+            if (!isAvatar && uploadMode)
+            {
+                SetUploadMode(false);
+                return;
+            }
+
+            UpdateRails();
+        }
+
+        private static void SetEditMenuOpen(bool open)
+        {
+            editMenuOpen = open;
+            ApplyLayout(true);
+        }
+
+        private static void SetSidePaneOpen(bool open)
+        {
+            sidePaneOpen = open;
+            ApplyLayout(true);
+        }
+
+        private static void SetUploadMode(bool upload)
+        {
+            uploadMode = upload && selectedIsAvatar;
+            ApplyLayout(true);
+        }
+
+        /// <summary>
+        /// 現在の状態にあわせて、ペインとシートの表示を切り替える。
+        /// アップロード中は編集用のペインを下げ、3Dビューをシートの左側に寄せる。
+        /// </summary>
+        private static void ApplyLayout(bool animate)
+        {
+            root.Q("studio").EnableInClassList(UploadingClass, uploadMode);
+            root.Q<Label>("studio_title").text = T7e.Get(uploadMode ? "Upload" : "Edit");
+
+            if (uploadMode && !uploadFormBuilt)
+            {
+                uploadFormBuilt = true;
+                Upload.UploadForm.ShowContent(root.Q("upload_form"));
+                LanguageUtility.Localization(root.Q("upload_form"));
+            }
+
+            editMenuTransition = AnimatePane("edit_menu_shell", !uploadMode && editMenuOpen, editMenuTransition, animate);
+            sidePaneTransition = AnimatePane("side_pane_shell", !uploadMode && sidePaneOpen, sidePaneTransition, animate);
+            uploadSheetTransition = AnimatePane("upload_sheet_shell", uploadMode, uploadSheetTransition, animate);
+
+            UpdateRails();
+            UpdatePreviewInset();
+
+            // ペインの出入りと3Dの移動の間、エディターの更新を落とさない(アニメーションの時間より少し長く)
+            if (animate) EAUploader.RequestSmoothFrames(0.5);
+        }
+
+        /// <summary>
+        /// 閉じたペインを開き直すためのボタン。アップロード中はどれも出さない。
+        /// </summary>
+        private static void UpdateRails()
+        {
+            root.Q("open_edit_menu").EnableInClassList("hidden", uploadMode || editMenuOpen);
+            root.Q("open_side_pane").EnableInClassList("hidden", uploadMode || sidePaneOpen);
+            root.Q("open_upload_fab").EnableInClassList("hidden", uploadMode || sidePaneOpen || !selectedIsAvatar);
+        }
+
+        /// <summary>
+        /// ペインやシートを開閉する。閉じるときは薄くなりながら端へ寄ってから隠し、開くときはその逆を行う。
+        /// 透明なものがクリックを受けないよう、消えきったあとに hidden で取り除く。
+        /// </summary>
+        private static IVisualElementScheduledItem AnimatePane(
+            string shellName, bool open, IVisualElementScheduledItem pending, bool animate)
+        {
+            pending?.Pause();
+
+            var shell = root.Q(shellName);
+
+            if (!animate)
+            {
+                shell.EnableInClassList("hidden", !open);
+                shell.EnableInClassList(PaneClosedClass, !open);
+                return null;
+            }
+
+            if (open)
+            {
+                shell.EnableInClassList("hidden", false);
+                pending = shell.schedule.Execute(() => shell.RemoveFromClassList(PaneClosedClass));
+                pending.StartingIn(PaneOpenDelayMs);
+            }
+            else
+            {
+                shell.AddToClassList(PaneClosedClass);
+                pending = shell.schedule.Execute(() => shell.AddToClassList("hidden"));
+                pending.StartingIn(PaneFadeMs);
+            }
+
+            return pending;
         }
 
         private static bool IsSelectedAvatar()
@@ -105,6 +293,8 @@ namespace EAUploader.UI.Setup
 
             var meta = Utility.GetEAUploaderMeta(prefab);
 
+            // サムネイルは VRChat のアバターサムネイルと同じ 4:3 で、枠いっぱいに表示する
+            AspectRatioFitter.Keep(root.Q<Image>("meta_thumbnail"), 0.75f);
             UpdateThumbnail();
 
             root.Q<ShadowButton>("regenerate_thumbnail").clicked += RegenerateThumbnail;
@@ -126,16 +316,30 @@ namespace EAUploader.UI.Setup
             var genreDropdown = root.Q<DropdownFieldPro>("meta_genre");
             genreDropdown.choices = new List<string>(GENRE_CHOICES);
             genreDropdown.SetValueWithoutNotify(meta.genre.ToString());
+            IVisualElementScheduledItem pendingGenreSave = null;
             genreDropdown.RegisterValueChangedCallback(evt =>
             {
                 if (!Enum.TryParse<EAUploaderMeta.PrefabGenre>(evt.newValue, out var genre)) return;
 
-                PrefabManager.SetPrefabGenre(EAUploaderCore.selectedPrefabPath, genre);
-                AvatarList.Main.RequestRefresh();
+                // まずメモリ上のメタとUIだけを即座に更新し、重たいアセット書き出しはアニメーション完了後に遅らせる
+                var currentPrefab = PrefabManager.GetPrefab(EAUploaderCore.selectedPrefabPath);
+                var currentMeta = currentPrefab != null ? Utility.GetEAUploaderMeta(currentPrefab) : null;
+                if (currentMeta != null)
+                {
+                    currentMeta.genre = genre;
+                    currentMeta.genreConfirmed = true;
+                }
 
-                // ジャンルが変わるとアップロード可否も変わるので、ボタンの表示を更新する
-                root.Q<Button>("go_upload").style.display =
-                    IsSelectedAvatar() ? DisplayStyle.Flex : DisplayStyle.None;
+                UpdateUploadAvailability(genre == EAUploaderMeta.PrefabGenre.Avatar);
+                UpdateHeader();
+
+                pendingGenreSave?.Pause();
+                pendingGenreSave = genreDropdown.schedule.Execute(() =>
+                {
+                    PrefabManager.SetPrefabGenre(EAUploaderCore.selectedPrefabPath, genre);
+                    AvatarList.Main.RequestRefresh();
+                });
+                pendingGenreSave.StartingIn(220);
             });
 
             BuildTagSection();
@@ -156,6 +360,19 @@ namespace EAUploader.UI.Setup
 
             root.Q<ShadowButton>("duplicate_prefab").clicked += DuplicatePrefab;
             root.Q<ShadowButton>("delete_prefab").clicked += DeletePrefab;
+
+            SetupMetaScrollShadows();
+        }
+
+        private const float SCROLL_SHADOW_RAMP_PX = 16f;
+
+        /// <summary>
+        /// アイテム情報のスクロール位置に応じて、上下の境界に影を出す。
+        /// </summary>
+        private static void SetupMetaScrollShadows()
+        {
+            ScrollShadows.Attach(root.Q<ScrollView>("meta_panel"),
+                root.Q<Shadow>("meta_scroll_shadow_top"), root.Q<Shadow>("meta_scroll_shadow_bottom"));
         }
 
         #region Tags
@@ -379,9 +596,12 @@ namespace EAUploader.UI.Setup
             if (meta == null || meta.status == status) return;
 
             meta.status = status;
-            EditorUtility.SetDirty(meta);
-            AssetDatabase.SaveAssets();
-            PrefabManager.InvalidateCache();
+            var info = PrefabManager.GetPrefabInfo(EAUploaderCore.selectedPrefabPath);
+            if (info != null)
+            {
+                info.Status = status;
+            }
+            PrefabManager.ScheduleSaveAssets(meta);
 
             // もう一方のトグルと排他になるよう表示を合わせる
             root.Q<SlideToggle>("meta_pinned")
@@ -432,7 +652,6 @@ namespace EAUploader.UI.Setup
             if (image == null) return;
 
             image.image = PrefabPreview.GetPrefabPreview(EAUploaderCore.selectedPrefabPath);
-            image.scaleMode = ScaleMode.ScaleToFit;
         }
 
         private static void RegenerateThumbnail()
@@ -620,6 +839,9 @@ namespace EAUploader.UI.Setup
                 }
             };
 
+            // 色付きのバナーとして表示する(styles.uss の .status-row)
+            row.AddToClassList("status-row");
+            row.AddToClassList(string.IsNullOrEmpty(ussClass) ? "status-row--info" : "status-row--" + ussClass);
             if (!string.IsNullOrEmpty(ussClass))
             {
                 row.AddToClassList(ussClass);
@@ -633,113 +855,169 @@ namespace EAUploader.UI.Setup
         #endregion
     }
 
+    /// <summary>
+    /// 編集ツール1つ分のカード。名前(押すとツールを開く)と開閉ボタンが並び、開くとその下に説明などが出る。
+    /// ボタンの形のカードの下から、詳細のシートが高さをアニメーションさせて出てくる。一覧を作り直さないので、他のカードは動かない。
+    /// </summary>
     internal class EditorItem : VisualElement
     {
+        private const float AnimationSeconds = 0.4f;
+        private const double OpenCloseSeconds = 0.22;
+        // 閉じているときも残す、ボタンの下に潜る高さ(styles.uss の .edit-tool__details-wrap)
+        private const float TuckedHeight = 10f;
+
+        private readonly VisualElement card;
+        private readonly VisualElement detailsWrap;
+        private readonly VisualElement details;
+        private readonly string editorName;
+        private bool isOpen;
+        private bool measured;
+        private float currentHeight = TuckedHeight;
+        private float currentOpacity;
+        private IVisualElementScheduledItem animation;
+
         public EditorItem(EditorRegistration editor)
         {
-            var buttonGroup = new VisualElement()
-            {
-                style =
-                {
-                    flexDirection = FlexDirection.Row,
-                }
-            };
+            editorName = editor.EditorName;
+            isOpen = Main.editorFoldouts[editor.EditorName];
 
-            var item_button = new Button(() => EditorApplication.ExecuteMenuItem(editor.MenuName))
-            {
-                text = T7e.Get(editor.EditorName),
-                style =
-                {
-                    flexGrow = 1,
-                    borderBottomRightRadius = 0,
-                    borderTopRightRadius = 0,
-                    borderRightWidth = 1,
-                },
-            };
+            card = new VisualElement();
+            card.AddToClassList("edit-tool__card");
 
-            buttonGroup.Add(item_button);
+            // 下の詳細シートを先に置き、上から重ねる順(column-reverse)で並べる。
+            // ボタン側のカードが手前に描かれるので、その影がシートの上端に落ちる
+            style.flexDirection = FlexDirection.ColumnReverse;
+            EnableInClassList("edit-tool--open", isOpen);
 
-            var foldoutButton = new Button(() =>
-            {
-                Main.editorFoldouts[editor.EditorName] = !Main.editorFoldouts[editor.EditorName];
-                Main.BuildEditor();
-            })
-            {
-                style =
-                {
-                    width = 50,
-                    justifyContent = Justify.Center,
-                    paddingLeft = 2,
-                    paddingRight = 2,
-                    borderBottomLeftRadius = 0,
-                    borderTopLeftRadius = 0,
-                }
-            };
+            var group = new VisualElement();
+            group.AddToClassList("edit-tool__group");
 
-            buttonGroup.Add(foldoutButton);
+            var item_button = new Button(() => EditorApplication.ExecuteMenuItem(editor.MenuName));
+            item_button.AddToClassList("edit-tool__main");
+            var nameLabel = new Label(T7e.Get(editor.EditorName)) { pickingMode = PickingMode.Ignore };
+            nameLabel.AddToClassList("edit-tool__name");
+            item_button.Add(nameLabel);
+            group.Add(item_button);
 
-            Add(buttonGroup);
+            var foldoutButton = new Button(Toggle);
+            foldoutButton.AddToClassList("edit-tool__toggle");
+            foldoutButton.Add(new MaterialIcon { icon = "expand_more", pickingMode = PickingMode.Ignore });
+            group.Add(foldoutButton);
+            card.Add(group);
 
-            var expandMore = new MaterialIcon { icon = "expand_more" };
-            expandMore.style.fontSize = 20;
-            var expandLess = new MaterialIcon { icon = "expand_less" };
-            expandLess.style.fontSize = 20;
+            // 2つのボタンは枠線を1本で共有していて、開閉ボタンの枠が手前に描かれる。
+            // 名前側にカーソルがあるときは、共有している線も青くして、枠が途切れて見えないようにする
+            item_button.RegisterCallback<PointerEnterEvent>(_ => foldoutButton.AddToClassList("edit-tool__toggle--seam"));
+            item_button.RegisterCallback<PointerLeaveEvent>(_ => foldoutButton.RemoveFromClassList("edit-tool__toggle--seam"));
 
             if (editor.Requirement != null && !editor.Requirement(EAUploaderCore.selectedPrefabPath))
             {
                 item_button.SetEnabled(false);
-                var warning = new VisualElement()
-                {
-                    style =
-                    {
-                        flexDirection = FlexDirection.Row,
-                        alignItems = Align.Center,
-                        marginBottom = 4,
-                    }
-                };
+                var warning = new VisualElement();
+                warning.AddToClassList("edit-tool__warning");
                 warning.AddToClassList("warning");
                 warning.Add(new MaterialIcon { icon = "warning", style = { paddingRight = 4 } });
                 warning.Add(new Label(T7e.Get(editor.RequirementDescription)));
-                Add(warning);
+                card.Add(warning);
             }
 
-            if (Main.editorFoldouts[editor.EditorName])
+            // 詳細は、高さを0から中身の高さまで動かして開く
+            detailsWrap = new VisualElement();
+            detailsWrap.AddToClassList("edit-tool__details-wrap");
+
+            details = new VisualElement();
+            details.AddToClassList("edit-tool__details");
+            details.Add(new Label(T7e.Get("Description: ") + T7e.Get(editor.Description)));
+            details.Add(new Label(T7e.Get("Version: ") + editor.Version));
+            details.Add(new Label(T7e.Get("Author: ") + editor.Author));
+
+            if (!string.IsNullOrEmpty(editor.Url))
             {
-                foldoutButton.Add(expandLess);
-                var editorContent = new VisualElement()
+                var openButton = new Button(() => Application.OpenURL(editor.Url))
                 {
-                    style =
-                    {
-                        paddingBottom = 8,
-                        paddingLeft = 8,
-                        paddingRight = 8,
-                        paddingTop = 8,
-                    }
+                    text = T7e.Get("Open the link")
                 };
-                editorContent.Add(new Label(T7e.Get("Description: ") + T7e.Get(editor.Description)));
-                editorContent.Add(new Label(T7e.Get("Version: ") + editor.Version));
-                editorContent.Add(new Label(T7e.Get("Author: ") + editor.Author));
-
-                if (!string.IsNullOrEmpty(editor.Url))
-                {
-                    var openButton = new Button(() =>
-                    {
-                        Application.OpenURL(editor.Url);
-                    })
-                    {
-                        text = T7e.Get("Open the link")
-                    };
-
-                    openButton.AddToClassList("link");
-                    editorContent.Add(openButton);
-                }
-
-                Add(editorContent);
+                openButton.AddToClassList("link");
+                details.Add(openButton);
             }
-            else
+
+            detailsWrap.Add(details);
+            Add(detailsWrap);
+
+            // 中身の高さが決まった(または文字の折り返しが変わった)ら、開いているときは高さを合わせる。
+            // 作った直後に初めて高さが決まるときだけアニメーションしない。そのあとの変化でアニメーションを切ると、
+            // 開く途中でレイアウトが更新されたときに、一瞬で開いてしまう
+            details.RegisterCallback<GeometryChangedEvent>(_ =>
             {
-                foldoutButton.Add(expandMore);
+                if (details.layout.height <= 0f) return;
+
+                var first = !measured;
+                measured = true;
+                if (isOpen) ApplyHeight(!first);
+            });
+
+            var shadow = new Shadow
+            {
+                shadowBlur = 10,
+                shadowOffsetY = 3,
+                shadowOpacity = 0.14f,
+            };
+            shadow.Add(card);
+            Add(shadow);
+        }
+
+        private void Toggle()
+        {
+            isOpen = !isOpen;
+            Main.editorFoldouts[editorName] = isOpen;
+            EnableInClassList("edit-tool--open", isOpen);
+            ApplyHeight(true);
+
+            // 高さの変化の間、エディターの更新を落とさない
+            EAUploader.RequestSmoothFrames(AnimationSeconds);
+        }
+
+        private void ApplyHeight(bool animate)
+        {
+            var targetHeight = isOpen ? details.layout.height : TuckedHeight;
+            var targetOpacity = isOpen ? 1f : 0f;
+            if (float.IsNaN(targetHeight)) return;
+
+            animation?.Pause();
+            animation = null;
+
+            if (!animate)
+            {
+                SetSheet(targetHeight, targetOpacity);
+                return;
             }
+
+            // 高さと透明度は、USS の transition ではなくここで動かす。transition は、エディターが止まっていた直後だと
+            // 開始が遅れて、最初の1フレームで大きく進んでしまう。最初の更新の時刻を開始時刻にして、時間で進める
+            var fromHeight = currentHeight;
+            var fromOpacity = currentOpacity;
+            var start = -1.0;
+            IVisualElementScheduledItem item = null;
+            item = detailsWrap.schedule.Execute(() =>
+            {
+                var now = EditorApplication.timeSinceStartup;
+                if (start < 0) start = now;
+
+                var t = Mathf.Clamp01((float)((now - start) / OpenCloseSeconds));
+                var eased = 1f - (1f - t) * (1f - t) * (1f - t);
+                SetSheet(Mathf.Lerp(fromHeight, targetHeight, eased), Mathf.Lerp(fromOpacity, targetOpacity, eased));
+
+                if (t >= 1f) item.Pause();
+            }).Every(1);
+            animation = item;
+        }
+
+        private void SetSheet(float height, float opacity)
+        {
+            currentHeight = height;
+            currentOpacity = opacity;
+            detailsWrap.style.height = height;
+            detailsWrap.style.opacity = opacity;
         }
     }
 }

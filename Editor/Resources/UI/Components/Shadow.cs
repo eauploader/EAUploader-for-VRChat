@@ -23,7 +23,7 @@ namespace EAUploader.UI.Components
         private float _spread;
         private float _offsetX;
         private float _offsetY;
-        private float _opacity = 0.2f;
+        private float _opacity = 0.1f;
 
         /// <summary>CSS blur radius in px. The Gaussian's standard deviation is half of this.</summary>
         public float shadowBlur { get => _blur; set { _blur = value; MarkDirtyRepaint(); } }
@@ -56,7 +56,7 @@ namespace EAUploader.UI.Components
                 new UxmlFloatAttributeDescription { name = "shadow-offset-y", defaultValue = 0 };
 
             UxmlFloatAttributeDescription opacityAttr =
-                new UxmlFloatAttributeDescription { name = "shadow-opacity", defaultValue = 0.2f };
+                new UxmlFloatAttributeDescription { name = "shadow-opacity", defaultValue = 0.1f };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {

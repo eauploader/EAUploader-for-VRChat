@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
 using VRC.Core;
+using VRC.SDKBase.Validation.Performance;
 using static EAUploader.UI.Windows.DialogPro;
 #if HAS_AAO
 using Anatawa12.AvatarOptimizer;
@@ -135,6 +136,12 @@ namespace EAUploader.UI.Upload
                 visualTree.CloneTree(root);
                 isCloned = true;
 
+                // サムネイルは VRChat のアバターサムネイルと同じ 4:3 で、枠いっぱいに表示する
+                AspectRatioFitter.Keep(root.Q<Image>("thumbnail-image"), 0.75f);
+                SmoothScroll.Enable(root.Q<ScrollView>("upload_scroll"));
+                ScrollShadows.Attach(root.Q<ScrollView>("upload_scroll"),
+                    root.Q<Shadow>("upload_scroll_shadow_top"), root.Q<Shadow>("upload_scroll_shadow_bottom"));
+
                 BindEvents();
             }
         }
@@ -224,8 +231,8 @@ namespace EAUploader.UI.Upload
             var tags = root.Q<ContentWarningsField>("content-warnings");
             var thumbnail = root.Q<Image>("thumbnail-image");
             var updateButton = root.Q<VisualElement>("info-buttons");
-            var discardButton = root.Q<VisualElement>("discard-info");
-            var saveButton = root.Q<VisualElement>("save-info");
+            var discardButton = root.Q<ShadowButton>("discard-info");
+            var saveButton = root.Q<ShadowButton>("save-info");
             var vrcInfo = root.Q<VisualElement>("vrc-info");
 
             var avatar = await AvatarUploader.GetVRCAvatarAsync(EAUploaderCore.selectedPrefabPath);
@@ -247,19 +254,11 @@ namespace EAUploader.UI.Upload
             vrcInfo.EnableInClassList("hidden", false);
             var vrcInfoContainer = vrcInfo.Q<VisualElement>("vrc-info-container");
 
-            var vrcInfoList = new List<VisualElement>
-            {
-                new Label(T7e.Get("Author: ") + avatar.Value.AuthorName),
-                new Label(T7e.Get("Created At: ") + avatar.Value.CreatedAt),
-                new Label(T7e.Get("Updated At: ") + avatar.Value.UpdatedAt),
-                new Label(T7e.Get("Upload Count: ") + avatar.Value.Version)
-            };
-
             vrcInfoContainer.Clear();
-            foreach (var info in vrcInfoList)
-            {
-                vrcInfoContainer.Add(info);
-            }
+            vrcInfoContainer.Add(CreateInfoRow("Author: ", avatar.Value.AuthorName));
+            vrcInfoContainer.Add(CreateInfoRow("Created At: ", avatar.Value.CreatedAt.ToString()));
+            vrcInfoContainer.Add(CreateInfoRow("Updated At: ", avatar.Value.UpdatedAt.ToString()));
+            vrcInfoContainer.Add(CreateInfoRow("Upload Count: ", avatar.Value.Version.ToString(), true));
 
             // Get blueprint id
             var blueprintContainer = root.Q<VisualElement>("blueprint-container");
@@ -272,20 +271,21 @@ namespace EAUploader.UI.Upload
             {
                 blueprintContainer.EnableInClassList("hidden", false);
 
-                var copyBlueprintId = blueprintContainer.Q<Button>("copy-blueprint-id-button");
-                copyBlueprintId.UnregisterCallback<ClickEvent>(CopyBlueprintId);
-                copyBlueprintId.RegisterCallback<ClickEvent>(CopyBlueprintId);
-                void CopyBlueprintId(ClickEvent evt)
+                blueprintContainer.Q<Label>("blueprint-id-label").text = blueprintId;
+
+                // 画面を開くたびにここを通るので、登録ではなく代入にして、押したときの処理が重ならないようにする
+                var copyBlueprintId = blueprintContainer.Q<ShadowButton>("copy-blueprint-id-button");
+                copyBlueprintId.clicked = CopyBlueprintId;
+                void CopyBlueprintId()
                 {
                     EditorGUIUtility.systemCopyBuffer = blueprintId;
                     DialogPro.Show(DialogType.Info, T7e.Get("Blueprint ID Copied"), T7e.Get("Blueprint ID has been copied to the clipboard."), T7e.Get("OK"), null, true);
                 }
 
 
-                var UnlinkVRCButton = blueprintContainer.Q<Button>("unlink-vrc-button");
-                UnlinkVRCButton.UnregisterCallback<ClickEvent>(UnlinkVRC);
-                UnlinkVRCButton.RegisterCallback<ClickEvent>(UnlinkVRC);
-                void UnlinkVRC(ClickEvent evt)
+                var UnlinkVRCButton = blueprintContainer.Q<ShadowButton>("unlink-vrc-button");
+                UnlinkVRCButton.clicked = UnlinkVRC;
+                void UnlinkVRC()
                 {
                     if (EditorUtility.DisplayDialog(T7e.Get("Unlink VRChat from this avatar"), T7e.Get("Are you sure you want to unlink VRChat from this avatar?"), T7e.Get("Yes"), T7e.Get("No")))
                     {
@@ -333,10 +333,9 @@ namespace EAUploader.UI.Upload
                 if (isUploaded) updateButton.EnableInClassList("hidden", false);
             };
 
-            discardButton.UnregisterCallback<ClickEvent>(DiscardChanges);
-            discardButton.Q<Button>().RegisterCallback<ClickEvent>(DiscardChanges);
+            discardButton.clicked = DiscardChanges;
 
-            void DiscardChanges(ClickEvent evt)
+            void DiscardChanges()
             {
                 if (!isUploaded) return;
 
@@ -349,16 +348,39 @@ namespace EAUploader.UI.Upload
                 updateButton.EnableInClassList("hidden", true);
             }
 
-            saveButton.UnregisterCallback<ClickEvent>(SaveChanges);
-            saveButton.Q<Button>().RegisterCallback<ClickEvent>(SaveChanges);
+            saveButton.clicked = SaveChanges;
 
-            async void SaveChanges(ClickEvent evt)
+            async void SaveChanges()
             {
                 if (!isUploaded) return;
                 await AvatarUploader.UpdateVRCAvatarAsync(EAUploaderCore.selectedPrefabPath, contentName.GetValue(), contentDescription.GetValue(), releaseStatus.value.ToLower(), tags.Tags, thumbnailUrl);
                 Main.RefreshSelectedAvatar();
                 updateButton.EnableInClassList("hidden", true);
             };
+        }
+
+        /// <summary>
+        /// 「項目名: 値」を、項目名を左に薄く、値を右に濃く並べた1行にする。
+        /// </summary>
+        private static VisualElement CreateInfoRow(string labelKey, string value, bool last = false)
+        {
+            var row = new VisualElement();
+            row.AddToClassList("upload-info-row");
+            if (last)
+            {
+                row.AddToClassList("upload-info-row--last");
+            }
+
+            var key = new Label(T7e.Get(labelKey).TrimEnd(' ', ':', '：'));
+            key.AddToClassList("upload-info-row__key");
+            row.Add(key);
+
+            var valueLabel = new Label(value);
+            valueLabel.AddToClassList("upload-info-row__value");
+            valueLabel.AddToClassList("no-translate");
+            row.Add(valueLabel);
+
+            return row;
         }
 
         private static Task<Texture2D> DownloadTexture(string url)
@@ -510,7 +532,34 @@ namespace EAUploader.UI.Upload
                 });
             }
 
+            BindPlatformCard("platform_quest", "platform_quest_note", questToggle);
+            BindPlatformCard("ios-option", "platform_ios_note", iosToggle);
+
             UpdatePlatformNote();
+        }
+
+        /// <summary>
+        /// プラットフォームのカードを、隠してあるトグルとつなぐ。カードを押すとトグルが切り替わり、
+        /// トグルの値(ビルドサポートが無くて戻された場合も含む)がカードの見た目に反映される。
+        /// </summary>
+        private static void BindPlatformCard(string cardName, string noteName, SlideToggle toggle)
+        {
+            var card = root.Q<Button>(cardName);
+            var note = root.Q<Label>(noteName);
+            if (card == null || toggle == null) return;
+
+            void Refresh()
+            {
+                card.EnableInClassList("platform-card--on", toggle.value);
+                if (note != null)
+                {
+                    note.text = T7e.Get(toggle.value ? "Build for this platform too" : "Not uploaded");
+                }
+            }
+
+            card.clicked += () => toggle.value = !toggle.value;
+            toggle.RegisterValueChangedCallback(_ => Refresh());
+            Refresh();
         }
 
         private static void UpdatePlatformNote()
@@ -592,8 +641,13 @@ namespace EAUploader.UI.Upload
             var performanceInfoList = root.Q<VisualElement>("performance_info_list");
             performanceInfoList.Clear();
 
+            SetupPerformanceSummary(performanceInfos);
+
             foreach (var info in performanceInfos)
             {
+                // 総合の評価は、折りたたみの見出しに出している
+                if (info.category == AvatarPerformanceCategory.Overall) continue;
+
                 var item = new VisualElement()
                 {
                     name = "performance_info_item"
@@ -618,6 +672,49 @@ namespace EAUploader.UI.Upload
 
                 performanceInfoList.Add(item);
             }
+        }
+
+        // パフォーマンスの内訳を開いているか。画面を作り直しても保つ
+        private static bool performanceExpanded;
+
+        /// <summary>
+        /// パフォーマンスの見出し(総合の評価)と、内訳の開閉を組み立てる。
+        /// </summary>
+        private static void SetupPerformanceSummary(IEnumerable<PerformanceInfoComputer.PerformanceInfo> performanceInfos)
+        {
+            var summary = root.Q<Button>("performance_summary");
+            if (summary == null) return;
+
+            foreach (var info in performanceInfos)
+            {
+                if (info.category != AvatarPerformanceCategory.Overall) continue;
+
+                root.Q<Image>("performance_summary_icon").image = PerformanceIcons.GetIconForPerformance(info.rating);
+                root.Q<Label>("performance_summary_rating").text = T7e.Get(info.rating.ToString());
+                break;
+            }
+
+            // Validate は何度も呼ばれるので、クリックの登録は一度だけにする
+            if (summary.userData == null)
+            {
+                summary.userData = true;
+                summary.clicked += () =>
+                {
+                    performanceExpanded = !performanceExpanded;
+                    ApplyPerformanceExpanded();
+                };
+            }
+
+            ApplyPerformanceExpanded();
+        }
+
+        private static void ApplyPerformanceExpanded()
+        {
+            root.Q("performance_info_list")?.EnableInClassList("hidden", !performanceExpanded);
+            var chevron = root.Q<MaterialIcon>("performance_summary_chevron");
+            if (chevron != null) chevron.icon = performanceExpanded ? "expand_less" : "expand_more";
+            var hint = root.Q<Label>("performance_summary_hint");
+            if (hint != null) hint.text = T7e.Get(performanceExpanded ? "Hide details" : "Show details");
         }
 
         private static void UpdateStatus()
@@ -657,6 +754,10 @@ namespace EAUploader.UI.Upload
                 uploadMain.style.display = DisplayStyle.None;
                 permissionStatusContainer.style.display = DisplayStyle.None;
             }
+
+            // ログイン済みでアップロードできるときは、カードを緑の1行に縮める
+            root.Q("account_card")?.EnableInClassList("upload-card--ok",
+                VRC.Core.APIUser.IsLoggedIn && APIUser.CurrentUser != null && APIUser.CurrentUser.canPublishAvatars);
 
             if (APIUser.CurrentUser != null && APIUser.CurrentUser.canPublishAvatars)
             {

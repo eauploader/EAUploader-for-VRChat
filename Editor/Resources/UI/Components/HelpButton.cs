@@ -36,7 +36,7 @@ namespace EAUploader.UI.Components
             {
                 shadowBlur = 8,
                 shadowOffsetY = 2,
-                shadowOpacity = 0.2f,
+                shadowOpacity = 0.08f,
             };
             var button = new Button();
             button.AddToClassList("help-button");

@@ -34,7 +34,7 @@ namespace EAUploader
             if (allTranslations != null && allTranslations.ContainsKey(currentLanguage) && allTranslations[currentLanguage].ContainsKey(key))
             {
                 string formatString = allTranslations[currentLanguage][key];
-                return string.Format(formatString, args);
+                return args != null && args.Length > 0 ? string.Format(formatString, args) : formatString;
             }
             else
             {
@@ -45,6 +45,7 @@ namespace EAUploader
         internal static void ClearCache()
         {
             allTranslations = null;
+            LanguageUtility.InvalidateLanguageCache();
         }
 
         private static void LoadTranslations()

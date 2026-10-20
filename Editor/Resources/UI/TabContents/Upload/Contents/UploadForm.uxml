@@ -6,148 +6,194 @@
     engine="UnityEngine.UIElements"
     editor="UnityEditor.UIElements"
     noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd"
-    editor-extension-mode="False">
-    <ui:VisualElement class="flex-1 border-b border-b-zinc-300 justify-between">
-        <ui:VisualElement class="flex-1">
-            <ui:VisualElement class="flex-row p-4 border-b border-zinc-300 shrink-0">
-                <ui:VisualElement class="w-one-half">
-                    <ui:Label text="Login to VRChat" class="text-xl font-bold pb-2"
-                        name="loginSDKLabel" />
+    editor-extension-mode="False"
+>
+    <!-- Upload form, laid out for the upload sheet of the edit screen: what VRChat shows on the left,
+         where it goes and how heavy it is on the right. The confirmation and the buttons stay at the bottom. -->
+    <ui:VisualElement class="flex-1 flex-col">
+        <ui:VisualElement class="list-scroll-area">
+        <ui:ScrollView name="upload_scroll" mode="Vertical" class="flex-1 upload-body">
+
+            <!-- Account : shrinks to one green line once logged in with upload permission (see UploadForm.UpdateStatus) -->
+            <ui:VisualElement name="account_card" class="upload-card">
+                <eau:MaterialIcon name="account_ok_icon" icon="check_circle" class="upload-card__ok-icon" />
+                <ui:VisualElement class="upload-card__body">
+                    <ui:Label text="Login to VRChat" class="font-bold pb-1" name="loginSDKLabel" />
                     <ui:VisualElement name="login_status" />
-                </ui:VisualElement>
-                <ui:VisualElement name="permission_status_container" class="w-one-half">
-                    <ui:Label text="Check you are allowed to upload avatar"
-                        class="text-xl font-bold pb-2" name="checkPermissionLabel" />
-                    <ui:VisualElement name="permission_status" />
+                    <ui:VisualElement name="permission_status_container" class="pt-2">
+                        <ui:Label text="Check you are allowed to upload avatar" class="font-bold pb-1"
+                            name="checkPermissionLabel" />
+                        <ui:VisualElement name="permission_status" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="upload_main" class="flex-row p-4 flex-1">
-                <ui:ScrollView class="w-one-half">
-                    <ui:VisualElement class="pb-4">
-                        <ui:VisualElement class="flex-row pb-2">
-                            <ui:Label text="Avatar Info" class="text-xl font-bold"
-                                name="modelInfoLabel" />
-                            <eau:HelpButton msg-id="109" class="pl-4 self-center" />
+
+            <ui:VisualElement name="upload_main" class="upload-columns">
+
+                <!-- Left column : how the avatar looks on VRChat -->
+                <ui:VisualElement class="upload-column upload-column--left">
+                    <ui:VisualElement class="upload-heading-row">
+                        <ui:Label text="How it looks on VRChat" class="upload-heading" name="modelInfoLabel" />
+                        <eau:HelpButton msg-id="109" class="ml-2" />
+                    </ui:VisualElement>
+                    <ui:VisualElement value="true" name="avatarInfo">
+                        <ui:VisualElement name="avatar_thumbnail" class="upload-thumbnail">
+                            <ui:VisualElement name="thumbnail" class="upload-thumbnail__frame">
+                                <ui:Image name="thumbnail-image" class="upload-thumbnail__image" />
+                                <!-- Laid over the bottom right of the picture -->
+                                <ui:VisualElement class="upload-thumbnail__actions">
+                                    <eau:ShadowButton name="remove_thumbnail" tooltip="Using preview image (Default)"
+                                        class="button-outline upload-thumbnail__icon-button mr-2">
+                                        <eau:MaterialIcon icon="restart_alt" />
+                                    </eau:ShadowButton>
+                                    <eau:ShadowButton name="add_thumbnail" class="button-with-icons button-outline">
+                                        <eau:MaterialIcon icon="image" />
+                                        <ui:Label text="Change Thumbnail" />
+                                    </eau:ShadowButton>
+                                </ui:VisualElement>
+                            </ui:VisualElement>
                         </ui:VisualElement>
-                        <ui:VisualElement value="true" name="avatarInfo">
-                            <ui:VisualElement>
-                                <eau:TextFieldPro class="pb-2" label="Name" name="content-name"
-                                    placeholder="Please enter a name for your avatar"
-                                    required="true" />
-                                <eau:TextFieldPro class="pb-2" label="Description"
-                                    name="content-description"
-                                    placeholder="Describe your avatar so it is easier to remember!"
-                                    required="false" />
+                        <eau:TextFieldPro class="upload-field" label="Name" name="content-name"
+                            placeholder="Please enter a name for your avatar"
+                            required="true" />
+                        <eau:TextFieldPro class="upload-field" label="Description"
+                            name="content-description"
+                            placeholder="Describe your avatar so it is easier to remember!"
+                            required="false" />
+                        <eau:DropdownFieldPro name="release-status" label="Visibility" index="0"
+                            choices="Private,Public" segmented="true" class="upload-field" />
+                        <!-- Shown once the name, description, visibility, tags or thumbnail differ from what is on VRChat -->
+                        <ui:VisualElement class="upload-action-row hidden" name="info-buttons">
+                            <eau:ShadowButton name="discard-info" class="upload-action-row__button button-with-icons button-outline mr-2">
+                                <eau:MaterialIcon icon="undo" />
+                                <ui:Label text="Discard" />
+                            </eau:ShadowButton>
+                            <eau:ShadowButton name="save-info" class="upload-action-row__button button-with-icons">
+                                <eau:MaterialIcon icon="save" />
+                                <ui:Label text="Save" />
+                            </eau:ShadowButton>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="vrc-info" class="hidden">
+                            <ui:Label text="VRChat Information" class="upload-heading upload-heading--block" />
+                            <ui:VisualElement name="vrc-info-container" class="upload-info-card" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="blueprint-container" class="hidden">
+                            <ui:VisualElement class="upload-heading-row pt-2">
+                                <ui:Label text="Blueprint" class="upload-heading" />
+                                <eau:HelpButton msg-id="117" class="ml-2" />
                             </ui:VisualElement>
-                            <eau:ContentWarningsField label="Content Warnings"
-                                name="content-warnings" class="pb-2" />
-                            <eau:DropdownFieldPro name="release-status" label="Visibility" index="0"
-                                choices="Private,Public" class="pb-2" />
-                            <ui:VisualElement class="flex-row hidden" name="info-buttons">
-                                <ui:Button text="Save" name="save-info"
-                                    class="flex-1 rounded-r-none border-1 border-r-color" />
-                                <ui:Button text="Discard" name="discard-info"
-                                    class="flex-1 rounded-l-none" />
+                            <ui:VisualElement class="upload-info-card">
+                                <ui:Label name="blueprint-id-label" text="" class="upload-info-id no-translate" />
                             </ui:VisualElement>
-                            <ui:VisualElement class="flex-row pb-2">
-                                <ui:Label text="Set thumbnail" class="text-xl font-bold"
-                                    name="addThumbnailLabel" />
-                                <eau:HelpButton msg-id="115" class="pl-4 self-center" />
-                            </ui:VisualElement>
-                            <ui:VisualElement name="avatar_thumbnail" class="pb-2">
-                                <ui:VisualElement name="thumbnail"
-                                    class="flex-row h-64 pb-4 self-center">
-                                    <ui:Image name="thumbnail-image" />
-                                </ui:VisualElement>
-                                <ui:VisualElement class="flex-row justify-center">
-                                    <eau:ShadowButton text="Change Thumbnail" name="add_thumbnail"
-                                        class="mr-4" />
-                                    <eau:ShadowButton text="Using preview image (Default)"
-                                        name="remove_thumbnail" />
-                                </ui:VisualElement>
-                            </ui:VisualElement>
-                            <ui:VisualElement name="vrc-info" class="hidden">
-                                <ui:Label text="VRChat Information"
-                                    class="text-lg font-bold pt-2 pb-2" />
-                                <ui:VisualElement name="vrc-info-container" />
-                            </ui:VisualElement>
-                            <ui:VisualElement name="blueprint-container" class="hidden">
-                                <ui:VisualElement class="flex-row">
-                                    <ui:Label text="Blueprint" class="text-lg font-bold pt-2 pb-2" />
-                                    <eau:HelpButton msg-id="117" class="pl-4 self-center" />
-                                </ui:VisualElement>
-                                <ui:VisualElement class="flex-row">
-                                    <ui:Button text="Copy" name="copy-blueprint-id-button"
-                                        class="flex-1 rounded-r-none border-1 border-r-color" />
-                                    <ui:Button text="Unlink from VRChat" name="unlink-vrc-button"
-                                        class="flex-1 rounded-l-none" />
-                                </ui:VisualElement>
+                            <ui:VisualElement class="upload-action-row">
+                                <eau:ShadowButton name="copy-blueprint-id-button" class="upload-action-row__button button-with-icons button-outline mr-2">
+                                    <eau:MaterialIcon icon="content_copy" />
+                                    <ui:Label text="Copy" />
+                                </eau:ShadowButton>
+                                <eau:ShadowButton name="unlink-vrc-button" class="upload-action-row__button button-with-icons button-outline button-outline--danger">
+                                    <eau:MaterialIcon icon="link_off" />
+                                    <ui:Label text="Unlink from VRChat" />
+                                </eau:ShadowButton>
                             </ui:VisualElement>
                         </ui:VisualElement>
                     </ui:VisualElement>
-                </ui:ScrollView>
-                <ui:VisualElement class="w-one-half ml-2">
-                    <ui:Label text="Avatar Optimization" class="text-xl font-bold pt-2" />
-                    <ui:VisualElement class="flex flex-row justify-between items-center">
-                        <ui:Label text="Automatic avatar optimizing (AvatarOptimizer)"
-                            class="text-left" />
-                        <ui:VisualElement class="flex flex-row items-center">
+                </ui:VisualElement>
+
+                <!-- Right column : platform, optimization and performance -->
+                <ui:VisualElement class="upload-column">
+                <!-- Platforms : one card per platform. Windows is always on; the others toggle (the hidden
+                     SlideToggles keep the values the upload code reads). -->
+                <ui:VisualElement name="platform-targets" class="upload-section">
+                    <ui:VisualElement class="upload-heading-row">
+                        <ui:Label text="Platform" class="upload-heading" name="platformLabel" />
+                        <eau:HelpButton msg-id="114" class="ml-2" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="platform-card platform-card--on platform-card--locked">
+                        <ui:VisualElement class="platform-card__text">
+                            <ui:Label text="Windows" class="platform-card__name no-translate" />
+                            <ui:Label text="Always uploaded" class="platform-card__note" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="platform-card__check">
+                            <eau:MaterialIcon icon="check" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Button name="platform_quest" class="platform-card">
+                        <ui:VisualElement class="platform-card__text">
+                            <ui:Label text="Quest (Android)" class="platform-card__name" />
+                            <ui:Label name="platform_quest_note" text="Not uploaded" class="platform-card__note" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="platform-card__check">
+                            <eau:MaterialIcon icon="check" />
+                        </ui:VisualElement>
+                        <eau:SlideToggle name="upload_for_quest" class="hidden" />
+                    </ui:Button>
+                    <ui:Button name="ios-option" class="platform-card hidden">
+                        <ui:VisualElement class="platform-card__text">
+                            <ui:Label text="iOS" class="platform-card__name no-translate" />
+                            <ui:Label name="platform_ios_note" text="Not uploaded" class="platform-card__note" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="platform-card__check">
+                            <eau:MaterialIcon icon="check" />
+                        </ui:VisualElement>
+                        <eau:SlideToggle name="upload_for_ios" class="hidden" />
+                    </ui:Button>
+                    <ui:Label name="platform-note" text="" class="text-sm warning" />
+                </ui:VisualElement>
+
+                <!-- Content warnings -->
+                <ui:VisualElement class="upload-section">
+                    <eau:ContentWarningsField label="Content Warnings" name="content-warnings" class="upload-warnings" />
+                </ui:VisualElement>
+
+                <!-- Performance : the overall rating, with the breakdown folded away; the optimizer switch below it -->
+                <ui:VisualElement>
+                    <ui:VisualElement class="upload-heading-row">
+                        <ui:Label text="Avatar Performance" class="upload-heading" name="modelPerfomLabel" />
+                        <eau:HelpButton msg-id="113" class="ml-2" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="perf-card">
+                        <ui:Button name="performance_summary" class="perf-card__summary">
+                            <ui:Image name="performance_summary_icon" class="perf-card__icon" />
+                            <ui:VisualElement class="perf-card__text">
+                                <ui:Label name="performance_summary_rating" text="" class="perf-card__rating no-translate" />
+                                <ui:Label name="performance_summary_hint" text="Show details" class="perf-card__hint" />
+                            </ui:VisualElement>
+                            <eau:MaterialIcon name="performance_summary_chevron" icon="expand_more" class="perf-card__chevron" />
+                        </ui:Button>
+                        <ui:VisualElement name="performance_info_list" class="perf-card__list hidden" />
+                        <ui:VisualElement class="perf-card__footer">
+                            <ui:Label text="Automatic avatar optimizing (AvatarOptimizer)" class="flex-1" />
                             <eau:SlideToggle name="avatar_optimize" class="mr-2 w-10" />
                             <eau:HelpButton msg-id="202" />
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement class="flex-row pb-2">
-                        <ui:Label text="Avatar Performance" class="text-xl font-bold"
-                            name="modelPerfomLabel" />
-                        <eau:HelpButton msg-id="113" class="pl-4 self-center" />
-                    </ui:VisualElement>
-                    <ui:ScrollView class="flex-col flex-1">
-                        <ui:VisualElement name="performance_info_list" class="flex-1" />
-                    </ui:ScrollView>
+                </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
+        </ui:ScrollView>
+        <eau:Shadow name="upload_scroll_shadow_top" shadow-blur="12" shadow-offset-y="2" shadow-opacity="0.1"
+            picking-mode="Ignore" class="list-scroll-shadow hidden" />
+        <eau:Shadow name="upload_scroll_shadow_bottom" shadow-blur="12" shadow-offset-y="-2" shadow-opacity="0.1"
+            picking-mode="Ignore" class="list-scroll-shadow--bottom hidden" />
         </ui:VisualElement>
-        <ui:VisualElement name="upload_action" class="p-4 border-t border-t-zinc-300">
-            <ui:VisualElement class="flex-colum">
-                <ui:VisualElement class="flex-row mb-2">
-                    <ui:Label text="Platform" class="text-xl font-bold" name="platformLabel" />
-                    <eau:HelpButton msg-id="114" class="ml-4 self-center" />
-                </ui:VisualElement>
-                <ui:VisualElement name="platform-targets" class="pb-2">
-                    <ui:Label
-                        text="All avatars are uploaded for Windows. Enable the platforms below to additionally build and upload for them."
-                        class="text-sm pb-2" />
-                    <ui:VisualElement class="flex-row items-center justify-between pb-1">
-                        <ui:Label text="Also upload for Quest (Android)" />
-                        <eau:SlideToggle name="upload_for_quest" class="w-10" />
+
+        <!-- Bottom : confirmation, build as test, upload -->
+        <ui:VisualElement name="upload_action" class="upload-footer">
+            <ui:VisualElement class="flex-row items-center">
+                <eau:CheckBox name="confirm_term" class="upload-confirm"
+                    label="The information provided above is accurate and I have the rights to upload this content to VRChat" />
+                <eau:ShadowButton name="buildandtest" class="button-with-icons button-outline mr-2">
+                    <eau:MaterialIcon icon="play_arrow" />
+                    <ui:Label text="Test" />
+                </eau:ShadowButton>
+                <eau:ShadowButton name="upload" class="upload-primary upload-primary--wide">
+                    <eau:MaterialIcon icon="upload" />
+                    <ui:VisualElement class="upload-primary__text">
+                        <ui:Label text="Upload" class="upload-primary__title" />
                     </ui:VisualElement>
-                    <ui:VisualElement name="ios-option" class="flex-row items-center justify-between hidden">
-                        <ui:Label text="Also upload for iOS" />
-                        <eau:SlideToggle name="upload_for_ios" class="w-10" />
-                    </ui:VisualElement>
-                    <ui:Label name="platform-note" text="" class="text-sm warning" />
-                </ui:VisualElement>
-                <ui:VisualElement class="flex-row">
-                    <ui:VisualElement class="w-one-half justify-between pr-2">
-                        <ui:VisualElement class="flex-row mb-2">
-                            <ui:Label text="Build as Test" class="text-xl font-bold"
-                                name="buildandtestLabel" />
-                            <eau:HelpButton msg-id="111" class="ml-4 self-center" />
-                        </ui:VisualElement>
-                        <eau:ShadowButton text="Build as Test" name="buildandtest" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="w-one-half pl-2">
-                        <ui:VisualElement class="flex-row mb-2">
-                            <ui:Label text="Upload" class="text-xl font-bold" name="uploadLabel" />
-                            <eau:HelpButton msg-id="112" class="ml-4 self-center" />
-                        </ui:VisualElement>
-                        <eau:CheckBox name="confirm_term"
-                            label="The information provided above is accurate and I have the rights to upload this content to VRChat" />
-                        <eau:ShadowButton text="Upload" name="upload" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
+                </eau:ShadowButton>
             </ui:VisualElement>
-            <ui:VisualElement name="upload_status" class="mt-2" />
+            <ui:VisualElement name="upload_status" />
             <ui:VisualElement name="upload_cancel_container" class="mt-2 hidden">
                 <eau:ShadowButton text="Cancel upload" name="cancel_upload" />
             </ui:VisualElement>

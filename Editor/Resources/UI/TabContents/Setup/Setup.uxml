@@ -7,120 +7,175 @@
     editor="UnityEditor.UIElements"
     noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd"
     editor-extension-mode="False">
-    <ui:VisualElement class="flex-1 flex-col">
+    <ui:VisualElement name="studio" class="flex-1 studio">
 
-        <!-- Header : centered title -->
-        <ui:VisualElement class="screen-header shrink-0 p-2">
-            <ui:Label text="Edit" class="text-xl font-bold" />
-        </ui:VisualElement>
+        <!-- The 3D view fills the whole screen; everything else floats above it -->
+        <ui:VisualElement name="avatar_preview" class="studio__viewport" />
 
-        <ui:VisualElement class="flex-row flex-1">
+        <!-- Header -->
+        <eau:Shadow name="studio_header_shell" shadow-blur="24" shadow-offset-y="6" shadow-opacity="0.08" class="studio__header-shell">
+            <ui:VisualElement class="studio__header">
+                <eau:ShadowButton name="back_to_list" class="button-with-icons button-outline mr-3">
+                    <eau:MaterialIcon icon="arrow_back" />
+                    <ui:Label text="Back to list" />
+                </eau:ShadowButton>
+                <!-- Which item is open, and its genre. studio_title stays for the mode but is not shown. -->
+                <ui:Label name="studio_title" text="Edit" class="hidden" />
+                <ui:VisualElement class="studio__header-divider" />
+                <ui:Label name="studio_item_name" class="studio__item-name no-translate" />
+                <ui:Label name="studio_genre_badge" class="studio__badge" />
+            </ui:VisualElement>
+        </eau:Shadow>
 
-            <!-- Left : edit menu -->
-            <ui:VisualElement name="edit_menu" class="w-one-quarter p-4 border-r border-zinc-300">
-                <ui:VisualElement class="flex-row items-center pb-2">
-                    <ui:Label text="Edit tool" class="text-xl font-bold" />
+        <!-- Left pane : edit tools -->
+        <eau:Shadow name="edit_menu_shell" shadow-blur="32" shadow-offset-y="12" shadow-opacity="0.09" class="studio__shell studio__shell--left">
+            <ui:VisualElement name="edit_menu" class="studio__pane">
+                <ui:VisualElement class="studio__pane-header">
+                    <ui:Label text="Edit tool" class="text-lg font-bold" />
                     <eau:HelpButton msg-id="103" class="ml-2" />
+                    <ui:VisualElement class="flex-1" />
+                    <ui:Button name="collapse_edit_menu" tooltip="Collapse" class="studio__icon-button">
+                        <eau:MaterialIcon icon="chevron_left" />
+                    </ui:Button>
                 </ui:VisualElement>
-                <ui:VisualElement name="avatar_status" class="pb-4 mb-4 border-b border-b-zinc-300" />
-                <ui:ScrollView name="avatar_editor_list" class="flex-1" />
-                <ui:VisualElement name="extension_buttons" class="hidden">
-                    <eau:HelpButton msg-id="104" class="mb-2" />
-                    <eau:ShadowButton name="import_extentions" class="button-with-icons">
-                        <eau:MaterialIcon icon="download" />
-                        <ui:Label text="Import extentions" />
-                    </eau:ShadowButton>
-                    <eau:ShadowButton name="find_extentions" class="button-with-icons pt-2">
-                        <eau:MaterialIcon icon="open_in_browser" />
-                        <ui:Label text="Find extentions" />
+                <ui:VisualElement class="studio__pane-body">
+            <ui:VisualElement name="avatar_status" class="mx-3 pb-4 mb-2 border-b border-b-zinc-300" />
+            <ui:ScrollView name="avatar_editor_list" mode="Vertical" class="flex-1" />
+            <ui:VisualElement name="extension_buttons" class="hidden px-3 pt-2">
+                <eau:HelpButton msg-id="104" class="mb-2" />
+                <eau:ShadowButton name="import_extentions" class="button-with-icons">
+                    <eau:MaterialIcon icon="download" />
+                    <ui:Label text="Import extentions" />
+                </eau:ShadowButton>
+                <eau:ShadowButton name="find_extentions" class="button-with-icons pt-2">
+                    <eau:MaterialIcon icon="open_in_browser" />
+                    <ui:Label text="Find extentions" />
+                </eau:ShadowButton>
+            </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </eau:Shadow>
+        <ui:Button name="open_edit_menu" class="studio__rail studio__rail--left hidden">
+            <eau:MaterialIcon icon="build" />
+            <ui:Label text="Edit tool" />
+        </ui:Button>
+
+        <!-- Right pane : item info. Its footer leads to the upload sheet. -->
+        <eau:Shadow name="side_pane_shell" shadow-blur="32" shadow-offset-y="12" shadow-opacity="0.09" class="studio__shell studio__shell--right">
+            <ui:VisualElement name="side_pane" class="studio__pane">
+                <ui:VisualElement class="studio__pane-header">
+                    <ui:Label text="Item Info" class="text-lg font-bold flex-1" />
+                    <ui:Button name="collapse_side_pane" tooltip="Collapse" class="studio__icon-button">
+                        <eau:MaterialIcon icon="chevron_right" />
+                    </ui:Button>
+                </ui:VisualElement>
+
+                <!-- Fields are grouped in sections separated by dividers -->
+                <ui:VisualElement class="list-scroll-area">
+                <ui:ScrollView name="meta_panel" mode="Vertical" class="flex-1">
+                    <!-- Thumbnail, with its buttons laid over the bottom right -->
+                    <ui:VisualElement name="meta_thumbnail_area" class="meta-field meta-thumbnail-frame">
+                        <ui:Image name="meta_thumbnail" class="meta-thumbnail" />
+                        <ui:VisualElement class="upload-thumbnail__actions">
+                            <eau:ShadowButton name="regenerate_thumbnail" tooltip="Regenerate Preview"
+                                class="button-outline upload-thumbnail__icon-button mr-2">
+                                <eau:MaterialIcon icon="restart_alt" />
+                            </eau:ShadowButton>
+                            <eau:ShadowButton name="change_thumbnail" class="button-with-icons button-outline">
+                                <eau:MaterialIcon icon="image" />
+                                <ui:Label text="Change Thumbnail" />
+                            </eau:ShadowButton>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="meta-field">
+                        <ui:Label text="Name" class="meta-field__label" />
+                        <ui:TextField name="meta_name" class="flex-1" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="meta-field">
+                        <ui:Label text="Genre" class="meta-field__label" />
+                        <eau:DropdownFieldPro name="meta_genre" segmented="true" class="flex-1" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="meta-field">
+                        <ui:Label text="Tags" class="meta-field__label" />
+                        <ui:VisualElement name="tag_chips" class="flex-row flex-wrap" />
+                        <ui:Label name="tag_empty" text="No tags are set." class="text-sm pb-1" />
+                        <ui:VisualElement class="flex-row items-center">
+                            <eau:TextFieldPro name="tag_input" placeholder="Add a tag" class="flex-1" />
+                            <eau:ShadowButton name="add_tag" class="ml-2">
+                                <eau:MaterialIcon icon="add" />
+                            </eau:ShadowButton>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="tag_input_suggestions" class="tag-suggestions hidden" />
+                        <eau:DropdownFieldPro name="tag_suggestions" class="mt-2" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="meta-field">
+                        <ui:Label text="Memo" class="meta-field__label" />
+                        <ui:TextField name="meta_memo" multiline="true" class="memo-field" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="meta-card">
+                        <ui:VisualElement class="meta-toggle-row">
+                            <ui:Label text="Pin" />
+                            <eau:SlideToggle name="meta_pinned" class="w-10" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="meta-toggle-row">
+                            <ui:Label text="Hide from list" />
+                            <eau:SlideToggle name="meta_hidden" class="w-10" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+
+                    <ui:VisualElement name="meta_details" class="meta-section" />
+
+                    <ui:VisualElement class="meta-section meta-actions">
+                        <eau:ShadowButton name="duplicate_prefab" class="button-with-icons button-outline mb-2">
+                            <eau:MaterialIcon icon="content_copy" />
+                            <ui:Label text="Duplicate" />
+                        </eau:ShadowButton>
+                        <eau:ShadowButton name="delete_prefab" class="button-with-icons button-outline button-outline--danger">
+                            <eau:MaterialIcon icon="delete" />
+                            <ui:Label text="Delete" />
+                        </eau:ShadowButton>
+                    </ui:VisualElement>
+                </ui:ScrollView>
+                <eau:Shadow name="meta_scroll_shadow_top" shadow-blur="12" shadow-offset-y="2" shadow-opacity="0.1"
+                    picking-mode="Ignore" class="list-scroll-shadow hidden" />
+                <eau:Shadow name="meta_scroll_shadow_bottom" shadow-blur="12" shadow-offset-y="-2" shadow-opacity="0.1"
+                    picking-mode="Ignore" class="list-scroll-shadow--bottom hidden" />
+                </ui:VisualElement>
+
+                <ui:VisualElement name="side_pane_footer" class="studio__pane-footer">
+                    <eau:ShadowButton name="open_upload" class="button-with-icons upload-primary">
+                        <eau:MaterialIcon icon="upload" />
+                        <ui:Label text="Go to upload" />
                     </eau:ShadowButton>
                 </ui:VisualElement>
             </ui:VisualElement>
+        </eau:Shadow>
+        <ui:Button name="open_side_pane" tooltip="Item Info" class="studio__rail studio__rail--info hidden">
+            <eau:MaterialIcon icon="info" />
+        </ui:Button>
+        <ui:Button name="open_upload_fab" class="studio__rail studio__rail--right hidden">
+            <eau:MaterialIcon icon="upload" />
+            <ui:Label text="Upload" />
+        </ui:Button>
 
-            <!-- Center : preview -->
-            <ui:VisualElement class="flex-1 border-r border-zinc-300">
-                <ui:VisualElement name="avatar_preview" class="flex-1" />
+        <!-- Upload sheet : covers the right part of the screen; the avatar stays visible on the left -->
+        <eau:Shadow name="upload_sheet_shell" shadow-blur="40" shadow-offset-y="16" shadow-opacity="0.1" class="studio__shell studio__shell--sheet studio__shell--closed hidden">
+            <ui:VisualElement name="upload_sheet" class="studio__pane">
+                <ui:VisualElement class="studio__sheet-header">
+                    <ui:Label text="Upload to VRChat" class="text-xl font-bold flex-1" />
+                    <eau:ShadowButton name="close_upload" class="button-with-icons button-outline">
+                        <eau:MaterialIcon icon="close" />
+                        <ui:Label text="Back to edit" />
+                    </eau:ShadowButton>
+                </ui:VisualElement>
+                <!-- The upload form (UploadForm) is built into upload_form the first time the sheet opens -->
+                <ui:VisualElement name="upload_form" class="flex-1" />
             </ui:VisualElement>
-
-            <!-- Right : metadata -->
-            <ui:ScrollView name="meta_panel" class="w-one-quarter p-4">
-                <ui:Label text="Item Info" class="text-xl font-bold pb-2" />
-
-                <ui:VisualElement name="meta_thumbnail_area" class="items-center pb-2">
-                    <ui:Image name="meta_thumbnail" class="meta-thumbnail" />
-                    <ui:VisualElement class="flex-row pt-2">
-                        <eau:ShadowButton name="regenerate_thumbnail" class="mr-1">
-                            <eau:MaterialIcon icon="restart_alt" />
-                        </eau:ShadowButton>
-                        <eau:ShadowButton name="change_thumbnail" class="ml-1">
-                            <eau:MaterialIcon icon="image" />
-                        </eau:ShadowButton>
-                    </ui:VisualElement>
-                </ui:VisualElement>
-
-                <ui:VisualElement class="pb-2">
-                    <ui:Label text="Name" class="font-medium" />
-                    <ui:TextField name="meta_name" class="flex-1" />
-                </ui:VisualElement>
-
-                <ui:VisualElement class="pb-2">
-                    <ui:Label text="Genre" class="font-medium" />
-                    <eau:DropdownFieldPro name="meta_genre" class="flex-1" />
-                </ui:VisualElement>
-
-                <ui:VisualElement class="pb-2">
-                    <ui:Label text="Tags" class="font-medium" />
-                    <ui:VisualElement name="tag_chips" class="flex-row flex-wrap" />
-                    <ui:Label name="tag_empty" text="No tags are set." class="text-sm pb-1" />
-                    <ui:VisualElement class="flex-row items-center">
-                        <eau:TextFieldPro name="tag_input" placeholder="Add a tag" class="flex-1" />
-                        <eau:ShadowButton name="add_tag" class="ml-1">
-                            <eau:MaterialIcon icon="add" />
-                        </eau:ShadowButton>
-                    </ui:VisualElement>
-                    <ui:VisualElement name="tag_input_suggestions" class="tag-suggestions hidden" />
-                    <eau:DropdownFieldPro name="tag_suggestions" class="mt-1" />
-                </ui:VisualElement>
-
-                <ui:VisualElement class="pb-2">
-                    <ui:Label text="Memo" class="font-medium" />
-                    <ui:TextField name="meta_memo" multiline="true" class="memo-field" />
-                </ui:VisualElement>
-
-                <ui:VisualElement class="flex-row items-center justify-between pb-1">
-                    <ui:Label text="Pin" />
-                    <eau:SlideToggle name="meta_pinned" class="w-10" />
-                </ui:VisualElement>
-                <ui:VisualElement class="flex-row items-center justify-between pb-2">
-                    <ui:Label text="Hide from list" />
-                    <eau:SlideToggle name="meta_hidden" class="w-10" />
-                </ui:VisualElement>
-
-                <ui:VisualElement name="meta_details" class="pt-2 border-t border-zinc-300" />
-
-                <ui:VisualElement class="pt-2">
-                    <eau:ShadowButton name="duplicate_prefab" class="button-with-icons">
-                        <eau:MaterialIcon icon="content_copy" />
-                        <ui:Label text="Duplicate" />
-                    </eau:ShadowButton>
-                    <eau:ShadowButton name="delete_prefab" class="button-with-icons pt-2">
-                        <eau:MaterialIcon icon="delete" />
-                        <ui:Label text="Delete" />
-                    </eau:ShadowButton>
-                </ui:VisualElement>
-            </ui:ScrollView>
-        </ui:VisualElement>
-
-        <!-- Bottom navigation -->
-        <ui:VisualElement class="footer-nav">
-            <ui:Button name="back_to_list" class="footer-nav__button footer-nav__button--secondary">
-                <eau:MaterialIcon icon="arrow_back" />
-                <ui:Label text="Back to list" />
-            </ui:Button>
-            <ui:Button name="go_upload" class="footer-nav__button">
-                <eau:MaterialIcon icon="upload" />
-                <ui:Label text="Upload" />
-            </ui:Button>
-        </ui:VisualElement>
+        </eau:Shadow>
     </ui:VisualElement>
 </ui:UXML>
