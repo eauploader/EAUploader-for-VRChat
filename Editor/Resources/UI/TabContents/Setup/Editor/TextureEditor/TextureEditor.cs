@@ -1,3 +1,4 @@
+using EAUploader.UI.Components;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -176,7 +177,7 @@ namespace EAUploader.UI.Setup.EditTools
             detailPanel.Add(title);
 
             var properties = GetTextureProperties(edit.Current);
-            var propertyDropdown = new DropdownField(T7e.Get("Texture"),
+            var propertyDropdown = new DropdownFieldPro(T7e.Get("Texture"),
                 properties.Select(p => DescribeProperty(edit.Current, p)).ToList(),
                 Mathf.Max(0, properties.IndexOf(edit.Property)));
             propertyDropdown.AddToClassList("mb-2");

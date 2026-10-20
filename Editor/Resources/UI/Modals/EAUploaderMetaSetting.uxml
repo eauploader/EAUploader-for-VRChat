@@ -24,7 +24,7 @@
                 </ui:VisualElement>
                 <ui:VisualElement class="flex-row justify-between items-center pb-2">
                     <ui:Label text="Genre" class="font-medium" />
-                    <ui:DropdownField name="genreDropdown" class="flex-1 ml-2" />
+                    <eau:DropdownFieldPro name="genreDropdown" class="flex-1 ml-2" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement class="flex-col mt-4">

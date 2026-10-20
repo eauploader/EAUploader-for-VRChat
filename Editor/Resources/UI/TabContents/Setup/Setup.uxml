@@ -65,7 +65,7 @@
 
                 <ui:VisualElement class="pb-2">
                     <ui:Label text="Genre" class="font-medium" />
-                    <ui:DropdownField name="meta_genre" class="flex-1" />
+                    <eau:DropdownFieldPro name="meta_genre" class="flex-1" />
                 </ui:VisualElement>
 
                 <ui:VisualElement class="pb-2">
@@ -79,7 +79,7 @@
                         </eau:ShadowButton>
                     </ui:VisualElement>
                     <ui:VisualElement name="tag_input_suggestions" class="tag-suggestions hidden" />
-                    <ui:DropdownField name="tag_suggestions" class="mt-1" />
+                    <eau:DropdownFieldPro name="tag_suggestions" class="mt-1" />
                 </ui:VisualElement>
 
                 <ui:VisualElement class="pb-2">

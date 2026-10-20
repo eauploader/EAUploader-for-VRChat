@@ -73,7 +73,7 @@ namespace EAUploader.UI.Modals
             var registered = TagManager.RegisterTag(field.GetValue());
             if (registered == null) return;
 
-            var groupDropdown = modalContent.Q<DropdownField>("new_tag_group");
+            var groupDropdown = modalContent.Q<DropdownFieldPro>("new_tag_group");
             TagManager.SetTagGroup(registered, GroupNameFromChoice(groupDropdown.value));
 
             field.ClearValue();
@@ -111,7 +111,7 @@ namespace EAUploader.UI.Modals
         /// </summary>
         private void RefreshGroupChoices()
         {
-            var dropdown = modalContent.Q<DropdownField>("new_tag_group");
+            var dropdown = modalContent.Q<DropdownFieldPro>("new_tag_group");
             var current = dropdown.value;
 
             dropdown.choices = BuildGroupChoices();
@@ -241,7 +241,7 @@ namespace EAUploader.UI.Modals
             row.Add(usageLabel);
 
             // 所属グループの変更
-            var groupDropdown = new DropdownField { choices = BuildGroupChoices() };
+            var groupDropdown = new DropdownFieldPro { choices = BuildGroupChoices() };
             groupDropdown.style.width = 160;
             groupDropdown.style.marginRight = 8;
             groupDropdown.SetValueWithoutNotify(TagManager.GetTagGroup(tag) ?? UngroupedLabel());

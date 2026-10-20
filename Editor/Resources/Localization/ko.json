@@ -914,6 +914,10 @@
       "value": "아이템 · 기타"
     },
     {
+      "key": "All",
+      "value": "전체"
+    },
+    {
       "key": "Show hidden items",
       "value": "숨긴 항목도 표시"
     },

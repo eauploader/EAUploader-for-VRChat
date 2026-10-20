@@ -36,7 +36,7 @@ namespace EAUploader.UI.Modals
         {
             public PrefabInfo Info;
             public Toggle Apply;
-            public DropdownField Genre;
+            public DropdownFieldPro Genre;
         }
 
         // コンストラクタで「対象のプレハブ一覧」を受け取る
@@ -160,7 +160,7 @@ namespace EAUploader.UI.Modals
                 var initialIndex = GENRE_CHOICES.IndexOf(currentGenre);
                 if (initialIndex < 0) initialIndex = GENRE_CHOICES.IndexOf("Cloth");
 
-                var dropdown = new DropdownField(T7e.Get("Genre"), new List<string>(GENRE_CHOICES), initialIndex);
+                var dropdown = new DropdownFieldPro(T7e.Get("Genre"), new List<string>(GENRE_CHOICES), initialIndex);
                 dropdown.style.marginLeft = 8;
                 itemRow.Add(dropdown);
 

@@ -220,7 +220,7 @@ namespace EAUploader.UI.Upload
         {
             var contentName = root.Q<TextFieldPro>("content-name");
             var contentDescription = root.Q<TextFieldPro>("content-description");
-            var releaseStatus = root.Q<DropdownField>("release-status");
+            var releaseStatus = root.Q<DropdownFieldPro>("release-status");
             var tags = root.Q<ContentWarningsField>("content-warnings");
             var thumbnail = root.Q<Image>("thumbnail-image");
             var updateButton = root.Q<VisualElement>("info-buttons");
@@ -702,7 +702,7 @@ namespace EAUploader.UI.Upload
 
             var contentName = root.Q<TextFieldPro>("content-name").GetValue();
             var contentDescription = root.Q<TextFieldPro>("content-description").GetValue();
-            var releaseStatus = root.Q<DropdownField>("release-status").value.ToLower(CultureInfo.InvariantCulture);
+            var releaseStatus = root.Q<DropdownFieldPro>("release-status").value.ToLower(CultureInfo.InvariantCulture);
             var tags = root.Q<ContentWarningsField>("content-warnings").Tags;
 
             string thumbnailPath = thumbnailUrl ?? PrefabPreview.GetPreviewImagePath(selectedPrefabPath);

@@ -18,7 +18,7 @@ namespace EAUploader.UI.Modals
         private TextField nameTextField;
         private ShadowButton duplicateButton;
         private Image previewImageElement;
-        private DropdownField genreDropdown;
+        private DropdownFieldPro genreDropdown;
         private PrefabInfo prefabInfo;
         public event Action OnSave;
 
@@ -67,7 +67,7 @@ namespace EAUploader.UI.Modals
             nameTextField = modalContent.Q<TextField>("nameTextField");
             duplicateButton = modalContent.Q<ShadowButton>("duplicateButton");
             previewImageElement = modalContent.Q<Image>("previewImage");
-            genreDropdown = modalContent.Q<DropdownField>("genreDropdown");
+            genreDropdown = modalContent.Q<DropdownFieldPro>("genreDropdown");
 
             if (nameTextField == null || duplicateButton == null || previewImageElement == null || genreDropdown == null)
             {

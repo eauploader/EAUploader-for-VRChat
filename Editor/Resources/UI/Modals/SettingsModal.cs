@@ -53,7 +53,7 @@ namespace EAUploader.UI.Modals
 
         private void BindLanguage()
         {
-            var dropdown = modalContent.Q<DropdownField>("language");
+            var dropdown = modalContent.Q<DropdownFieldPro>("language");
             dropdown.choices = languageInfos.Select(x => x.display).ToList();
             dropdown.index = languageInfos.FindIndex(x => x.name == LanguageUtility.GetCurrentLanguage());
             dropdown.RegisterValueChangedCallback(evt =>
@@ -79,7 +79,7 @@ namespace EAUploader.UI.Modals
         private void BindTheme()
         {
             var themeInfos = ThemeUtility.GetAvailableThemes();
-            var dropdown = modalContent.Q<DropdownField>("thema");
+            var dropdown = modalContent.Q<DropdownFieldPro>("thema");
             dropdown.choices = themeInfos.Select(x => x.display).ToList();
             dropdown.index = themeInfos.FindIndex(x => x.name == ThemeUtility.GetCurrentTheme());
             dropdown.RegisterValueChangedCallback(evt =>

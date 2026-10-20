@@ -123,7 +123,7 @@ namespace EAUploader.UI.Setup
             });
 
             // ジャンル
-            var genreDropdown = root.Q<DropdownField>("meta_genre");
+            var genreDropdown = root.Q<DropdownFieldPro>("meta_genre");
             genreDropdown.choices = new List<string>(GENRE_CHOICES);
             genreDropdown.SetValueWithoutNotify(meta.genre.ToString());
             genreDropdown.RegisterValueChangedCallback(evt =>
@@ -183,7 +183,7 @@ namespace EAUploader.UI.Setup
 
             root.Q<ShadowButton>("add_tag").clicked += AddTagFromInput;
 
-            var dropdown = root.Q<DropdownField>("tag_suggestions");
+            var dropdown = root.Q<DropdownFieldPro>("tag_suggestions");
             dropdown.RegisterValueChangedCallback(evt =>
             {
                 if (string.IsNullOrEmpty(evt.newValue) || evt.newValue == TagPlaceholder()) return;
@@ -284,7 +284,7 @@ namespace EAUploader.UI.Setup
             var choices = new List<string> { placeholder };
             choices.AddRange(TagManager.GetAllTags().Where(t => !TagManager.Contains(tags, t)));
 
-            var dropdown = root.Q<DropdownField>("tag_suggestions");
+            var dropdown = root.Q<DropdownFieldPro>("tag_suggestions");
             dropdown.choices = choices;
             dropdown.SetValueWithoutNotify(placeholder);
             dropdown.SetEnabled(choices.Count > 1);

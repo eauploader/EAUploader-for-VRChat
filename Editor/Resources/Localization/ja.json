@@ -930,6 +930,10 @@
       "value": "アイテム・その他"
     },
     {
+      "key": "All",
+      "value": "すべて"
+    },
+    {
       "key": "Show hidden items",
       "value": "非表示のアイテムも表示"
     },

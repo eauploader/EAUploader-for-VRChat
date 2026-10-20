@@ -41,7 +41,7 @@
                             </ui:VisualElement>
                             <eau:ContentWarningsField label="Content Warnings"
                                 name="content-warnings" class="pb-2" />
-                            <ui:DropdownField name="release-status" label="Visibility" index="0"
+                            <eau:DropdownFieldPro name="release-status" label="Visibility" index="0"
                                 choices="Private,Public" class="pb-2" />
                             <ui:VisualElement class="flex-row hidden" name="info-buttons">
                                 <ui:Button text="Save" name="save-info"

@@ -92,7 +92,7 @@ namespace EAUploader.UI.Setup.EditTools
                 currentRenderer = PickDefaultRenderer();
             }
 
-            var meshDropdown = new DropdownField(meshChoices, renderers.IndexOf(currentRenderer));
+            var meshDropdown = new DropdownFieldPro(meshChoices, renderers.IndexOf(currentRenderer));
             meshDropdown.AddToClassList("no-translate");
             meshDropdown.AddToClassList("mb-2");
             meshDropdown.RegisterValueChangedCallback(_ =>

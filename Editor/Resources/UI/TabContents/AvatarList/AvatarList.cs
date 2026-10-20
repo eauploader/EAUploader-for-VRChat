@@ -26,7 +26,8 @@ namespace EAUploader.UI.AvatarList
 
         // 画面を作り直しても選択状態を保つため、絞り込み条件は静的に保持する
         private static SortOrder sortOrder = SortOrder.LastModifiedDescending;
-        private static Category selectedCategory = Category.Avatar;
+        // カテゴリは複数選択できる。何も選択していない状態は「すべて」を表し、初期状態もこれ。
+        private static readonly HashSet<Category> selectedCategories = new HashSet<Category>();
         private static bool showHidden = false;
         private static string searchQuery = string.Empty;
 
@@ -38,6 +39,8 @@ namespace EAUploader.UI.AvatarList
         // カードの表示サイズ(幅px)。スライダーで変更でき、EditorPrefsに保存する。
         private const string CARD_WIDTH_PREF_KEY = "EAUploader.CardWidth";
         internal const float DEFAULT_CARD_WIDTH = 360f;
+        // この距離（px）だけスクロールすると、ヘッダー下の影が最も濃くなる
+        private const float SCROLL_SHADOW_RAMP_PX = 16f;
         private const float MIN_CARD_WIDTH = 160f;
         private const float MAX_CARD_WIDTH = 600f;
 
@@ -121,12 +124,6 @@ namespace EAUploader.UI.AvatarList
                 }
             });
 
-            root.Q<ShadowButton>("searchButton").clicked += () =>
-            {
-                searchQuery = searchField.GetValue() ?? string.Empty;
-                UpdateCards();
-            };
-
             root.Q<ShadowButton>("open_import").clicked += () => new ImportModal().Open();
             root.Q<ShadowButton>("open_tag_settings").clicked += () => new TagSettingsModal().Open();
             root.Q<ShadowButton>("open_tag_filter").clicked += () =>
@@ -139,9 +136,22 @@ namespace EAUploader.UI.AvatarList
             root.Q<ShadowButton>("open_settings").clicked += () => new SettingsModal().Open();
             root.Q<ShadowButton>("exit_unity").clicked += ExitUnity;
 
+            // スクロール位置が先頭でないとき、ヘッダーとツールバーの下に影を出す。
+            // 先頭から SCROLL_SHADOW_RAMP_PX だけスクロールする間に、0 から UXML で指定した濃さまで徐々に濃くする。
+            var cardScroll = root.Q<ScrollView>("card_scroll");
+            var scrollShadow = root.Q<Shadow>("list_scroll_shadow");
+            var scrollShadowMaxOpacity = scrollShadow.shadowOpacity;
+            cardScroll.verticalScroller.valueChanged += offset =>
+            {
+                var amount = Mathf.Clamp01(offset / SCROLL_SHADOW_RAMP_PX);
+                scrollShadow.EnableInClassList("hidden", amount <= 0f);
+                scrollShadow.shadowOpacity = scrollShadowMaxOpacity * amount;
+            };
+
             // カードサイズ
             var cardSizeSlider = new Slider(MIN_CARD_WIDTH, MAX_CARD_WIDTH) { value = CardWidth };
             cardSizeSlider.style.width = 120;
+            cardSizeSlider.AddToClassList("card-size-slider");
             cardSizeSlider.RegisterValueChangedCallback(evt =>
             {
                 CardWidth = evt.newValue;
@@ -152,23 +162,33 @@ namespace EAUploader.UI.AvatarList
             cardSizeBar.Add(cardSizeSlider);
 
             // カテゴリ選択
-            var categoryDropdown = new DropdownField("", new List<string>
+            var categoryDropdown = new DropdownFieldPro("", new List<string>
             {
                 T7e.Get("Avatar"),
                 T7e.Get("Cloth"),
                 T7e.Get("Items and Others")
-            }, (int)selectedCategory);
-            categoryDropdown.RegisterValueChangedCallback(_ =>
+            }, -1)
             {
-                selectedCategory = (Category)categoryDropdown.index;
+                multiSelect = true,
+                emptyMeansAll = true,
+                allText = T7e.Get("All")
+            };
+            categoryDropdown.SetSelectedIndicesWithoutNotify(selectedCategories.Select(c => (int)c));
+            categoryDropdown.selectionChanged += indices =>
+            {
+                selectedCategories.Clear();
+                foreach (var i in indices)
+                {
+                    selectedCategories.Add((Category)i);
+                }
                 UpdateCards();
-            });
+            };
             var categorybar = root.Q<VisualElement>("categorybar");
             categorybar.Clear();
             categorybar.Add(categoryDropdown);
 
             // 並び替え
-            var sortDropdown = new DropdownField("", new List<string>
+            var sortDropdown = new DropdownFieldPro("", new List<string>
             {
                 T7e.Get("Last Modified Descending"),
                 T7e.Get("Last Modified Ascending"),
@@ -184,7 +204,7 @@ namespace EAUploader.UI.AvatarList
             sortbar.Clear();
             sortbar.Add(sortDropdown);
 
-            var showHiddenToggle = root.Q<Toggle>("show_hidden");
+            var showHiddenToggle = root.Q<SlideToggle>("show_hidden");
             showHiddenToggle.SetValueWithoutNotify(showHidden);
             showHiddenToggle.RegisterValueChangedCallback(evt =>
             {
@@ -218,15 +238,31 @@ namespace EAUploader.UI.AvatarList
             label.EnableInClassList("hidden", selectedTags.Count == 0);
         }
 
+        /// <summary>
+        /// Unityを終了してよいか、アプリ内のモーダルで確認する。
+        /// </summary>
         private static void ExitUnity()
         {
-            if (EditorUtility.DisplayDialog(
-                    T7e.Get("Confirm Exit"),
-                    T7e.Get("Are you sure you want to exit Unity?"),
-                    T7e.Get("Yes"), T7e.Get("No")))
+            var modal = EAUploader.modal;
+            if (modal == null) return;
+
+            modal.Initialize();
+            modal.setTitle(T7e.Get("Confirm Exit"));
+
+            var message = new Label(T7e.Get("Are you sure you want to exit Unity?"));
+            message.style.whiteSpace = WhiteSpace.Normal;
+            modal.setContent(message);
+
+            modal.setFooter(new[]
             {
-                EditorApplication.Exit(0);
-            }
+                new Modal.ActionButton(T7e.Get("No"), () => modal.Hide()),
+                new Modal.ActionButton(T7e.Get("Yes"), () =>
+                {
+                    modal.Hide();
+                    EditorApplication.Exit(0);
+                })
+            });
+            modal.Show();
         }
 
         /// <summary>
@@ -363,7 +399,10 @@ namespace EAUploader.UI.AvatarList
                 prefabs = prefabs.Where(p => p.Status != EAUploaderMeta.PrefabStatus.Hidden).ToList();
             }
 
-            prefabs = prefabs.Where(p => MatchesCategory(p.Genre, selectedCategory)).ToList();
+            if (selectedCategories.Count > 0)
+            {
+                prefabs = prefabs.Where(p => selectedCategories.Any(c => MatchesCategory(p.Genre, c))).ToList();
+            }
 
             // 選択したタグをすべて持つものだけを残す(AND条件)
             if (selectedTags.Count > 0)
@@ -433,13 +472,25 @@ namespace EAUploader.UI.AvatarList
     /// </summary>
     internal class AvatarCard : VisualElement
     {
+        // カードは透明な状態で追加し、その少し後にこのクラスを外してフェードインさせる
+        private const string EnteringClass = "avatar-card--entering";
+        private const long EnterDelayMs = 30;
+
+        // 操作ボタンはフェードで出し入れする。表示中はこのクラスを付け、消えきったあとに hidden にする
+        private const string ActionsVisibleClass = "avatar-card__actions--visible";
+        private const long ActionsFadeMs = 150;
+
         private readonly PrefabInfo prefabInfo;
+        private IVisualElementScheduledItem actionsTransition;
 
         public AvatarCard(PrefabInfo prefab)
         {
             prefabInfo = prefab;
 
             AddToClassList("avatar-card");
+            AddToClassList(EnteringClass);
+            RegisterCallback<AttachToPanelEvent>(_ =>
+                schedule.Execute(() => RemoveFromClassList(EnteringClass)).StartingIn(EnterDelayMs));
 
             var visualTree = Resources.Load<VisualTreeAsset>("UI/TabContents/AvatarList/AvatarCard");
             visualTree.CloneTree(this);
@@ -447,11 +498,16 @@ namespace EAUploader.UI.AvatarList
             var isAvatar = prefab.Genre == EAUploaderMeta.PrefabGenre.Avatar;
 
             // サムネイル
+            // 角丸にあわせて画像も丸く描くため、Image.image ではなく背景画像として表示する
+            // (Image.image は角丸にならず、カードの角から四角くはみ出す)
             var thumbnail = this.Q<Image>("thumbnail");
-            thumbnail.image = prefab.Preview != null
+            var preview = prefab.Preview != null
                 ? prefab.Preview
                 : PrefabPreview.GetPrefabPreview(prefab.Path);
-            thumbnail.scaleMode = ScaleMode.ScaleToFit;
+            if (preview != null)
+            {
+                thumbnail.style.backgroundImage = new StyleBackground(Background.FromTexture2D(preview));
+            }
 
             this.Q<Label>("title").text = prefab.Name;
             this.Q<Label>("last_modified").text = prefab.LastModified.ToString("yyyy/MM/dd HH:mm");
@@ -571,8 +627,31 @@ namespace EAUploader.UI.AvatarList
             actions.RegisterCallback<PointerUpEvent>(evt => evt.StopPropagation());
             actions.RegisterCallback<PointerDownEvent>(evt => evt.StopPropagation());
 
-            RegisterCallback<MouseEnterEvent>(_ => actions.EnableInClassList("hidden", false));
-            RegisterCallback<MouseLeaveEvent>(_ => actions.EnableInClassList("hidden", true));
+            RegisterCallback<MouseEnterEvent>(_ => SetActionsVisible(actions, true));
+            RegisterCallback<MouseLeaveEvent>(_ => SetActionsVisible(actions, false));
+        }
+
+        /// <summary>
+        /// 操作ボタンをフェードで表示/非表示にする。
+        /// 透明なままだとクリックを受けてしまうので、消えきったあとに hidden で取り除く。
+        /// </summary>
+        private void SetActionsVisible(VisualElement actions, bool visible)
+        {
+            actionsTransition?.Pause();
+
+            if (visible)
+            {
+                actions.EnableInClassList("hidden", false);
+                // 透明な状態を一度描画してからクラスを付けないと、アニメーションにならない
+                actionsTransition = actions.schedule.Execute(() => actions.AddToClassList(ActionsVisibleClass));
+                actionsTransition.StartingIn(EnterDelayMs);
+            }
+            else
+            {
+                actions.RemoveFromClassList(ActionsVisibleClass);
+                actionsTransition = actions.schedule.Execute(() => actions.AddToClassList("hidden"));
+                actionsTransition.StartingIn(ActionsFadeMs);
+            }
         }
 
         private void SetupContextMenu(PrefabInfo prefab)
