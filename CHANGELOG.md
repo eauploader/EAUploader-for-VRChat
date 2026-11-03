@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.1
+
+- Fixed errors on first installation when the settings and log folders do not yet exist.
+- Prevented failures while writing logs from causing additional errors during startup.
+
 ## 1.6.0
 
 - Redesigned the avatar list and edit screen, with a 3D studio view, floating tool panels and an integrated upload sheet.

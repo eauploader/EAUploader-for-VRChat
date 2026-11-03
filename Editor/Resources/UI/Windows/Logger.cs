@@ -56,6 +56,7 @@ namespace EAUploader.UI.Windows
 
         // エラーレポート表示中に発生したログでモーダルを再帰的に開かないためのガード
         private static bool isReportingError = false;
+        private static bool isLoadingReportSettings = false;
 
         [Serializable]
         public class DependencyInfo
@@ -143,7 +144,19 @@ namespace EAUploader.UI.Windows
             }
 
             // ログファイルへの書き込み
-            writeLog(logText, stackTrace, eAULog);
+            if (!string.IsNullOrEmpty(OUTPUT_LOGFILE_NAME))
+            {
+                try
+                {
+                    writeLog(logText, stackTrace, eAULog);
+                }
+                catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+                {
+                    // Avoid recursively logging an error from the log callback.
+                    OUTPUT_LOGFILE_NAME = "";
+                    System.Console.Error.WriteLine("Could not write EAUploader log: " + ex.Message);
+                }
+            }
 
             // エラーor例外時にモーダル表示
             if (logType == LogType.Exception || logType == LogType.Error)
@@ -152,7 +165,18 @@ namespace EAUploader.UI.Windows
                 AppendErrorLog(logText, stackTrace);
 
                 // 設定で無効化されている場合はログファイルへの記録のみ行う
-                if (!Config.LoadSettings().showErrorReportWindow) return;
+                if (isLoadingReportSettings) return;
+                bool showErrorReportWindow;
+                isLoadingReportSettings = true;
+                try
+                {
+                    showErrorReportWindow = Config.LoadSettings().showErrorReportWindow;
+                }
+                finally
+                {
+                    isLoadingReportSettings = false;
+                }
+                if (!showErrorReportWindow) return;
 
                 // モーダルはEAUploaderウィンドウ内に描画されるため、
                 // ウィンドウ生成前のエラーでは表示できない

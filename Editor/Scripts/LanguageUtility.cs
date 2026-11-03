@@ -11,7 +11,6 @@ namespace EAUploader
 {
     public static class LanguageUtility
     {
-        private const string SETTINGS_PATH = "Assets/EAUploader/settings.json";
         private const string TRANSLATE_FOLDER_PATH = "Packages/tech.uslog.eauploader/Editor/Resources/Localization";
         private static string cachedLanguage;
 
@@ -27,23 +26,14 @@ namespace EAUploader
                 return cachedLanguage;
             }
 
-            if (!File.Exists(SETTINGS_PATH))
+            if (!File.Exists(Config.SETTINGS_PATH))
             {
-                Config.CreateDefaultSettings();  // Config.を追加
+                Config.CreateDefaultSettings();
             }
 
-            try
-            {
-                string jsonContent = File.ReadAllText(SETTINGS_PATH);
-                var settings = JsonUtility.FromJson<Config.ConfigData>(jsonContent);  // Config.ConfigDataに変更
-                cachedLanguage = settings.language;
-                return cachedLanguage;
-            }
-            catch (IOException ex)
-            {
-                Debug.LogError($"Error reading language settings: {ex.Message}");
-                return "en";
-            }
+            var settings = Config.LoadSettings();
+            cachedLanguage = string.IsNullOrEmpty(settings?.language) ? "ja" : settings.language;
+            return cachedLanguage;
         }
 
         /// <summary>

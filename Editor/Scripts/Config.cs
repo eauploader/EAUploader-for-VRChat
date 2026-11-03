@@ -31,10 +31,12 @@ namespace EAUploader
             try
             {
                 string jsonContent = JsonUtility.ToJson(settings);
+                var directory = Path.GetDirectoryName(SETTINGS_PATH);
+                if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
                 File.WriteAllText(SETTINGS_PATH, jsonContent);
                 LanguageUtility.InvalidateLanguageCache();
             }
-            catch (IOException ex)
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
                 Debug.LogError($"Error saving language settings: {ex.Message}");
             }
@@ -54,7 +56,7 @@ namespace EAUploader
                     return new ConfigData() { language = "ja", isLibraryOpen = true, showErrorReportWindow = true };
                 }
             }
-            catch (IOException ex)
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
                 Debug.LogError($"Error loading language settings: {ex.Message}");
                 return new ConfigData() { language = "ja", isLibraryOpen = true, showErrorReportWindow = true };
