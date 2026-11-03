@@ -7,6 +7,7 @@
 - Added an in-window Prefab deletion confirmation with an animated, read-only list of the files being deleted. Shared assets are retained, dependency searches are cached, and changed deletion targets must be confirmed again.
 - Improved Japanese font rendering, input placeholders, tag entry, segmented controls and clipboard notifications. Metadata and tag writes are debounced.
 - Restore original Prefab data when migration fails, and retry incomplete migrations instead of marking them complete.
+- Ignore stale upload-information responses after switching Prefabs, and dispose completed thumbnail requests.
 - Added `PrefabAPI.ShowDeletePrefabDialog(path, completed)` for asynchronous UI Toolkit confirmation. The obsolete one-argument overload retains its synchronous native confirmation and returns true only after deletion completes.
 - Package archives now contain only the Unity package and documentation, excluding local developer settings and release tooling.
 

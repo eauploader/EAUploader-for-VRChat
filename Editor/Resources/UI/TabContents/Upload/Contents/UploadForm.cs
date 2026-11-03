@@ -216,7 +216,7 @@ namespace EAUploader.UI.Upload
             uploadButton.SetEnabled(!AvatarUploader.IsUploading && !isFormNull && isConfirmTerm);
         }
 
-        private static async void RefreshUploadedInfo()
+        private static async Task RefreshUploadedInfoAsync()
         {
             try
             {
@@ -355,6 +355,7 @@ namespace EAUploader.UI.Upload
             void DiscardChanges()
             {
                 if (!isUploaded) return;
+                if (!IsCurrent()) return;
 
                 contentName.SetValueWithoutNotify(avatar.Value.Name);
                 contentDescription.SetValueWithoutNotify(avatar.Value.Description);
@@ -464,7 +465,7 @@ namespace EAUploader.UI.Upload
                 var previewImage = PrefabPreview.GetPrefabPreview(path);
                 avatarThumbnail.image = previewImage;
 
-                RefreshUploadedInfo();
+                _ = RefreshUploadedInfoAsync();
                 Validate();
                 UpdateStatus();
 

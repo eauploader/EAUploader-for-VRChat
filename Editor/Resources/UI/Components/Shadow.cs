@@ -44,19 +44,19 @@ namespace EAUploader.UI.Components
             }
 
             UxmlFloatAttributeDescription blurAttr =
-                new UxmlFloatAttributeDescription { name = "shadow-blur", defaultValue = 10 };
+                new() { name = "shadow-blur", defaultValue = 10 };
 
             UxmlFloatAttributeDescription spreadAttr =
-                new UxmlFloatAttributeDescription { name = "shadow-spread", defaultValue = 0 };
+                new() { name = "shadow-spread", defaultValue = 0 };
 
             UxmlFloatAttributeDescription offsetXAttr =
-                new UxmlFloatAttributeDescription { name = "shadow-offset-x", defaultValue = 0 };
+                new() { name = "shadow-offset-x", defaultValue = 0 };
 
             UxmlFloatAttributeDescription offsetYAttr =
-                new UxmlFloatAttributeDescription { name = "shadow-offset-y", defaultValue = 0 };
+                new() { name = "shadow-offset-y", defaultValue = 0 };
 
             UxmlFloatAttributeDescription opacityAttr =
-                new UxmlFloatAttributeDescription { name = "shadow-opacity", defaultValue = 0.1f };
+                new() { name = "shadow-opacity", defaultValue = 0.1f };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
