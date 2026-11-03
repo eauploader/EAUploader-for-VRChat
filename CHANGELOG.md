@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.2
+
+- Fixed importing existing project Prefabs from the file picker, folders, and drag and drop by using Unity project-relative paths.
+- Added guidance for standalone Prefabs outside the project and handled Prefab file extensions without case sensitivity.
+
 ## 1.6.1
 
 - Fixed errors on first installation when the settings and log folders do not yet exist.

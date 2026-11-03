@@ -110,6 +110,14 @@
       "value": "Assetが見つかりません"
     },
     {
+      "key": "Cannot import prefab",
+      "value": "Prefabをインポートできません"
+    },
+    {
+      "key": "Select a prefab in this project's Assets folder, outside EAUploader's internal folders. To import assets from another project, use a unitypackage.",
+      "value": "このプロジェクトのAssetsフォルダ内にあるPrefabを選択してください。EAUploaderの内部フォルダは対象外です。他のプロジェクトから取り込む場合はUnitypackageを使用してください。"
+    },
+    {
       "key": "There are no prefab or unitypackage files in the selected folder.",
       "value": "選択されたフォルダにprefab や unityパッケージファイル がありません。"
     },

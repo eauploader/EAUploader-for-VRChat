@@ -305,19 +305,16 @@ namespace EAUploader.UI.AvatarList
         {
             root.Q<VisualElement>("drop_model").EnableInClassList("hidden", true);
 
-            if (DragAndDrop.paths.Length > 0 && DragAndDrop.objectReferences.Length == 0)
+            if (DragAndDrop.paths.Length > 0)
             {
+                bool invalidPrefab = false;
                 foreach (string path in DragAndDrop.paths)
                 {
-                    var fileExtension = Path.GetExtension(path)?.ToLower();
+                    var fileExtension = Path.GetExtension(path)?.ToLowerInvariant();
 
-                    if (fileExtension == ".prefab")
+                    if (fileExtension == ".prefab" || fileExtension == ".unitypackage")
                     {
-                        AssetDatabase.ImportAsset(path, ImportAssetOptions.Default);
-                    }
-                    else if (fileExtension == ".unitypackage")
-                    {
-                        AssetDatabase.ImportPackage(path, false);
+                        if (!ImportModal.ImportAsset(path, false)) invalidPrefab = true;
                     }
 #if HAS_VRM
                     else if (fileExtension == ".vrm")
@@ -326,12 +323,8 @@ namespace EAUploader.UI.AvatarList
                     }
 #endif
                 }
-            }
-            else
-            {
-                Debug.Log("Out of reach");
-                foreach (string path in DragAndDrop.paths) Debug.Log("- " + path);
-                foreach (Object obj in DragAndDrop.objectReferences) Debug.Log("- " + obj);
+                if (invalidPrefab) ImportModal.ShowInvalidPrefabMessage();
+                DragAndDrop.AcceptDrag();
             }
         }
 

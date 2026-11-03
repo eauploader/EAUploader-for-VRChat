@@ -1,5 +1,6 @@
 using EAUploader.CustomPrefabUtility;
 using EAUploader.UI.Modals;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -28,7 +29,7 @@ namespace EAUploader
             var prefabsChanged = false;
             foreach (var asset in importedAssets)
             {
-                if (asset.EndsWith(".prefab"))
+                if (asset.EndsWith(".prefab", StringComparison.OrdinalIgnoreCase))
                 {
                     if (PrefabManager.IsMetadataSaveInProgress(asset)) continue;
                     prefabsChanged = true;
@@ -47,8 +48,8 @@ namespace EAUploader
                 }
             }
 
-            if (prefabsChanged || deletedAssets.Any(a => a.EndsWith(".prefab"))
-                || movedAssets.Any(a => a.EndsWith(".prefab")) || movedFromAssetPaths.Any(a => a.EndsWith(".prefab")))
+            if (prefabsChanged || deletedAssets.Any(a => a.EndsWith(".prefab", StringComparison.OrdinalIgnoreCase))
+                || movedAssets.Any(a => a.EndsWith(".prefab", StringComparison.OrdinalIgnoreCase)) || movedFromAssetPaths.Any(a => a.EndsWith(".prefab", StringComparison.OrdinalIgnoreCase)))
             {
                 PrefabManager.InvalidateCache();
             }
