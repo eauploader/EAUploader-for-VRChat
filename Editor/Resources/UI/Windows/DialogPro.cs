@@ -109,6 +109,7 @@ namespace EAUploader.UI.Windows
                     if (copyButton != null) copyButton.style.display = DisplayStyle.None;
                     break;
                 default:
+                    // Other dialog types use the base presentation.
                     break;
             }
 
@@ -186,6 +187,7 @@ namespace EAUploader.UI.Windows
                     if (copyButton != null) copyButton.style.display = DisplayStyle.None;
                     break;
                 default:
+                    // Other dialog types use the base presentation.
                     break;
             }
 

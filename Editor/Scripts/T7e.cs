@@ -34,7 +34,7 @@ namespace EAUploader
             if (allTranslations != null && allTranslations.ContainsKey(currentLanguage) && allTranslations[currentLanguage].ContainsKey(key))
             {
                 string formatString = allTranslations[currentLanguage][key];
-                return args != null && args.Length > 0 ? string.Format(formatString, args) : formatString;
+                return args is { Length: > 0 } ? string.Format(formatString, args) : formatString;
             }
             else
             {

@@ -5,6 +5,7 @@ using EAUploader.CustomPrefabUtility;
 using System;
 using EAUploader.UI.Setup.EditTools;
 
+// Unity 2022.3 uses C# 9; file-scoped namespaces require C# 10. skipcq: CS-R1062
 namespace EAUploader.UI.Setup
 {
     public class ViewpointPositionEditorUI : IDisposable

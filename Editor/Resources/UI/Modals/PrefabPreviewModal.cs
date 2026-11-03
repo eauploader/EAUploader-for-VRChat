@@ -6,6 +6,7 @@ using EAUploader.UI.Components;
 using EAUploader.CustomPrefabUtility;
 using EAUploader.Components; // Utility.GetEAUploaderMeta などがある場合
 
+// Unity 2022.3 uses C# 9; file-scoped namespaces require C# 10. skipcq: CS-R1062
 namespace EAUploader.UI.Modals
 {
     /// <summary>

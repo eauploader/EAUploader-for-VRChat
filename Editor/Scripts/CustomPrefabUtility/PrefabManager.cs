@@ -7,6 +7,7 @@ using UnityEngine;
 using System.IO;
 using VRC.SDK3.Avatars.Components;
 
+// Unity 2022.3 uses C# 9; file-scoped namespaces require C# 10. skipcq: CS-R1062
 namespace EAUploader.CustomPrefabUtility
 {
     [InitializeOnLoad]

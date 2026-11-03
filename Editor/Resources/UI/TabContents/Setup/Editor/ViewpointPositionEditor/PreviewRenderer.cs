@@ -5,6 +5,7 @@ using EAUploader.CustomPrefabUtility;
 using System;
 using EAUploader.UI.Setup.EditTools;
 
+// Unity 2022.3 uses C# 9; file-scoped namespaces require C# 10. skipcq: CS-R1062
 namespace EAUploader.UI.Setup
 {
     public class PreviewRenderer : IDisposable
@@ -85,8 +86,7 @@ namespace EAUploader.UI.Setup
             _viewpointSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             _viewpointSphere.transform.position = avatarDescriptor.ViewPosition;
             _viewpointSphere.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
-            var material = new Material(Resources.Load<Shader>("Shaders/AlwaysShow"));
-            material.color = Color.red;
+            var material = new Material(Resources.Load<Shader>("Shaders/AlwaysShow")) { color = Color.red };
             _viewpointSphere.GetComponent<Renderer>().material = material;
         }
 
@@ -95,8 +95,7 @@ namespace EAUploader.UI.Setup
             _previousViewpointSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             _previousViewpointSphere.transform.position = _viewpointSphere.transform.position;
             _previousViewpointSphere.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);
-            var material = new Material(Resources.Load<Shader>("Shaders/AlwaysShow"));
-            material.color = Color.green;
+            var material = new Material(Resources.Load<Shader>("Shaders/AlwaysShow")) { color = Color.green };
             _previousViewpointSphere.GetComponent<Renderer>().material = material;
         }
 

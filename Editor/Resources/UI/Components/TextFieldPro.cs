@@ -1,16 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 
+// Unity 2022.3 uses C# 9; file-scoped namespaces require C# 10. skipcq: CS-R1062
 namespace EAUploader.UI.Components
 {
     public class TextFieldPro : TextField
     {
         public new class UxmlFactory : UxmlFactory<TextFieldPro, UxmlTraits> { }
 
+        // UI Toolkit requires this nested UxmlTraits convention. skipcq: CS-R1103
         public new class UxmlTraits : TextField.UxmlTraits
         {
-            private readonly UxmlStringAttributeDescription placeholder = new UxmlStringAttributeDescription { name = "placeholder" };
-            private readonly UxmlBoolAttributeDescription required = new UxmlBoolAttributeDescription { name = "required" };
+            private readonly UxmlStringAttributeDescription placeholder = new() { name = "placeholder" };
+            private readonly UxmlBoolAttributeDescription required = new() { name = "required" };
 
             public override IEnumerable<UxmlChildElementDescription> uxmlChildElementsDescription
             {
@@ -44,10 +46,7 @@ namespace EAUploader.UI.Components
         public bool required
         {
             get => _required;
-            set
-            {
-                _required = value;
-            }
+            set => _required = value;
         }
         private bool _required;
         private bool loading;
@@ -114,7 +113,8 @@ namespace EAUploader.UI.Components
             {
                 this.Q<TextInputBase>().EnableInClassList("border-red", true);
                 return null;
-            } else if (IsPlaceholder())
+            }
+            if (IsPlaceholder())
             {
                 return null;
             }

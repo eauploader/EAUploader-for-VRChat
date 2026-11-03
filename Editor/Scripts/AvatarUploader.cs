@@ -15,6 +15,7 @@ using VRC.Core;
 using VRC.SDK3A.Editor;
 using VRC.SDKBase.Editor.Api;
 
+// Unity 2022.3 uses C# 9; file-scoped namespaces require C# 10. skipcq: CS-R1062
 namespace EAUploader
 {
     /// <summary>
@@ -253,6 +254,7 @@ namespace EAUploader
         #region VRChat API
 
         [Obsolete("Use GetVRCAvatarAsync instead.")]
+        // Preserve obsolete public method names for existing plugins. skipcq: CS-R1073
         public static Task<VRCAvatar?> GetVRCAvatar(string selectedPrefabPath)
         {
             return GetVRCAvatarAsync(selectedPrefabPath);
@@ -545,6 +547,7 @@ namespace EAUploader
         }
 
         [Obsolete("Use UpdateVRCAvatarAsync instead.")]
+        // Preserve obsolete public method names for existing plugins. skipcq: CS-R1073
         public static Task UpdateVRCAvatar(string prefabPath, string contentName, string contentDescription,
             string releaseStatus, List<string> tags, string thumbnailPath)
         {

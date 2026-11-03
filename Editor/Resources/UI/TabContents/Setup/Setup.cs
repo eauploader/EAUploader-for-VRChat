@@ -9,6 +9,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+// Unity 2022.3 uses C# 9; file-scoped namespaces require C# 10. skipcq: CS-R1062
 namespace EAUploader.UI.Setup
 {
     /// <summary>編集画面の表示状態。</summary>
@@ -520,8 +521,7 @@ namespace EAUploader.UI.Setup
 
         private static void OnTagOutsidePointerDown(PointerDownEvent evt)
         {
-            var target = evt.target as VisualElement;
-            if (target != null && !tagDropdownControl.Contains(target) && !tagDropdown.Contains(target))
+            if (evt.target is VisualElement target && !tagDropdownControl.Contains(target) && !tagDropdown.Contains(target))
                 CloseTagDropdown();
         }
 
@@ -572,8 +572,8 @@ namespace EAUploader.UI.Setup
             if (options.Count == 0) return;
             var focused = tagDropdown.panel?.focusController.focusedElement;
             var current = options.FindIndex(option => option == focused);
-            var next = current < 0 ? (direction > 0 ? 0 : options.Count - 1)
-                : (current + direction + options.Count) % options.Count;
+            var next = (current + direction + options.Count) % options.Count;
+            if (current < 0) next = direction > 0 ? 0 : options.Count - 1;
             options[next].Focus();
             if (options[next] != create) list.ScrollTo(options[next]);
         }
@@ -620,7 +620,7 @@ namespace EAUploader.UI.Setup
             var attached = TagManager.GetTags(EAUploaderCore.selectedPrefabPath);
             var query = input.GetValue()?.Trim();
             if (string.IsNullOrEmpty(query)) query = null;
-            var tooLong = query != null && query.Length > TagManager.MAX_TAG_LENGTH;
+            var tooLong = query?.Length > TagManager.MAX_TAG_LENGTH;
             var duplicate = TagManager.Contains(attached, query);
             var available = TagManager.GetAllTags()
                 .Where(t => !TagManager.Contains(attached, t))
@@ -635,10 +635,12 @@ namespace EAUploader.UI.Setup
             tagDropdown.Q("tag_create_separator").EnableInClassList("hidden", !canCreate || matches.Count == 0);
             tagDropdown.Q<Label>("tag_create_name").text = query ?? string.Empty;
             var hint = tagDropdown.Q<Label>("tag_input_hint");
-            hint.text = tooLong
-                ? string.Format(T7e.Get("Tag names can be up to {0} characters."), TagManager.MAX_TAG_LENGTH)
-                : T7e.Get(duplicate ? "This tag is already added."
-                    : query == null ? "Type to add a new tag." : "Press Enter to add a tag.");
+            if (tooLong)
+                hint.text = string.Format(T7e.Get("Tag names can be up to {0} characters."), TagManager.MAX_TAG_LENGTH);
+            else if (duplicate)
+                hint.text = T7e.Get("This tag is already added.");
+            else
+                hint.text = T7e.Get(query == null ? "Type to add a new tag." : "Press Enter to add a tag.");
             hint.EnableInClassList("hidden", !tooLong && !duplicate && matches.Count > 0);
             container.EnableInClassList("hidden", matches.Count == 0);
 
@@ -1097,6 +1099,7 @@ namespace EAUploader.UI.Setup
         private readonly VisualElement details;
         private readonly string editorName;
         private bool isOpen;
+        // Assigned by UI Toolkit callbacks after construction. skipcq: CS-R1137
         private bool measured;
         private float currentHeight = TuckedHeight;
         private float currentOpacity;

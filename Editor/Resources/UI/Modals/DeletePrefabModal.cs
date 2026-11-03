@@ -9,6 +9,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+// Unity 2022.3 uses C# 9; file-scoped namespaces require C# 10. skipcq: CS-R1062
 namespace EAUploader.UI.Modals
 {
     internal sealed class DeletePrefabModal
@@ -250,9 +251,12 @@ namespace EAUploader.UI.Modals
             foreach (var asset in plan.Assets.Where(a => deleteTargets.Contains(a.Path))
                 .OrderBy(a => a.IsSource ? 0 : 1).ThenBy(a => a.Path))
             {
-                var material = Path.GetExtension(asset.Path).Equals(".mat", StringComparison.OrdinalIgnoreCase);
-                AddAssetRow(list, asset.Path, T7e.Get(asset.IsSource ? "Imported prefab" : material ? "Material" : "Texture"),
-                    asset.IsSource ? "view_in_ar" : material ? "palette" : "image");
+                if (asset.IsSource)
+                    AddAssetRow(list, asset.Path, T7e.Get("Imported prefab"), "view_in_ar");
+                else if (Path.GetExtension(asset.Path).Equals(".mat", StringComparison.OrdinalIgnoreCase))
+                    AddAssetRow(list, asset.Path, T7e.Get("Material"), "palette");
+                else
+                    AddAssetRow(list, asset.Path, T7e.Get("Texture"), "image");
             }
             content.Q<Label>("delete_count").text = list.childCount.ToString();
             SetHidden("delete_count", false);

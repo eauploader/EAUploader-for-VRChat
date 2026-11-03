@@ -159,8 +159,13 @@ namespace EAUploader.UI.Components
                     ushort c = (ushort)(a + nx);
                     ushort d = (ushort)(c + 1);
                     // UI Toolkit culls counter-clockwise triangles (y points down), so wind these clockwise.
-                    indices[k++] = a; indices[k++] = b; indices[k++] = c;
-                    indices[k++] = b; indices[k++] = d; indices[k++] = c;
+                    indices[k] = a;
+                    indices[k + 1] = b;
+                    indices[k + 2] = c;
+                    indices[k + 3] = b;
+                    indices[k + 4] = d;
+                    indices[k + 5] = c;
+                    k += 6;
                 }
             }
 

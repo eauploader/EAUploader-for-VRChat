@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+// Unity 2022.3 uses C# 9; file-scoped namespaces require C# 10. skipcq: CS-R1062
 namespace EAUploader.UI.Components
 {
     // Looks and behaves like DropdownField, but the list is drawn with UI Toolkit instead of the native
@@ -21,10 +22,10 @@ namespace EAUploader.UI.Components
 
         public new class UxmlTraits : BaseFieldTraits<string, UxmlStringAttributeDescription>
         {
-            private readonly UxmlStringAttributeDescription m_Choices = new UxmlStringAttributeDescription { name = "choices" };
-            private readonly UxmlIntAttributeDescription m_Index = new UxmlIntAttributeDescription { name = "index", defaultValue = -1 };
-            private readonly UxmlBoolAttributeDescription m_MultiSelect = new UxmlBoolAttributeDescription { name = "multi-select" };
-            private readonly UxmlBoolAttributeDescription m_Segmented = new UxmlBoolAttributeDescription { name = "segmented" };
+            private readonly UxmlStringAttributeDescription m_Choices = new() { name = "choices" };
+            private readonly UxmlIntAttributeDescription m_Index = new() { name = "index", defaultValue = -1 };
+            private readonly UxmlBoolAttributeDescription m_MultiSelect = new() { name = "multi-select" };
+            private readonly UxmlBoolAttributeDescription m_Segmented = new() { name = "segmented" };
 
             public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
             {
@@ -48,23 +49,23 @@ namespace EAUploader.UI.Components
             }
         }
 
-        public static readonly new string ussClassName = "dropdown-pro";
-        public static readonly new string inputUssClassName = "dropdown-pro__input";
-        public static readonly string openUssClassName = "dropdown-pro--open";
-        public static readonly string textUssClassName = "dropdown-pro__text";
-        public static readonly string arrowUssClassName = "dropdown-pro__arrow";
-        public static readonly string overlayUssClassName = "dropdown-pro__overlay";
-        public static readonly string shadowUssClassName = "dropdown-pro__shadow";
-        public static readonly string menuUssClassName = "dropdown-pro__menu";
-        public static readonly string itemUssClassName = "dropdown-pro__item";
-        public static readonly string itemSelectedUssClassName = "dropdown-pro__item--selected";
-        public static readonly string itemCheckUssClassName = "dropdown-pro__item-check";
-        public static readonly string itemLabelUssClassName = "dropdown-pro__item-label";
-        public static readonly string segmentsUssClassName = "dropdown-pro__segments";
-        public static readonly string segmentIndicatorUssClassName = "dropdown-pro__segment-indicator";
-        public static readonly string segmentIndicatorBoxUssClassName = "dropdown-pro__segment-indicator-box";
-        public static readonly string segmentUssClassName = "dropdown-pro__segment";
-        public static readonly string segmentActiveUssClassName = "dropdown-pro__segment--active";
+        public new const string ussClassName = "dropdown-pro";
+        public new const string inputUssClassName = "dropdown-pro__input";
+        public const string openUssClassName = "dropdown-pro--open";
+        public const string textUssClassName = "dropdown-pro__text";
+        public const string arrowUssClassName = "dropdown-pro__arrow";
+        public const string overlayUssClassName = "dropdown-pro__overlay";
+        public const string shadowUssClassName = "dropdown-pro__shadow";
+        public const string menuUssClassName = "dropdown-pro__menu";
+        public const string itemUssClassName = "dropdown-pro__item";
+        public const string itemSelectedUssClassName = "dropdown-pro__item--selected";
+        public const string itemCheckUssClassName = "dropdown-pro__item-check";
+        public const string itemLabelUssClassName = "dropdown-pro__item-label";
+        public const string segmentsUssClassName = "dropdown-pro__segments";
+        public const string segmentIndicatorUssClassName = "dropdown-pro__segment-indicator";
+        public const string segmentIndicatorBoxUssClassName = "dropdown-pro__segment-indicator-box";
+        public const string segmentUssClassName = "dropdown-pro__segment";
+        public const string segmentActiveUssClassName = "dropdown-pro__segment--active";
 
         // Gap between the field and the opened list, and the minimum distance kept from the window edges.
         private const float MenuGap = 4f;
@@ -163,6 +164,7 @@ namespace EAUploader.UI.Components
             }
         }
 
+        // Return a sorted immutable snapshot without exposing mutable selection state. skipcq: CS-P1026
         public IReadOnlyList<int> selectedIndices => _selected.OrderBy(i => i).ToList();
 
         public DropdownFieldPro() : this(null, null, -1) { }

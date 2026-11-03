@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 using static EAUploader.Config;
 using static EAUploader.T7e;
 
+// Unity 2022.3 uses C# 9; file-scoped namespaces require C# 10. skipcq: CS-R1062
 namespace EAUploader
 {
     public static class LanguageUtility
@@ -60,6 +61,7 @@ namespace EAUploader
                     return;
                 }
                 var translated = T7e.Get(e.text);
+                // Avoid resetting unchanged UI text during periodic localization. skipcq: CS-R1092
                 if (e.text != translated)
                 {
                     e.text = translated;
@@ -139,7 +141,7 @@ namespace EAUploader
                 }
 
                 string key = e.text;
-                if (allTranslations != null && allTranslations.ContainsKey(currentLanguage) && allTranslations[currentLanguage].ContainsKey(key))
+                if (allTranslations.ContainsKey(currentLanguage) && allTranslations[currentLanguage].ContainsKey(key))
                 {
                     e.text = allTranslations[currentLanguage][key];
                 }
@@ -177,7 +179,7 @@ namespace EAUploader
 
             string currentLanguage = GetCurrentLanguage();
 
-            if (allTranslations != null && allTranslations.ContainsKey(currentLanguage) && allTranslations[currentLanguage].ContainsKey(key))
+            if (allTranslations.ContainsKey(currentLanguage) && allTranslations[currentLanguage].ContainsKey(key))
             {
                 return allTranslations[currentLanguage][key];
             }

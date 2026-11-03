@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
+// Unity 2022.3 uses C# 9; file-scoped namespaces require C# 10. skipcq: CS-R1062
 namespace EAUploader.UI.Components
 {
     // A clickable card with a round check indicator on the left and the label text beside it.
@@ -11,11 +12,11 @@ namespace EAUploader.UI.Components
 
         public new class UxmlTraits : BaseFieldTraits<bool, UxmlBoolAttributeDescription> { }
 
-        public static readonly new string ussClassName = "check-box";
-        public static readonly string checkedUssClassName = "check-box--checked";
-        public static readonly new string inputUssClassName = "check-box__input";
-        public static readonly string inputMarkUssClassName = "check-box__input-mark";
-        public static readonly string inputCheckedUssClassName = "check-box__input--checked";
+        public new const string ussClassName = "check-box";
+        public const string checkedUssClassName = "check-box--checked";
+        public new const string inputUssClassName = "check-box__input";
+        public const string inputMarkUssClassName = "check-box__input-mark";
+        public const string inputCheckedUssClassName = "check-box__input--checked";
 
         const float IndicatorSize = 20f;
 

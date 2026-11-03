@@ -5,12 +5,13 @@ using EAUploader.CustomPrefabUtility;
 using System;
 using EAUploader.UI.Setup.EditTools;
 
+// Unity 2022.3 uses C# 9; file-scoped namespaces require C# 10. skipcq: CS-R1062
 namespace EAUploader.UI.Setup
 {
     public class PreviewImage : Image, IDisposable
     {
         private const int DefaultImageSize = 1024;
-        private static Rect _imageDimension = new Rect(0, 0, DefaultImageSize, DefaultImageSize);
+        private Rect _imageDimension;
         private readonly PreviewRenderUtility _previewUtility;
 
         public PreviewImage(PreviewRenderUtility previewUtility)

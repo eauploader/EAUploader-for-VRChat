@@ -200,6 +200,7 @@ namespace EAUploader.UI
                     Setup.Main.ShowContent(contentRoot, Setup.EditScreenMode.Upload);
                     break;
                 default:
+                    // Unknown screens leave the content unchanged.
                     break;
             }
 

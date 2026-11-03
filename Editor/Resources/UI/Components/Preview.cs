@@ -174,7 +174,7 @@ namespace EAUploader.UI.Components
 
         private void StepDamping()
         {
-            if (iMGUIContainer == null || iMGUIContainer.panel == null)
+            if (iMGUIContainer?.panel == null)
             {
                 StopDamping();
                 return;
@@ -684,7 +684,7 @@ namespace EAUploader.UI.Components
             if (obj != null) Object.DestroyImmediate(obj);
         }
 
-        private static void GetBackgroundColors(string theme, out Color center, out Color edge)
+        private static void ResolveBackgroundColors(string theme, out Color center, out Color edge)
         {
             switch (theme)
             {
@@ -710,7 +710,7 @@ namespace EAUploader.UI.Components
         /// </summary>
         private static Texture2D BuildBackground(string theme)
         {
-            GetBackgroundColors(theme, out var center, out var edge);
+            ResolveBackgroundColors(theme, out var center, out var edge);
 
             var texture = new Texture2D(BackgroundSize, BackgroundSize, TextureFormat.RGBA32, false)
             {

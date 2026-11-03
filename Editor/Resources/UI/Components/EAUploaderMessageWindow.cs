@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+// Unity 2022.3 uses C# 9; file-scoped namespaces require C# 10. skipcq: CS-R1062
 namespace EAUploader.UI.Components
 {
     public static class EAUploaderMessageWindow
     {
-        private static readonly Vector2 windowSize = new Vector2(600, 300);
+        private static readonly Vector2 windowSize = new(600, 300);
 
         /// <summary>
         /// ShowMsgを呼ぶと、EAUploaderのモーダルを表示する。

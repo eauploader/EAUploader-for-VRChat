@@ -17,6 +17,7 @@ using static EAUploader.UI.Windows.DialogPro;
 using Anatawa12.AvatarOptimizer;
 #endif
 
+// Unity 2022.3 uses C# 9; file-scoped namespaces require C# 10. skipcq: CS-R1062
 namespace EAUploader.UI.Upload
 {
     internal class UploadForm
@@ -27,8 +28,8 @@ namespace EAUploader.UI.Upload
         private static bool isLoggedin;
         private static bool isFormNull = true;
         private static bool isConfirmTerm = false;
-        private static bool Has_AAO = EAUploaderCore.HasAAO;
         private static bool isUploaded = false;
+        private static int infoRequestVersion;
 
         // 追加アップロード先。Windowsは常に対象なのでフラグを持たない。
         private static bool uploadForQuest = false;
@@ -120,7 +121,6 @@ namespace EAUploader.UI.Upload
             CloneVisualTree();
             CheckCanUpload();
 
-            CheckIsUploaded();
             Validate();
             UpdateStatus();
 
@@ -163,14 +163,7 @@ namespace EAUploader.UI.Upload
             root.Q<ShadowButton>("remove_thumbnail").clicked += RemoveThumbnail;
             root.Q<TextFieldPro>("content-name").RegisterValueChangedCallback(evt =>
             {
-                if (string.IsNullOrEmpty(root.Q<TextFieldPro>("content-name").GetValue()))
-                {
-                    isFormNull = true;
-                }
-                else
-                {
-                    isFormNull = false;
-                }
+                isFormNull = string.IsNullOrEmpty(root.Q<TextFieldPro>("content-name").GetValue());
                 CheckCanUpload();
             });
             root.Q<CheckBox>("confirm_term").RegisterValueChangedCallback(evt =>
@@ -223,8 +216,25 @@ namespace EAUploader.UI.Upload
             uploadButton.SetEnabled(!AvatarUploader.IsUploading && !isFormNull && isConfirmTerm);
         }
 
-        private static async Task CheckIsUploaded()
+        private static async void RefreshUploadedInfo()
         {
+            try
+            {
+                await CheckIsUploadedAsync();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+            }
+        }
+
+        private static async Task CheckIsUploadedAsync()
+        {
+            var requestVersion = ++infoRequestVersion;
+            var requestRoot = root;
+            var prefabPath = EAUploaderCore.selectedPrefabPath;
+            bool IsCurrent() => requestVersion == infoRequestVersion && requestRoot == root &&
+                prefabPath == EAUploaderCore.selectedPrefabPath;
             var contentName = root.Q<TextFieldPro>("content-name");
             var contentDescription = root.Q<TextFieldPro>("content-description");
             var releaseStatus = root.Q<DropdownFieldPro>("release-status");
@@ -235,14 +245,15 @@ namespace EAUploader.UI.Upload
             var saveButton = root.Q<ShadowButton>("save-info");
             var vrcInfo = root.Q<VisualElement>("vrc-info");
 
-            var avatar = await AvatarUploader.GetVRCAvatarAsync(EAUploaderCore.selectedPrefabPath);
+            var avatar = await AvatarUploader.GetVRCAvatarAsync(prefabPath);
+            if (!IsCurrent()) return;
             if (avatar == null)
             {
                 contentName.ClearValue();
                 contentDescription.ClearValue();
                 releaseStatus.value = "Private";
                 tags.SetTags(new List<string>());
-                thumbnail.image = PrefabPreview.GetPrefabPreview(EAUploaderCore.selectedPrefabPath);
+                thumbnail.image = PrefabPreview.GetPrefabPreview(prefabPath);
                 thumbnailUrl = null;
                 vrcInfo.EnableInClassList("hidden", true);
 
@@ -262,7 +273,7 @@ namespace EAUploader.UI.Upload
 
             // Get blueprint id
             var blueprintContainer = root.Q<VisualElement>("blueprint-container");
-            var prefab = PrefabManager.GetPrefab(EAUploaderCore.selectedPrefabPath);
+            var prefab = PrefabManager.GetPrefab(prefabPath);
             var pipelineManager = Utility.GetPipelineManager(prefab);
             var blueprintId = pipelineManager.blueprintId;
 
@@ -310,7 +321,12 @@ namespace EAUploader.UI.Upload
             isFormNull = false;
             releaseStatus.value = char.ToUpper(avatar.Value.ReleaseStatus[0]) + avatar.Value.ReleaseStatus.Substring(1);
             tags.SetTags(avatar.Value.Tags);
-            Texture2D cachedImage = await DownloadTexture(avatar.Value.ThumbnailImageUrl);
+            Texture2D cachedImage = await DownloadTextureAsync(avatar.Value.ThumbnailImageUrl);
+            if (!IsCurrent())
+            {
+                UnityEngine.Object.DestroyImmediate(cachedImage);
+                return;
+            }
             thumbnail.image = cachedImage;
             thumbnailUrl = avatar.Value.ThumbnailImageUrl;
 
@@ -354,7 +370,9 @@ namespace EAUploader.UI.Upload
             async void SaveChanges()
             {
                 if (!isUploaded) return;
-                await AvatarUploader.UpdateVRCAvatarAsync(EAUploaderCore.selectedPrefabPath, contentName.GetValue(), contentDescription.GetValue(), releaseStatus.value.ToLower(), tags.Tags, thumbnailUrl);
+                if (!IsCurrent()) return;
+                await AvatarUploader.UpdateVRCAvatarAsync(prefabPath, contentName.GetValue(), contentDescription.GetValue(), releaseStatus.value.ToLower(), tags.Tags, thumbnailUrl);
+                if (!IsCurrent()) return;
                 Main.RefreshSelectedAvatar();
                 updateButton.EnableInClassList("hidden", true);
             };
@@ -384,20 +402,23 @@ namespace EAUploader.UI.Upload
             return row;
         }
 
-        private static Task<Texture2D> DownloadTexture(string url)
+        private static Task<Texture2D> DownloadTextureAsync(string url)
         {
             var tcs = new TaskCompletionSource<Texture2D>();
             var request = UnityWebRequestTexture.GetTexture(url);
             var asyncOp = request.SendWebRequest();
             asyncOp.completed += (op) =>
             {
-                if (request.result == UnityWebRequest.Result.Success)
+                try
                 {
-                    tcs.SetResult(((DownloadHandlerTexture)request.downloadHandler).texture);
+                    if (request.result == UnityWebRequest.Result.Success)
+                        tcs.SetResult(((DownloadHandlerTexture)request.downloadHandler).texture);
+                    else
+                        tcs.SetException(new Exception(request.error));
                 }
-                else
+                finally
                 {
-                    tcs.SetException(new Exception(request.error));
+                    request.Dispose();
                 }
             };
             return tcs.Task;
@@ -443,7 +464,7 @@ namespace EAUploader.UI.Upload
                 var previewImage = PrefabPreview.GetPrefabPreview(path);
                 avatarThumbnail.image = previewImage;
 
-                CheckIsUploaded();
+                RefreshUploadedInfo();
                 Validate();
                 UpdateStatus();
 

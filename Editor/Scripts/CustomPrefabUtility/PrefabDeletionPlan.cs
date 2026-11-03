@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 
+// Unity 2022.3 uses C# 9; file-scoped namespaces require C# 10. skipcq: CS-R1062
 namespace EAUploader.CustomPrefabUtility
 {
     internal sealed class PrefabDeletionPlan
@@ -163,8 +164,11 @@ namespace EAUploader.CustomPrefabUtility
                 if (File.Exists(previewPath) && !AssetDatabase.DeleteAsset(previewPath))
                     throw new IOException("Could not delete: " + previewPath);
 
-                foreach (var asset in extras.OrderBy(a => a.IsSource ? 0 :
-                    Path.GetExtension(a.Path).Equals(".mat", StringComparison.OrdinalIgnoreCase) ? 1 : 2))
+                foreach (var asset in extras.OrderBy(a =>
+                {
+                    if (a.IsSource) return 0;
+                    return Path.GetExtension(a.Path).Equals(".mat", StringComparison.OrdinalIgnoreCase) ? 1 : 2;
+                }))
                     if (!AssetDatabase.DeleteAsset(asset.Path))
                         throw new IOException("Could not delete: " + asset.Path);
 
