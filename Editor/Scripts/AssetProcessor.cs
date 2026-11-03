@@ -25,10 +25,13 @@ namespace EAUploader
                 T7e.ClearCache();
             }
 
+            var prefabsChanged = false;
             foreach (var asset in importedAssets)
             {
                 if (asset.EndsWith(".prefab"))
                 {
+                    if (PrefabManager.IsMetadataSaveInProgress(asset)) continue;
+                    prefabsChanged = true;
                     var path = AssetDatabase.GetAssetPath(AssetDatabase.LoadAssetAtPath<GameObject>(asset));
                     if (string.IsNullOrEmpty(path)) continue;
 
@@ -44,7 +47,8 @@ namespace EAUploader
                 }
             }
 
-            if (deletedAssets.Any(a => a.EndsWith(".prefab")))
+            if (prefabsChanged || deletedAssets.Any(a => a.EndsWith(".prefab"))
+                || movedAssets.Any(a => a.EndsWith(".prefab")) || movedFromAssetPaths.Any(a => a.EndsWith(".prefab")))
             {
                 PrefabManager.InvalidateCache();
             }

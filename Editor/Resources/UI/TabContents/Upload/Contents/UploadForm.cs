@@ -279,7 +279,8 @@ namespace EAUploader.UI.Upload
                 void CopyBlueprintId()
                 {
                     EditorGUIUtility.systemCopyBuffer = blueprintId;
-                    DialogPro.Show(DialogType.Info, T7e.Get("Blueprint ID Copied"), T7e.Get("Blueprint ID has been copied to the clipboard."), T7e.Get("OK"), null, true);
+                    EAUploader.toasts?.Show(T7e.Get("Blueprint ID copied"), type: ToastType.Success,
+                        durationSeconds: 3, key: "clipboard:Copy Blueprint ID");
                 }
 
 

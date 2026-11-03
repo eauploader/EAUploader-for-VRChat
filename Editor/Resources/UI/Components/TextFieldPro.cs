@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine.UIElements;
 
 namespace EAUploader.UI.Components
@@ -32,15 +32,15 @@ namespace EAUploader.UI.Components
             set
             {
                 _placeholder = value;
-                if (string.IsNullOrWhiteSpace(_placeholder)) return;
-                if (!string.IsNullOrEmpty(text)) return;
-                SetValueWithoutNotify(_placeholder);
-                AddToClassList(ussClassName + "__placeholder");
+                _placeholderLabel.text = value ?? string.Empty;
+                RefreshPlaceholder();
             }
         }
 
         private string _placeholder;
-        private static readonly string PlaceholderClass = TextField.ussClassName + "__placeholder";
+        private readonly Label _placeholderLabel;
+        private readonly TextElement _textElement;
+        private IVisualElementScheduledItem _placeholderLayoutUpdate;
         public bool required
         {
             get => _required;
@@ -69,32 +69,41 @@ namespace EAUploader.UI.Components
                     {
                         text = "";
                     }
-                    FocusOut();
                 }
+                RefreshPlaceholder();
                 EnableInClassList(ussClassName + "__loading", loading);
             }
         }
 
         public TextFieldPro()
         {
-            RegisterCallback<FocusOutEvent>(evt => FocusOut());
-            RegisterCallback<FocusInEvent>(evt => FocusIn());
+            _placeholderLabel = new Label { pickingMode = PickingMode.Ignore };
+            _placeholderLabel.AddToClassList("text-field-pro__placeholder");
+            var input = this.Q<TextInputBase>();
+            _textElement = input.Q<TextElement>();
+            input.Add(_placeholderLabel);
+            _textElement.RegisterCallback<GeometryChangedEvent>(_ => UpdatePlaceholderLayout());
+            _placeholderLabel.RegisterCallback<GeometryChangedEvent>(_ => UpdatePlaceholderLayout());
+            RegisterCallback<InputEvent>(_ => RefreshPlaceholder());
             this.RegisterValueChangedCallback(ValueChanged);
+            RefreshPlaceholder();
+        }
+
+        public override void SetValueWithoutNotify(string newValue)
+        {
+            base.SetValueWithoutNotify(newValue);
+            RefreshPlaceholder();
         }
 
         public void Reset()
         {
-            if (string.IsNullOrEmpty(text))
-            {
-                FocusOut();
-                return;
-            };
-            RemoveFromClassList(PlaceholderClass);
+            RefreshPlaceholder();
             EnableInClassList("border-red", false);
         }
 
         private void ValueChanged(ChangeEvent<string> evt)
         {
+            RefreshPlaceholder();
             if (!_required) return;
             this.Q<TextInputBase>().EnableInClassList("border-red", string.IsNullOrWhiteSpace(evt.newValue));
         }
@@ -112,32 +121,48 @@ namespace EAUploader.UI.Components
             return text;
         }
 
-        private void FocusOut()
+        private void RefreshPlaceholder()
         {
-            if (string.IsNullOrWhiteSpace(_placeholder)) return;
-            if (!string.IsNullOrEmpty(text)) return;
-            SetValueWithoutNotify(_placeholder);
-            AddToClassList(ussClassName + "__placeholder");
+            _placeholderLabel?.EnableInClassList("text-field-pro__placeholder--hidden", !IsPlaceholder());
+            _placeholderLayoutUpdate?.Pause();
+            if (IsPlaceholder() && _textElement?.panel != null)
+            {
+                _placeholderLayoutUpdate = schedule.Execute(() =>
+                {
+                    _placeholderLayoutUpdate = null;
+                    UpdatePlaceholderLayout();
+                });
+            }
         }
 
-        private void FocusIn()
+        private void UpdatePlaceholderLayout()
         {
-            if (string.IsNullOrWhiteSpace(_placeholder)) return;
-            if (!this.ClassListContains(ussClassName + "__placeholder")) return;
-            this.value = string.Empty;
-            this.RemoveFromClassList(ussClassName + "__placeholder");
+            var parent = _placeholderLabel.parent;
+            var rect = _textElement.ChangeCoordinatesTo(parent, _textElement.contentRect);
+            var lineOffset = 0f;
+            if (multiline && IsPlaceholder())
+            {
+                var cursorLineHeight = _textElement.MeasureTextSize("\u200b", 0f, MeasureMode.Undefined, 0f, MeasureMode.Undefined).y;
+                var firstLine = _placeholderLabel.text.Split('\n')[0];
+                var placeholderLineHeight = _placeholderLabel.MeasureTextSize(string.IsNullOrEmpty(firstLine) ? "\u200b" : firstLine,
+                    0f, MeasureMode.Undefined, 0f, MeasureMode.Undefined).y;
+                if (cursorLineHeight > 1f && placeholderLineHeight > 1f)
+                    lineOffset = (cursorLineHeight - placeholderLineHeight) * 0.5f;
+            }
+            _placeholderLabel.style.left = rect.x - parent.resolvedStyle.borderLeftWidth;
+            _placeholderLabel.style.top = rect.y - parent.resolvedStyle.borderTopWidth + lineOffset;
+            _placeholderLabel.style.width = rect.width;
+            _placeholderLabel.style.height = rect.height;
         }
 
         public bool IsPlaceholder()
         {
-            var placeholderClass = TextField.ussClassName + "__placeholder";
-            return ClassListContains(placeholderClass);
+            return !loading && !string.IsNullOrWhiteSpace(_placeholder) && string.IsNullOrEmpty(text);
         }
 
         public void ClearValue()
         {
             SetValueWithoutNotify("");
-            FocusOut();
         }
     }
 }

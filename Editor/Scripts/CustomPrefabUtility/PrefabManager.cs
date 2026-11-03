@@ -9,6 +9,7 @@ using VRC.SDK3.Avatars.Components;
 
 namespace EAUploader.CustomPrefabUtility
 {
+    [InitializeOnLoad]
     public static class PrefabManager
     {
         // キャッシュフィールド
@@ -23,29 +24,72 @@ namespace EAUploader.CustomPrefabUtility
         // 自身の保存が誘発する再インポートでインポート日時を上書きしないための猶予(秒)
         private const double REIMPORT_DEBOUNCE_SECONDS = 5.0;
 
-        // 関連アセット削除の判定で参照元として走査するアセットの拡張子
-        private static readonly string[] REFERENCER_EXTENSIONS =
-            { ".prefab", ".unity", ".controller", ".overridecontroller", ".anim", ".asset", ".mat" };
-
         // 移行処理などで、取り込みを検知してもVariantを作りたくない間だけtrueにする
         internal static bool SuppressAutoVariantCreation;
 
-        private static bool pendingAssetSave;
+        private const double METADATA_SAVE_DELAY_SECONDS = 0.3;
+        private static readonly Dictionary<EAUploaderMeta, double> pendingPrefabSaves = new Dictionary<EAUploaderMeta, double>();
+        private static readonly HashSet<string> metadataSavePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        internal static void ScheduleSaveAssets(UnityEngine.Object dirtyTarget)
+        static PrefabManager()
         {
-            EditorUtility.SetDirty(dirtyTarget);
-            if (pendingAssetSave) return;
-
-            pendingAssetSave = true;
-            EditorApplication.delayCall += FlushPendingSave;
+            EditorApplication.update += PersistPendingMetadata;
+            AssemblyReloadEvents.beforeAssemblyReload += FlushPendingMetadataSaves;
+            EditorApplication.quitting += FlushPendingMetadataSaves;
         }
 
-        private static void FlushPendingSave()
+        internal static void ScheduleMetadataSave(EAUploaderMeta meta)
         {
-            if (!pendingAssetSave) return;
-            pendingAssetSave = false;
-            AssetDatabase.SaveAssets();
+            if (!meta) return;
+            EditorUtility.SetDirty(meta);
+            pendingPrefabSaves[meta] = EditorApplication.timeSinceStartup + METADATA_SAVE_DELAY_SECONDS;
+            UpdateCachedMetadata(meta);
+        }
+
+        internal static bool IsMetadataSaveInProgress(string path) => metadataSavePaths.Contains(path);
+
+        private static void PersistPendingMetadata()
+        {
+            if (EditorApplication.isCompiling || EditorApplication.isUpdating) return;
+            var now = EditorApplication.timeSinceStartup;
+            var due = pendingPrefabSaves.FirstOrDefault(entry => entry.Value <= now);
+            if (!ReferenceEquals(due.Key, null)) SavePendingPrefab(due.Key);
+        }
+
+        private static void SavePendingPrefab(EAUploaderMeta meta)
+        {
+            pendingPrefabSaves.Remove(meta);
+            if (!meta || !EditorUtility.IsDirty(meta)) return;
+            var path = AssetDatabase.GetAssetPath(meta);
+            if (string.IsNullOrEmpty(path)) return;
+
+            metadataSavePaths.Add(path);
+            try
+            {
+                AssetDatabase.StartAssetEditing();
+                try
+                {
+                    AssetDatabase.SaveAssetIfDirty(meta);
+                }
+                finally
+                {
+                    AssetDatabase.StopAssetEditing();
+                }
+            }
+            catch (Exception e)
+            {
+                pendingPrefabSaves[meta] = EditorApplication.timeSinceStartup + 1.0;
+                Debug.LogError($"Error saving item metadata for {path}: {e.Message}");
+            }
+            finally
+            {
+                metadataSavePaths.Remove(path);
+            }
+        }
+
+        private static void FlushPendingMetadataSaves()
+        {
+            foreach (var meta in pendingPrefabSaves.Keys.ToList()) SavePendingPrefab(meta);
         }
 
         public static void Initialize()
@@ -67,6 +111,19 @@ namespace EAUploader.CustomPrefabUtility
         {
             cachedPrefabs = null;
             lastUpdateTime = 0.0;
+            TagManager.InvalidateTagCache();
+        }
+
+        private static void UpdateCachedMetadata(EAUploaderMeta meta)
+        {
+            var prefabPath = AssetDatabase.GetAssetPath(meta);
+            var info = cachedPrefabs?.Find(prefab => prefab.Path == prefabPath);
+            if (info == null) return;
+            info.Status = meta.status;
+            info.Genre = meta.genre;
+            info.Type = meta.type;
+            info.Tags = meta.tags != null ? new List<string>(meta.tags) : new List<string>();
+            info.Memo = meta.memo;
         }
 
         /// <summary>
@@ -378,152 +435,38 @@ namespace EAUploader.CustomPrefabUtility
             return null;
         }
 
+        /// <summary>削除確認モーダルを開く。戻り値はモーダルを開けたかどうか。</summary>
+        [Obsolete("Deletion is asynchronous. Use ShowDeletePrefabDialog(prefabPath, completed) to receive the deletion result.")]
         public static bool ShowDeletePrefabDialog(string prefabPath)
         {
-            if (string.IsNullOrEmpty(prefabPath)) return false;
-
-            var itemFolder = ManagedPrefabs.GetItemFolder(prefabPath);
-
-            // 他に同じ取り込み元のVariantが残らない場合だけ、取り込み元も一緒に消せるようにする
-            var sourcePath = ManagedPrefabs.GetSourcePath(prefabPath);
-            var sourceIsOrphaned = sourcePath != null
-                && ManagedPrefabs.FindVariantsOf(sourcePath).All(p => p == prefabPath);
-
-            var deleteTargets = new List<string> { prefabPath };
-            if (sourceIsOrphaned) deleteTargets.Add(sourcePath);
-
-            // 削除対象からしか参照されていないMaterial/Textureを一緒に消せるようにする
-            List<string> orphanedAssets;
-            try
-            {
-                EditorUtility.DisplayProgressBar(
-                    T7e.Get("Delete Prefab"),
-                    T7e.Get("Looking for related assets..."),
-                    0.5f);
-                orphanedAssets = FindAssetsOnlyUsedBy(deleteTargets);
-            }
-            finally
-            {
-                EditorUtility.ClearProgressBar();
-            }
-
-            var message = T7e.Get("Are you sure you want to delete this prefab?") + "\n\n" +
-                          Path.GetFileNameWithoutExtension(prefabPath);
-
-            if (sourceIsOrphaned)
-            {
-                message += "\n\n" +
-                    T7e.Get("The imported prefab it was created from is no longer used and will also be deleted:") +
-                    "\n" + sourcePath;
-            }
-
-            if (orphanedAssets.Count > 0)
-            {
-                message += "\n\n" +
-                    T7e.Get("The following related assets are used only by this prefab and will also be deleted:") +
-                    $" ({orphanedAssets.Count})\n" + BuildAssetListPreview(orphanedAssets);
-            }
-
-            if (!EditorUtility.DisplayDialog(T7e.Get("Delete Prefab"), message, T7e.Get("Delete"), T7e.Get("Cancel")))
-            {
-                return false;
-            }
-
-            DeletePrefabPreview(prefabPath);
-
-            AssetDatabase.StartAssetEditing();
-            try
-            {
-                foreach (var assetPath in orphanedAssets)
-                {
-                    AssetDatabase.DeleteAsset(assetPath);
-                }
-                foreach (var assetPath in deleteTargets)
-                {
-                    AssetDatabase.DeleteAsset(assetPath);
-                }
-            }
-            finally
-            {
-                AssetDatabase.StopAssetEditing();
-            }
-
-            // 中身が無くなったアイテムフォルダは片付ける
-            ManagedPrefabs.DeleteItemFolderIfEmpty(itemFolder);
-
-            AssetDatabase.Refresh();
-
-            if (EAUploaderCore.selectedPrefabPath == prefabPath)
-            {
-                EAUploaderCore.selectedPrefabPath = null;
-            }
-
-            InvalidateCache();
-            return true;
+            return ShowDeletePrefabDialog(prefabPath, null);
         }
 
-        private static string BuildAssetListPreview(List<string> assetPaths)
+        /// <summary>削除確認モーダルを開き、削除完了時またはキャンセル時に結果を通知する。</summary>
+        public static bool ShowDeletePrefabDialog(string prefabPath, Action<bool> completed)
         {
-            const int MAX_LINES = 15;
-            var lines = assetPaths.Take(MAX_LINES).Select(Path.GetFileName).ToList();
-            if (assetPaths.Count > MAX_LINES)
-            {
-                lines.Add("... (+" + (assetPaths.Count - MAX_LINES) + ")");
-            }
-            return string.Join("\n", lines);
+            if (string.IsNullOrEmpty(prefabPath)) return false;
+            return new UI.Modals.DeletePrefabModal(prefabPath, completed).Open();
         }
 
-        /// <summary>
-        /// 指定Prefabが参照しているMaterial/Textureのうち、
-        /// プロジェクト内の他のアセットからは参照されていないものを返す。
-        /// </summary>
         internal static List<string> FindAssetsOnlyUsedBy(string prefabPath)
         {
-            return FindAssetsOnlyUsedBy(new[] { prefabPath });
-        }
-
-        /// <summary>
-        /// これから削除するアセット群が参照しているMaterial/Textureのうち、
-        /// 他のアセットからは参照されていないものを返す。
-        /// </summary>
-        internal static List<string> FindAssetsOnlyUsedBy(IEnumerable<string> deletedPaths)
-        {
-            var deleted = new HashSet<string>(deletedPaths.Where(p => !string.IsNullOrEmpty(p)));
-            if (deleted.Count == 0) return new List<string>();
-
+            var plan = new PrefabDeletionPlan(prefabPath);
+            var scan = plan.Scan();
             try
             {
-                var candidates = new HashSet<string>(
-                    AssetDatabase.GetDependencies(deleted.ToArray(), true)
-                        .Where(p => !deleted.Contains(p))
-                        .Where(p => p.StartsWith("Assets/", StringComparison.Ordinal))
-                        .Where(IsDeletableDependency));
-
-                if (candidates.Count == 0) return new List<string>();
-
-                // 削除候補と削除対象以外の全アセットを参照元として、依存関係を一括取得する
-                var referencers = AssetDatabase.GetAllAssetPaths()
-                    .Where(p => p.StartsWith("Assets/", StringComparison.Ordinal))
-                    .Where(p => !deleted.Contains(p) && !candidates.Contains(p))
-                    .Where(p => REFERENCER_EXTENSIONS.Contains(
-                        (Path.GetExtension(p) ?? string.Empty).ToLowerInvariant()))
-                    .ToArray();
-
-                var used = referencers.Length > 0
-                    ? new HashSet<string>(AssetDatabase.GetDependencies(referencers, true))
-                    : new HashSet<string>();
-
-                return candidates.Where(p => !used.Contains(p)).OrderBy(p => p).ToList();
+                while (scan.MoveNext()) { }
+                var selected = new HashSet<string>(plan.Assets.Where(a => !a.IsSource).Select(a => a.Path));
+                selected.ExceptWith(plan.GetBlockedAssets(selected));
+                return selected.OrderBy(p => p).ToList();
             }
-            catch (Exception e)
+            finally
             {
-                // 依存関係の解決に失敗した場合は関連アセットを消さず、Prefabのみの削除にフォールバックする
-                Debug.LogError($"Failed to resolve related assets: {e.Message}");
-                return new List<string>();
+                (scan as IDisposable)?.Dispose();
             }
         }
 
-        private static bool IsDeletableDependency(string assetPath)
+        internal static bool IsDeletableDependency(string assetPath)
         {
             var extension = (Path.GetExtension(assetPath) ?? string.Empty).ToLowerInvariant();
             switch (extension)
@@ -563,13 +506,23 @@ namespace EAUploader.CustomPrefabUtility
             var meta = Utility.GetEAUploaderMeta(prefab);
             if (meta == null) return;
 
-            meta.status = (meta.status == EAUploaderMeta.PrefabStatus.Pinned)
+            var status = (meta.status == EAUploaderMeta.PrefabStatus.Pinned)
                 ? EAUploaderMeta.PrefabStatus.Show
                 : EAUploaderMeta.PrefabStatus.Pinned;
 
-            EditorUtility.SetDirty(meta);
-            AssetDatabase.SaveAssets();
-            InvalidateCache();
+            SetPrefabStatus(prefabPath, status);
+        }
+
+        public static bool SetPrefabStatus(string prefabPath, EAUploaderMeta.PrefabStatus status)
+        {
+            var prefab = GetPrefab(prefabPath);
+            if (prefab == null) return false;
+            var meta = Utility.GetEAUploaderMeta(prefab);
+            if (meta == null || meta.status == status) return false;
+
+            meta.status = status;
+            ScheduleMetadataSave(meta);
+            return true;
         }
 
         public static bool IsPinned(string prefabPath)
@@ -630,12 +583,7 @@ namespace EAUploader.CustomPrefabUtility
 
             if (dirty)
             {
-                var info = cachedPrefabs?.Find(p => p.Path == path);
-                if (info != null)
-                {
-                    info.Genre = genre;
-                }
-                ScheduleSaveAssets(meta);
+                ScheduleMetadataSave(meta);
             }
         }
 

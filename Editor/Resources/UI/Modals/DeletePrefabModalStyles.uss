@@ -1,0 +1,324 @@
+.delete-prefab-dialog {
+    --delete-surface: #ffffff;
+    --delete-subtle: #fafafa;
+    --delete-border: #e4e4e7;
+    --delete-text: #18181b;
+    --delete-muted: #52525b;
+}
+
+.modal__container.delete-prefab-dialog .modal__shadow {
+    width: 560px;
+    min-width: 0;
+    max-width: 90%;
+    max-height: 90%;
+    flex-shrink: 1;
+}
+
+.delete-prefab-dialog .modal,
+.delete-prefab-dialog .modal__content,
+.delete-prefab {
+    flex-shrink: 1;
+    min-height: 0;
+}
+
+.delete-prefab-dialog .modal {
+    padding: 0;
+    border-width: 1px;
+    border-color: var(--delete-border);
+    border-radius: 8px;
+    background-color: var(--delete-surface);
+    overflow: hidden;
+}
+
+.delete-prefab-dialog .modal__title {
+    margin: 0;
+    padding: 20px 24px 0;
+    font-size: 18px;
+    color: var(--delete-text);
+}
+
+.delete-prefab-dialog .modal__content {
+    padding: 0;
+}
+
+.delete-prefab-dialog .modal__footer {
+    padding: 16px 24px;
+    border-top-width: 1px;
+    border-top-color: var(--delete-border);
+    background-color: var(--delete-subtle);
+}
+
+.delete-prefab__scroll {
+    max-height: 420px;
+    flex-shrink: 1;
+    min-height: 60px;
+}
+
+.delete-prefab__scroll .unity-scroll-view__content-container {
+    padding: 12px 24px 16px;
+}
+
+.delete-prefab__scroll .unity-scroll-view__vertical-scroller {
+    position: absolute;
+    right: 4px;
+    top: 0;
+    bottom: 0;
+}
+
+.delete-prefab Label {
+    white-space: normal;
+}
+
+.delete-prefab-dialog .delete-prefab__description {
+    margin: 0 0 16px;
+    padding: 0;
+    font-size: 13px;
+    color: var(--delete-muted);
+}
+
+.delete-prefab__target {
+    flex-direction: row;
+    align-items: center;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    border-width: 1px;
+    border-color: var(--delete-border);
+    border-radius: 4px;
+    background-color: var(--delete-subtle);
+}
+
+.delete-prefab-dialog .delete-prefab__target-icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    margin: 0 20px 0 0;
+    padding: 0;
+    font-size: 24px;
+    -unity-text-align: middle-center;
+    color: var(--delete-muted);
+}
+
+.delete-prefab__target-text,
+.delete-prefab__asset-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.delete-prefab-dialog .delete-prefab__name {
+    margin: 0;
+    padding: 0;
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: var(--delete-text);
+}
+
+.delete-prefab-dialog .delete-prefab__target-caption,
+.delete-prefab-dialog .delete-prefab__help,
+.delete-prefab-dialog .delete-prefab__status {
+    margin: 4px 0 0;
+    padding: 0;
+    font-size: 12px;
+    color: var(--delete-muted);
+}
+
+.delete-prefab-dialog .delete-prefab__help {
+    margin: 0 0 16px;
+}
+
+.delete-prefab-dialog .delete-prefab__status {
+    margin-bottom: 12px;
+}
+
+.delete-prefab__details {
+    border-color: var(--delete-border);
+    border-radius: 4px;
+}
+
+.delete-prefab-dialog .delete-prefab__details > Button {
+    padding: 10px 12px;
+    background-color: var(--delete-surface);
+}
+
+.delete-prefab-dialog .delete-prefab__details > Button:hover {
+    background-color: var(--delete-subtle);
+}
+
+.delete-prefab-dialog .delete-prefab__details-title {
+    flex-grow: 1;
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+    color: var(--delete-text);
+}
+
+.delete-prefab-dialog .delete-prefab__details-icon,
+.delete-prefab-dialog .delete-prefab__chevron {
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    color: var(--delete-muted);
+}
+
+.delete-prefab-dialog .delete-prefab__details-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-right: 10px;
+    -unity-text-align: middle-center;
+}
+
+.delete-prefab__details-body {
+    height: 0;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+#deletion_list {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    flex-shrink: 0;
+}
+
+.delete-prefab__details--open .delete-prefab__chevron {
+    rotate: 180deg;
+}
+
+.delete-prefab-dialog .delete-prefab__count {
+    margin: 0 8px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    background-color: var(--delete-subtle);
+    font-size: 12px;
+    color: var(--delete-muted);
+}
+
+.delete-prefab__asset {
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 12px;
+    border-top-width: 1px;
+    border-top-color: var(--delete-border);
+}
+
+.delete-prefab-dialog .delete-prefab__asset-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin: 0 10px 0 0;
+    padding: 0;
+    font-size: 18px;
+    -unity-text-align: middle-center;
+    color: var(--delete-muted);
+}
+
+.delete-prefab__asset-heading {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.delete-prefab-dialog .delete-prefab__asset-name {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 0 8px 0 0;
+    padding: 0;
+    font-size: 13px;
+    -unity-font-style: normal;
+    color: var(--delete-text);
+}
+
+.delete-prefab-dialog .delete-prefab__asset-kind,
+.delete-prefab-dialog .delete-prefab__path {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    color: var(--delete-muted);
+}
+
+.delete-prefab-dialog .delete-prefab__path {
+    margin-top: 2px;
+}
+
+.delete-prefab-dialog .delete-prefab__summary {
+    margin: 0;
+    padding: 0 24px 16px;
+    font-size: 13px;
+    color: var(--delete-muted);
+}
+
+.delete-prefab-dialog .delete-prefab__error {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--danger);
+}
+
+.delete-prefab-dialog .delete-prefab__action {
+    min-height: 34px;
+    padding: 7px 16px;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.delete-prefab-dialog .delete-prefab__cancel {
+    border-width: 1px;
+    border-color: var(--delete-border);
+    background-color: var(--delete-surface);
+    color: var(--delete-text);
+}
+
+.delete-prefab-dialog .delete-prefab__cancel:hover {
+    border-color: var(--default-selected);
+    background-color: var(--delete-subtle);
+}
+
+.delete-prefab-dialog .delete-prefab__confirm {
+    color: white;
+    background-color: var(--danger);
+}
+
+.delete-prefab-dialog .delete-prefab__confirm > Label,
+.delete-prefab-dialog .delete-prefab__confirm > MaterialIcon {
+    color: white;
+}
+
+.delete-prefab-dialog .delete-prefab__confirm > MaterialIcon {
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.delete-prefab-dialog .delete-prefab__confirm:hover {
+    background-color: var(--danger-hover);
+}
+
+.delete-prefab-dialog .delete-prefab__confirm:active {
+    background-color: var(--danger-selected);
+}
+
+.delete-prefab-dialog .delete-prefab__confirm:disabled {
+    opacity: 0.45;
+}
+
+.delete-prefab__hidden {
+    display: none;
+}
+
+.dark .delete-prefab-dialog {
+    --delete-surface: #333333;
+    --delete-subtle: #2b2b2b;
+    --delete-border: #4a4a4a;
+    --delete-text: #f4f4f5;
+    --delete-muted: #c0c0c8;
+}
+
+.pastel .delete-prefab-dialog {
+    --delete-surface: #fffdfc;
+    --delete-subtle: #fdf3f6;
+    --delete-border: #f7d9e1;
+    --delete-text: #8b4513;
+    --delete-muted: #805651;
+}

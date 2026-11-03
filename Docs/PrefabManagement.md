@@ -89,12 +89,15 @@ Import entry points: drag & drop onto the Avatar List, the Import modal (`.prefa
 
 ## Deletion
 
-`PrefabManager.ShowDeletePrefabDialog(path)`:
+`PrefabManager.ShowDeletePrefabDialog(path, completed)`:
 
-1. Collects the Variant and, if no other Variant uses it, its source Prefab.
-2. Finds materials and textures referenced only by the deleted assets (`FindAssetsOnlyUsedBy`) by scanning dependencies of all other `.prefab/.unity/.controller/.overridecontroller/.anim/.asset/.mat` assets.
-3. Shows a confirmation dialog listing everything that will be deleted.
-4. Deletes the preview, the assets, and the item folder if it became empty, then clears the selection if needed.
+1. Opens an in-window UI Toolkit modal immediately, with the Variant name and path.
+2. Finds its source Prefab, materials and textures on the Editor thread, showing progress in the modal. As in the original implementation, reference checks are limited to `.prefab/.unity/.controller/.overridecontroller/.anim/.asset/.mat` files under `Assets/`, with their recursive dependencies fetched in one bulk query. Assets used by these other assets cannot be selected.
+3. Includes all deletable related assets and shows a brief deletion summary. The details accordion starts collapsed and displays a read-only list of the actual deletion targets: the Prefab, its existing preview image, and deletable related assets, with file names and paths. There are no individual selection controls. Shared assets and dependencies needed by retained assets are excluded. Confirmation is enabled once the search completes. Search can be cancelled without deleting anything.
+4. Reuses completed search results while the asset database dependency version and project revision are unchanged. Asset changes invalidate the cache; stale results are searched again before deletion. GUIDs are checked on every deletion. A changed target list requires confirmation again. A deletion failure stops further deletion and is reported in the modal.
+5. Removes the item folder if empty, clears the selection if needed, and calls `completed(true)` on success or `completed(false)` on cancellation.
+
+The return value indicates whether the modal opened. The legacy one-argument overload is obsolete: deletion is asynchronous, so callers must use the callback to determine its outcome.
 
 ## Legacy migration (`LegacyPrefabMigration`)
 

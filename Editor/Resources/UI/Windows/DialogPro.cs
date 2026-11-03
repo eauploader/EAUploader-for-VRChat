@@ -63,7 +63,12 @@ namespace EAUploader.UI.Windows
 
             if (copyButton != null)
             {
-                copyButton.clicked += () => EditorGUIUtility.systemCopyBuffer = message;
+                copyButton.clicked += () =>
+                {
+                    EditorGUIUtility.systemCopyBuffer = message;
+                    EAUploader.toasts?.Show(T7e.Get("Copied to clipboard"), type: ToastType.Success,
+                        durationSeconds: 3, key: "clipboard:message");
+                };
             }
 
             if (okButton != null)
@@ -140,7 +145,12 @@ namespace EAUploader.UI.Windows
 
             if (copyButton != null)
             {
-                copyButton.clicked += () => EditorGUIUtility.systemCopyBuffer = message;
+                copyButton.clicked += () =>
+                {
+                    EditorGUIUtility.systemCopyBuffer = message;
+                    EAUploader.toasts?.Show(T7e.Get("Copied to clipboard"), type: ToastType.Success,
+                        durationSeconds: 3, key: "clipboard:message");
+                };
             }
             if (okButton != null)
             {

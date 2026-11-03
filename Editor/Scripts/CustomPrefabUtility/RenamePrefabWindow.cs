@@ -23,7 +23,8 @@ namespace EAUploader.CustomPrefabUtility
             wnd.minSize = new Vector2(400, 200);
             wnd.maxSize = wnd.minSize;
 
-            wnd.rootVisualElement.style.unityFont = AssetDatabase.LoadAssetAtPath<UnityEngine.Font>("Assets/EAUploader/UI/Noto_Sans_JP SDF.ttf");
+            wnd.rootVisualElement.style.unityFontDefinition = FontDefinition.FromSDFFont(
+                Resources.Load<UnityEngine.TextCore.Text.FontAsset>("UI/EAUploaderFont"));
 
             var visualTree = new VisualElement();
             var newPrefabName = new TextField("新しいPrefabの名前")

@@ -55,7 +55,7 @@ Static methods marked with `[EAUPlugin]` (either `EAUploader.EAUPluginAttribute`
 
 | Class | Members |
 | --- | --- |
-| `PrefabAPI` | `UpdatePrefabInfo()`, `ImportPrefab(path)`, `GetPrefab(path)`, `ShowDeletePrefabDialog(path)`, `DeletePrefabPreview(path)`, `PinPrefab(path)`, `GetAvatarDescriptor(path)`, `IsPinned(path)`, `SavePrefab(prefab, path)` |
+| `PrefabAPI` | `UpdatePrefabInfo()`, `ImportPrefab(path)`, `GetPrefab(path)`, `ShowDeletePrefabDialog(path, completed)`, `DeletePrefabPreview(path)`, `PinPrefab(path)`, `GetAvatarDescriptor(path)`, `IsPinned(path)`, `SavePrefab(prefab, path)` |
 | `PrefabPreviewAPI` | `GeneratePreview`, `GenerateAndSaveAllPrefabPreviews`, `SavePrefabPreview`, `LoadTextureFromFile`, `SaveTextureToFile`, `GetPreviewImagePath`, `GetPrefabPreview` |
 | `ShaderAPI` | `CheckShaders`, `GetExistingShaders`, `CheckShadersInPrefabs`, `CheckAvatarHasShader` |
 | `VRMAPI` | `ImportVRM(path)` |

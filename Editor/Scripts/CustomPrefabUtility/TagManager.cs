@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ namespace EAUploader.CustomPrefabUtility
     /// 「どのPrefabにどのタグが付いているか」は各Prefabの EAUploaderMeta.tags が持つ。
     /// タグ名とグループ名の比較は大文字小文字を区別しない。
     /// </summary>
+    [InitializeOnLoad]
     public static class TagManager
     {
         private const string TAGS_PATH = "Assets/EAUploader/tags.json";
@@ -39,8 +41,23 @@ namespace EAUploader.CustomPrefabUtility
             public List<TagGroupData> groups = new List<TagGroupData>();
         }
 
-        // JSONの読み込み結果。追加/削除のたびに破棄する。
+        // JSONの読み込み結果。
         private static TagRegistry cachedRegistry;
+        private static List<string> cachedAllTags;
+        private const double SAVE_DELAY_SECONDS = 0.3;
+        private static string pendingRegistryJson;
+        private static string activeRegistryJson;
+        private static double registrySaveAt;
+        private static Task registryWrite;
+
+        static TagManager()
+        {
+            EditorApplication.update += PersistPendingChanges;
+            AssemblyReloadEvents.beforeAssemblyReload += FlushPendingWrites;
+            EditorApplication.quitting += FlushPendingWrites;
+        }
+
+        internal static void InvalidateTagCache() => cachedAllTags = null;
 
         #region Tags
 
@@ -50,8 +67,9 @@ namespace EAUploader.CustomPrefabUtility
         /// </summary>
         public static List<string> GetAllTags()
         {
+            if (cachedAllTags != null) return new List<string>(cachedAllTags);
             var registry = LoadRegistry();
-            var merged = new List<string>(registry.tags);
+            var merged = new HashSet<string>(registry.tags, StringComparer.OrdinalIgnoreCase);
 
             // JSONを手で消した場合などでも、使用中のタグが候補から消えないようにする
             foreach (var info in PrefabManager.GetAllPrefabs())
@@ -60,12 +78,12 @@ namespace EAUploader.CustomPrefabUtility
 
                 foreach (var tag in info.Tags)
                 {
-                    if (!Contains(merged, tag)) merged.Add(tag);
+                    merged.Add(tag);
                 }
             }
 
-            merged.Sort(StringComparer.OrdinalIgnoreCase);
-            return merged;
+            cachedAllTags = merged.OrderBy(tag => tag, StringComparer.OrdinalIgnoreCase).ToList();
+            return new List<string>(cachedAllTags);
         }
 
         /// <summary>
@@ -85,6 +103,11 @@ namespace EAUploader.CustomPrefabUtility
             if (existing != null) return existing;
 
             registry.tags.Add(normalized);
+            if (cachedAllTags != null && !Contains(cachedAllTags, normalized))
+            {
+                cachedAllTags.Add(normalized);
+                cachedAllTags.Sort(StringComparer.OrdinalIgnoreCase);
+            }
             SaveRegistry(registry);
             return normalized;
         }
@@ -111,7 +134,7 @@ namespace EAUploader.CustomPrefabUtility
                 RemoveTagFromPrefab(info.Path, normalized);
             }
 
-            PrefabManager.InvalidateCache();
+            cachedAllTags?.RemoveAll(t => string.Equals(t, normalized, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -280,17 +303,17 @@ namespace EAUploader.CustomPrefabUtility
         /// <returns>付与した場合はtrue。既に付いていた場合や無効な名前の場合はfalse</returns>
         public static bool AddTagToPrefab(string prefabPath, string tag)
         {
-            var normalized = RegisterTag(tag);
-            if (normalized == null) return false;
-
             var meta = GetMeta(prefabPath);
             if (meta == null) return false;
+
+            var normalized = RegisterTag(tag);
+            if (normalized == null) return false;
 
             if (meta.tags == null) meta.tags = new List<string>();
             if (Contains(meta.tags, normalized)) return false;
 
             meta.tags.Add(normalized);
-            Save(meta);
+            PrefabManager.ScheduleMetadataSave(meta);
             return true;
         }
 
@@ -306,7 +329,7 @@ namespace EAUploader.CustomPrefabUtility
                 t => string.Equals(t, normalized, StringComparison.OrdinalIgnoreCase));
             if (removed == 0) return;
 
-            Save(meta);
+            PrefabManager.ScheduleMetadataSave(meta);
         }
 
         #endregion
@@ -348,11 +371,62 @@ namespace EAUploader.CustomPrefabUtility
             return Utility.GetEAUploaderMeta(prefab);
         }
 
-        private static void Save(EAUploaderMeta meta)
+        private static void PersistPendingChanges()
         {
-            EditorUtility.SetDirty(meta);
-            AssetDatabase.SaveAssets();
-            PrefabManager.InvalidateCache();
+            CompleteRegistryWrite(false);
+            if (EditorApplication.isCompiling || EditorApplication.isUpdating) return;
+
+            var now = EditorApplication.timeSinceStartup;
+            if (registryWrite != null || pendingRegistryJson == null || now < registrySaveAt) return;
+            activeRegistryJson = pendingRegistryJson;
+            pendingRegistryJson = null;
+            var json = activeRegistryJson;
+            var path = Path.GetFullPath(TAGS_PATH);
+            registryWrite = Task.Run(() => WriteRegistrySnapshot(path, json));
+        }
+
+        private static void CompleteRegistryWrite(bool wait)
+        {
+            if (registryWrite == null || (!wait && !registryWrite.IsCompleted)) return;
+            try
+            {
+                registryWrite.GetAwaiter().GetResult();
+            }
+            catch (Exception e)
+            {
+                pendingRegistryJson = pendingRegistryJson ?? activeRegistryJson;
+                registrySaveAt = EditorApplication.timeSinceStartup + 1.0;
+                Debug.LogError($"Error saving tags: {e.Message}");
+            }
+            finally
+            {
+                activeRegistryJson = null;
+                registryWrite = null;
+            }
+        }
+
+        private static void FlushPendingWrites()
+        {
+            CompleteRegistryWrite(true);
+            if (pendingRegistryJson == null) return;
+            try
+            {
+                WriteRegistrySnapshot(Path.GetFullPath(TAGS_PATH), pendingRegistryJson);
+                pendingRegistryJson = null;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error saving tags: {e.Message}");
+            }
+        }
+
+        private static void WriteRegistrySnapshot(string path, string json)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            var temporary = path + ".tmp";
+            File.WriteAllText(temporary, json);
+            if (File.Exists(path)) File.Replace(temporary, path, null);
+            else File.Move(temporary, path);
         }
 
         private static TagRegistry LoadRegistry()
@@ -392,22 +466,8 @@ namespace EAUploader.CustomPrefabUtility
         private static void SaveRegistry(TagRegistry registry)
         {
             cachedRegistry = registry;
-
-            try
-            {
-                var directory = Path.GetDirectoryName(TAGS_PATH);
-                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                }
-
-                File.WriteAllText(TAGS_PATH, JsonUtility.ToJson(registry, true));
-                AssetDatabase.ImportAsset(TAGS_PATH);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Error saving tags: {e.Message}");
-            }
+            pendingRegistryJson = JsonUtility.ToJson(registry, true);
+            registrySaveAt = EditorApplication.timeSinceStartup + SAVE_DELAY_SECONDS;
         }
 
         #endregion

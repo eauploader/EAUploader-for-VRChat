@@ -62,6 +62,7 @@ namespace EAUploader.UI.Components
         public static readonly string itemLabelUssClassName = "dropdown-pro__item-label";
         public static readonly string segmentsUssClassName = "dropdown-pro__segments";
         public static readonly string segmentIndicatorUssClassName = "dropdown-pro__segment-indicator";
+        public static readonly string segmentIndicatorBoxUssClassName = "dropdown-pro__segment-indicator-box";
         public static readonly string segmentUssClassName = "dropdown-pro__segment";
         public static readonly string segmentActiveUssClassName = "dropdown-pro__segment--active";
 
@@ -69,9 +70,9 @@ namespace EAUploader.UI.Components
         private const float MenuGap = 4f;
         private const float WindowMargin = 4f;
         // The list slides this far (px) while it fades in. It comes from the side it opens away from.
-        private const float SlideDistance = 8f;
+        internal const float SlideDistance = 8f;
         // Rough size of the list before it has been laid out; only used to pick the slide direction. Keep in sync with the USS.
-        private const float EstimatedItemHeight = 34f;
+        private const float EstimatedItemHeight = 29f;
         private const float EstimatedMenuPadding = 10f;
         private const float MenuMaxHeight = 320f;
 
@@ -237,8 +238,17 @@ namespace EAUploader.UI.Components
             _segments.Clear();
             _segmentButtons.Clear();
 
-            _segmentIndicator = new VisualElement { pickingMode = PickingMode.Ignore };
+            _segmentIndicator = new Shadow
+            {
+                shadowBlur = 6,
+                shadowOffsetY = 2,
+                shadowOpacity = 0.08f,
+                pickingMode = PickingMode.Ignore
+            };
             _segmentIndicator.AddToClassList(segmentIndicatorUssClassName);
+            var indicatorBox = new VisualElement { pickingMode = PickingMode.Ignore };
+            indicatorBox.AddToClassList(segmentIndicatorBoxUssClassName);
+            _segmentIndicator.Add(indicatorBox);
             _segments.Add(_segmentIndicator);
             for (var i = 0; i < _choices.Count; i++)
             {

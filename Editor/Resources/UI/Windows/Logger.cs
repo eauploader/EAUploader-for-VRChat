@@ -313,7 +313,12 @@ namespace EAUploader.UI.Windows
                 // コピー: エラーレポートをクリップボードにコピー
                 if (copyButton != null)
                 {
-                    copyButton.clicked += () => EditorGUIUtility.systemCopyBuffer = fullReport;
+                    copyButton.clicked += () =>
+                    {
+                        EditorGUIUtility.systemCopyBuffer = fullReport;
+                        EAUploader.toasts?.Show(T7e.Get("Copied to clipboard"), type: Components.ToastType.Success,
+                            durationSeconds: 3, key: "clipboard:report");
+                    };
                 }
 
                 // OK: モーダルを閉じる

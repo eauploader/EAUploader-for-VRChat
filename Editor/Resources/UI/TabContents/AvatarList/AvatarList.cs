@@ -727,10 +727,7 @@ namespace EAUploader.UI.AvatarList
 
         private void Delete()
         {
-            if (PrefabManager.ShowDeletePrefabDialog(prefabInfo.Path))
-            {
-                Main.UpdateCards();
-            }
+            PrefabManager.ShowDeletePrefabDialog(prefabInfo.Path, null);
         }
     }
 }

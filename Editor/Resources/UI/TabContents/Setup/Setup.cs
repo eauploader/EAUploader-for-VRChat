@@ -377,44 +377,206 @@ namespace EAUploader.UI.Setup
 
         #region Tags
 
-        // 入力に対して出す候補の最大件数
-        private const int MAX_TAG_SUGGESTIONS = 8;
+        private static VisualElement tagDropdown;
+        private static VisualElement tagDropdownControl;
+        private static VisualElement tagDropdownHost;
+        private static bool tagDropdownOpen;
+        private static bool tagDropdownAnimationPending;
+        private static IVisualElementScheduledItem tagDropdownReveal;
 
         /// <summary>
         /// タグの追加欄と、付いているタグの一覧を組み立てる。
-        /// 入力欄に打ち込むと、一致する既存タグが候補として下に並ぶ。
-        /// 一覧から探したい場合は、その下のドロップダウンからも選べる。
+        /// 入力欄で既存タグを絞り込み、候補を選ぶか新しいタグを追加する。
         /// </summary>
         private static void BuildTagSection()
         {
+            CloseTagDropdown();
+            tagDropdown = root.Q("tag_suggestions_section");
+            tagDropdownControl = root.Q("tag_control");
             var input = root.Q<TextFieldPro>("tag_input");
-            input.maxLength = TagManager.MAX_TAG_LENGTH;
+            input.maxLength = -1;
+            input.RegisterCallback<FocusInEvent>(_ =>
+            {
+                if (!input.ClassListContains("tag-editor__refocusing")) OpenTagDropdown();
+            });
+            input.RegisterCallback<PointerDownEvent>(_ => OpenTagDropdown());
             input.RegisterCallback<KeyDownEvent>(evt =>
             {
+                if (!string.IsNullOrEmpty(Input.compositionString)) return;
+                if (evt.keyCode == KeyCode.Escape)
+                {
+                    CloseTagDropdown();
+                    evt.StopPropagation();
+                    evt.PreventDefault();
+                    return;
+                }
+                if (evt.keyCode == KeyCode.DownArrow || evt.keyCode == KeyCode.UpArrow)
+                {
+                    OpenTagDropdown();
+                    FocusTagOption(evt.keyCode == KeyCode.DownArrow ? 1 : -1);
+                    evt.StopPropagation();
+                    evt.PreventDefault();
+                    return;
+                }
                 if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
                 {
-                    AddTagFromInput();
+                    if (tagDropdownOpen) AddTagFromInput();
+                    else OpenTagDropdown();
+                    evt.StopPropagation();
+                    evt.PreventDefault();
                 }
-            });
-            input.RegisterValueChangedCallback(_ => RefreshInputSuggestions());
-
-            root.Q<ShadowButton>("add_tag").clicked += AddTagFromInput;
-
-            var dropdown = root.Q<DropdownFieldPro>("tag_suggestions");
-            dropdown.RegisterValueChangedCallback(evt =>
+            }, TrickleDown.TrickleDown);
+            input.RegisterValueChangedCallback(_ =>
             {
-                if (string.IsNullOrEmpty(evt.newValue) || evt.newValue == TagPlaceholder()) return;
-
-                // 選んだ候補を入力欄に入れて、追加ボタン(またはEnter)で確定させる
-                input.value = evt.newValue;
-                input.Reset();
-                dropdown.SetValueWithoutNotify(TagPlaceholder());
+                if (!input.ClassListContains("tag-editor__refocusing")) OpenTagDropdown();
+                RefreshInputSuggestions();
             });
+
+            tagDropdown.Q<Button>("add_tag").clicked += AddTagFromInput;
+            tagDropdown.RegisterCallback<KeyDownEvent>(evt =>
+            {
+                if (evt.keyCode == KeyCode.Escape)
+                {
+                    RefocusTagInput();
+                    CloseTagDropdown();
+                }
+                else if (evt.keyCode == KeyCode.DownArrow || evt.keyCode == KeyCode.UpArrow)
+                {
+                    FocusTagOption(evt.keyCode == KeyCode.DownArrow ? 1 : -1);
+                }
+                else return;
+                evt.StopPropagation();
+                evt.PreventDefault();
+            });
+            tagDropdownControl.RegisterCallback<FocusOutEvent>(_ => ScheduleTagDropdownFocusCheck());
+            tagDropdown.RegisterCallback<FocusOutEvent>(_ => ScheduleTagDropdownFocusCheck());
+            tagDropdownControl.RegisterCallback<DetachFromPanelEvent>(_ => CloseTagDropdown());
+            tagDropdown.RegisterCallback<GeometryChangedEvent>(_ => AnimateTagDropdown());
+            root.Q<ScrollView>("meta_panel").verticalScroller.valueChanged += _ => CloseTagDropdown();
 
             RefreshTagSection();
         }
 
-        private static string TagPlaceholder() => T7e.Get("Select from existing tags");
+        private static void OpenTagDropdown()
+        {
+            if (tagDropdownOpen || tagDropdownControl?.panel == null) return;
+            tagDropdownHost = tagDropdownControl;
+            while (tagDropdownHost.parent != null && tagDropdownHost.parent != tagDropdownControl.panel.visualTree)
+                tagDropdownHost = tagDropdownHost.parent;
+
+            tagDropdownOpen = true;
+            tagDropdownAnimationPending = true;
+            tagDropdown.AddToClassList("tag-editor__dropdown-shell--preparing");
+            tagDropdown.style.opacity = 0f;
+            tagDropdown.style.translate = new Translate(0f, 0f);
+            tagDropdownControl.AddToClassList("tag-editor__control--open");
+            tagDropdownHost.Add(tagDropdown);
+            tagDropdown.RemoveFromClassList("hidden");
+            tagDropdownHost.RegisterCallback<PointerDownEvent>(OnTagOutsidePointerDown, TrickleDown.TrickleDown);
+            tagDropdownHost.RegisterCallback<GeometryChangedEvent>(OnTagDropdownHostGeometryChanged);
+            RefreshInputSuggestions();
+            PositionTagDropdown();
+            tagDropdownReveal = tagDropdown.schedule.Execute(AnimateTagDropdown);
+        }
+
+        private static void CloseTagDropdown()
+        {
+            if (!tagDropdownOpen) return;
+            tagDropdownOpen = false;
+            tagDropdownAnimationPending = false;
+            tagDropdownReveal?.Pause();
+            tagDropdownReveal = null;
+            tagDropdownHost?.UnregisterCallback<PointerDownEvent>(OnTagOutsidePointerDown, TrickleDown.TrickleDown);
+            tagDropdownHost?.UnregisterCallback<GeometryChangedEvent>(OnTagDropdownHostGeometryChanged);
+            tagDropdown.AddToClassList("hidden");
+            tagDropdownControl.RemoveFromClassList("tag-editor__control--open");
+            if (tagDropdownControl.parent != null) tagDropdownControl.parent.Add(tagDropdown);
+            else tagDropdown.RemoveFromHierarchy();
+            tagDropdownHost = null;
+        }
+
+        private static void AnimateTagDropdown()
+        {
+            var opensUpwards = PositionTagDropdown();
+            if (!tagDropdownOpen || !tagDropdownAnimationPending || tagDropdown.layout.width <= 0f || tagDropdown.layout.height <= 0f) return;
+
+            tagDropdownAnimationPending = false;
+            tagDropdownReveal?.Pause();
+            var dropdown = tagDropdown;
+            dropdown.style.translate = new Translate(0f, opensUpwards ? DropdownFieldPro.SlideDistance : -DropdownFieldPro.SlideDistance);
+            tagDropdownReveal = dropdown.schedule.Execute(() =>
+            {
+                if (!tagDropdownOpen || tagDropdown != dropdown) return;
+                dropdown.RemoveFromClassList("tag-editor__dropdown-shell--preparing");
+                tagDropdownReveal = dropdown.schedule.Execute(() =>
+                {
+                    if (!tagDropdownOpen || tagDropdown != dropdown) return;
+                    dropdown.style.opacity = 1f;
+                    dropdown.style.translate = new Translate(0f, 0f);
+                    tagDropdownReveal = null;
+                });
+            });
+        }
+
+        private static void OnTagOutsidePointerDown(PointerDownEvent evt)
+        {
+            var target = evt.target as VisualElement;
+            if (target != null && !tagDropdownControl.Contains(target) && !tagDropdown.Contains(target))
+                CloseTagDropdown();
+        }
+
+        private static void OnTagDropdownHostGeometryChanged(GeometryChangedEvent evt) => CloseTagDropdown();
+
+        private static void ScheduleTagDropdownFocusCheck()
+        {
+            tagDropdownControl.schedule.Execute(() =>
+            {
+                if (!tagDropdownOpen) return;
+                var focused = tagDropdownControl.panel?.focusController.focusedElement as VisualElement;
+                if (focused == null || (!tagDropdownControl.Contains(focused) && !tagDropdown.Contains(focused)))
+                    CloseTagDropdown();
+            });
+        }
+
+        private static void RefocusTagInput()
+        {
+            var input = root.Q<TextFieldPro>("tag_input");
+            input.AddToClassList("tag-editor__refocusing");
+            input.Focus();
+            input.schedule.Execute(() => input.RemoveFromClassList("tag-editor__refocusing"));
+        }
+
+        private static bool PositionTagDropdown()
+        {
+            if (!tagDropdownOpen || tagDropdownHost == null) return false;
+            var field = tagDropdownControl.worldBound;
+            var position = tagDropdownHost.WorldToLocal(field.position);
+            var width = Mathf.Min(field.width, tagDropdownHost.layout.width - 8f);
+            tagDropdown.style.width = width;
+            tagDropdown.style.left = Mathf.Clamp(position.x, 4f, Mathf.Max(4f, tagDropdownHost.layout.width - width - 4f));
+            var height = tagDropdown.layout.height;
+            if (float.IsNaN(height)) height = 0f;
+            var below = position.y + field.height + 4f;
+            var top = below + height <= tagDropdownHost.layout.height - 4f
+                ? below : Mathf.Max(4f, position.y - height - 4f);
+            tagDropdown.style.top = top;
+            return top < position.y;
+        }
+
+        private static void FocusTagOption(int direction)
+        {
+            var list = tagDropdown.Q<ScrollView>("tag_input_suggestions");
+            var options = list.Children().OfType<Button>().ToList();
+            var create = tagDropdown.Q<Button>("add_tag");
+            if (create.enabledSelf && !create.ClassListContains("hidden")) options.Add(create);
+            if (options.Count == 0) return;
+            var focused = tagDropdown.panel?.focusController.focusedElement;
+            var current = options.FindIndex(option => option == focused);
+            var next = current < 0 ? (direction > 0 ? 0 : options.Count - 1)
+                : (current + direction + options.Count) % options.Count;
+            options[next].Focus();
+            if (options[next] != create) list.ScrollTo(options[next]);
+        }
 
         private static void AddTagFromInput()
         {
@@ -426,14 +588,22 @@ namespace EAUploader.UI.Setup
 
         private static void AddTag(string tag)
         {
-            var added = TagManager.AddTagToPrefab(EAUploaderCore.selectedPrefabPath, tag);
+            if (tag != null && tag.Trim().Length > TagManager.MAX_TAG_LENGTH) return;
+            var normalized = TagManager.Normalize(tag);
+            if (normalized == null || TagManager.Contains(
+                TagManager.GetTags(EAUploaderCore.selectedPrefabPath), normalized)) return;
 
-            // 既に付いているタグや空文字の場合も、入力欄は消して次の入力に備える
-            root.Q<TextFieldPro>("tag_input")?.ClearValue();
-            HideInputSuggestions();
+            var added = TagManager.AddTagToPrefab(EAUploaderCore.selectedPrefabPath, tag);
+            if (!added) return;
+
+            var input = root.Q<TextFieldPro>("tag_input");
+            input.SetValueWithoutNotify(string.Empty);
+            input.Reset();
+            RefocusTagInput();
+            CloseTagDropdown();
             RefreshTagSection();
 
-            if (added) AvatarList.Main.RequestRefresh();
+            AvatarList.Main.RequestRefresh();
         }
 
         /// <summary>
@@ -441,70 +611,70 @@ namespace EAUploader.UI.Setup
         /// </summary>
         private static void RefreshInputSuggestions()
         {
-            var container = root.Q<VisualElement>("tag_input_suggestions");
+            var container = tagDropdown?.Q<ScrollView>("tag_input_suggestions");
             var input = root.Q<TextFieldPro>("tag_input");
             if (container == null || input == null) return;
 
             container.Clear();
 
-            var query = input.GetValue();
-            if (string.IsNullOrWhiteSpace(query))
-            {
-                container.EnableInClassList("hidden", true);
-                return;
-            }
-
             var attached = TagManager.GetTags(EAUploaderCore.selectedPrefabPath);
-            var matches = TagManager.GetAllTags()
+            var query = input.GetValue()?.Trim();
+            if (string.IsNullOrEmpty(query)) query = null;
+            var tooLong = query != null && query.Length > TagManager.MAX_TAG_LENGTH;
+            var duplicate = TagManager.Contains(attached, query);
+            var available = TagManager.GetAllTags()
                 .Where(t => !TagManager.Contains(attached, t))
-                .Where(t => t.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
-                .Take(MAX_TAG_SUGGESTIONS)
                 .ToList();
-
+            var matches = available
+                .Where(t => query == null || t.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
+                .ToList();
+            var canCreate = query != null && !tooLong && !duplicate && !TagManager.Contains(available, query);
+            var create = tagDropdown.Q<Button>("add_tag");
+            create.SetEnabled(canCreate);
+            create.EnableInClassList("hidden", !canCreate);
+            tagDropdown.Q("tag_create_separator").EnableInClassList("hidden", !canCreate || matches.Count == 0);
+            tagDropdown.Q<Label>("tag_create_name").text = query ?? string.Empty;
+            var hint = tagDropdown.Q<Label>("tag_input_hint");
+            hint.text = tooLong
+                ? string.Format(T7e.Get("Tag names can be up to {0} characters."), TagManager.MAX_TAG_LENGTH)
+                : T7e.Get(duplicate ? "This tag is already added."
+                    : query == null ? "Type to add a new tag." : "Press Enter to add a tag.");
+            hint.EnableInClassList("hidden", !tooLong && !duplicate && matches.Count > 0);
             container.EnableInClassList("hidden", matches.Count == 0);
 
             foreach (var tag in matches)
             {
                 // タグ名はユーザーの入力なので翻訳対象から外す
-                var button = new Button(() => AddTag(tag)) { text = tag };
+                var button = new Button(() => AddTag(tag)) { tooltip = tag };
                 button.AddToClassList("tag-suggestion");
-                button.AddToClassList("no-translate");
+                var label = new Label(tag);
+                label.AddToClassList("no-translate");
+                button.Add(label);
                 container.Add(button);
             }
         }
 
-        private static void HideInputSuggestions()
-        {
-            root?.Q<VisualElement>("tag_input_suggestions")?.EnableInClassList("hidden", true);
-        }
-
         /// <summary>
-        /// 付いているタグの表示と、候補ドロップダウンの中身を作り直す。
+        /// 付いているタグの表示と、追加できる候補を作り直す。
         /// </summary>
         private static void RefreshTagSection()
         {
             var prefabPath = EAUploaderCore.selectedPrefabPath;
 
             var chips = root.Q<VisualElement>("tag_chips");
-            chips.Clear();
+            var input = root.Q<TextFieldPro>("tag_input");
+            foreach (var chip in chips.Children().Where(child => child.ClassListContains("tag-chip--removable")).ToList())
+                chip.RemoveFromHierarchy();
 
             var tags = TagManager.GetTags(prefabPath);
             foreach (var tag in tags)
             {
-                chips.Add(CreateTagChip(tag));
+                chips.Insert(chips.IndexOf(input), CreateTagChip(tag));
             }
 
-            root.Q<Label>("tag_empty")?.EnableInClassList("hidden", tags.Count > 0);
+            input.placeholder = tags.Count > 0 ? string.Empty : T7e.Get("Search or create a tag");
 
-            // 既に付いているタグは候補から外す
-            var placeholder = TagPlaceholder();
-            var choices = new List<string> { placeholder };
-            choices.AddRange(TagManager.GetAllTags().Where(t => !TagManager.Contains(tags, t)));
-
-            var dropdown = root.Q<DropdownFieldPro>("tag_suggestions");
-            dropdown.choices = choices;
-            dropdown.SetValueWithoutNotify(placeholder);
-            dropdown.SetEnabled(choices.Count > 1);
+            RefreshInputSuggestions();
         }
 
         private static VisualElement CreateTagChip(string tag)
@@ -524,18 +694,8 @@ namespace EAUploader.UI.Setup
                 AvatarList.Main.RequestRefresh();
             });
             remove.AddToClassList("tag-chip__remove");
-            remove.style.backgroundColor = Color.clear;
-            remove.style.borderTopWidth = 0;
-            remove.style.borderBottomWidth = 0;
-            remove.style.borderLeftWidth = 0;
-            remove.style.borderRightWidth = 0;
-            remove.style.paddingLeft = 0;
-            remove.style.paddingRight = 0;
-            remove.style.marginLeft = 2;
-            remove.style.marginRight = 0;
-            remove.style.marginTop = 0;
-            remove.style.marginBottom = 0;
-            remove.Add(new MaterialIcon { icon = "close", style = { fontSize = 14 } });
+            remove.tooltip = T7e.Get("Remove tag");
+            remove.Add(new MaterialIcon { icon = "close" });
             chip.Add(remove);
 
             return chip;
@@ -561,47 +721,112 @@ namespace EAUploader.UI.Setup
             var details = root.Q<VisualElement>("meta_details");
             details.Clear();
 
+            var summary = new VisualElement();
+            summary.AddToClassList("meta-details__summary");
             if (info != null)
             {
-                details.Add(new Label(T7e.Get("Last Modified: ") + info.LastModified.ToString("yyyy/MM/dd HH:mm")));
+                summary.Add(CreateMetaValue("Last Updated", info.LastModified.ToString("yyyy/MM/dd HH:mm")));
             }
 
             if (Utility.CheckAvatarHasVRCAvatarDescriptor(prefab))
             {
-                details.Add(new Label(T7e.Get("Height: ") + Utility.GetAvatarHeight(prefab) + "m"));
+                summary.Add(CreateMetaValue("Avatar Height", Utility.GetAvatarHeight(prefab).ToString("0.##") + " m"));
             }
+            if (summary.childCount > 0) details.Add(summary);
 
             var pipelineManager = Utility.GetPipelineManager(prefab);
             if (pipelineManager != null && !string.IsNullOrEmpty(pipelineManager.blueprintId))
             {
-                var blueprintRow = new VisualElement { style = { flexDirection = FlexDirection.Row } };
-                blueprintRow.Add(new Label("Blueprint") { style = { flexGrow = 1 } });
-
-                var copyButton = new Button(() => EditorGUIUtility.systemCopyBuffer = pipelineManager.blueprintId)
-                { text = T7e.Get("Copy") };
-                blueprintRow.Add(copyButton);
-
+                var blueprintId = pipelineManager.blueprintId;
+                const string maskedBlueprintId = "••••••••••••••••";
+                var blueprintRow = CreateMetaValue("Blueprint ID", maskedBlueprintId);
+                blueprintRow.AddToClassList("meta-details__reference");
+                var blueprintValueRow = blueprintRow[1];
+                var blueprintValue = blueprintValueRow.Q<Label>(className: "meta-details__value");
+                blueprintValue.tooltip = string.Empty;
+                var blueprintVisible = false;
+                var visibilityIcon = new MaterialIcon("visibility");
+                var visibilityButton = new Button { tooltip = T7e.Get("Show Blueprint ID") };
+                visibilityButton.AddToClassList("meta-details__icon-button");
+                visibilityButton.Add(visibilityIcon);
+                visibilityButton.clicked += () =>
+                {
+                    blueprintVisible = !blueprintVisible;
+                    blueprintValue.text = blueprintVisible ? blueprintId : maskedBlueprintId;
+                    blueprintValue.tooltip = blueprintVisible ? blueprintId : string.Empty;
+                    visibilityIcon.icon = blueprintVisible ? "visibility_off" : "visibility";
+                    visibilityButton.tooltip = T7e.Get(blueprintVisible ? "Hide Blueprint ID" : "Show Blueprint ID");
+                };
+                blueprintValueRow.Add(visibilityButton);
+                blueprintValueRow.Add(CreateMetaCopyButton(blueprintId, "Copy Blueprint ID"));
                 details.Add(blueprintRow);
             }
 
-            details.Add(new Label(T7e.Get("Path: ") + info?.Path));
+            var path = !string.IsNullOrEmpty(info?.Path) ? info.Path : AssetDatabase.GetAssetPath(prefab);
+            if (!string.IsNullOrEmpty(path))
+            {
+                var pathRow = CreateMetaValue("Asset Path", path);
+                pathRow.AddToClassList("meta-details__reference");
+                pathRow.AddToClassList("meta-details__path");
+                pathRow[1].Add(CreateMetaCopyButton(path, "Copy Path"));
+                var reveal = new Button(() => EditorGUIUtility.PingObject(prefab))
+                {
+                    tooltip = T7e.Get("Show in Project")
+                };
+                reveal.AddToClassList("meta-details__icon-button");
+                reveal.Add(new MaterialIcon("folder_open"));
+                pathRow[1].Add(reveal);
+                details.Add(pathRow);
+            }
+        }
+
+        private static VisualElement CreateMetaValue(string title, string value)
+        {
+            var group = new VisualElement();
+            group.AddToClassList("meta-details__group");
+            var header = new VisualElement();
+            header.AddToClassList("meta-details__header");
+            var caption = new Label(T7e.Get(title));
+            caption.AddToClassList("meta-details__caption");
+            header.Add(caption);
+            group.Add(header);
+            var label = new Label(value) { tooltip = value };
+            label.AddToClassList("meta-details__value");
+            label.AddToClassList("no-translate");
+            var valueRow = new VisualElement();
+            valueRow.AddToClassList("meta-details__value-row");
+            valueRow.Add(label);
+            group.Add(valueRow);
+            return group;
+        }
+
+        private static Button CreateMetaCopyButton(string value, string title)
+        {
+            var icon = new MaterialIcon("content_copy");
+            var button = new Button { tooltip = T7e.Get(title) };
+            button.AddToClassList("meta-details__icon-button");
+            button.Add(icon);
+            IVisualElementScheduledItem reset = null;
+            button.clicked += () =>
+            {
+                EditorGUIUtility.systemCopyBuffer = value;
+                EAUploader.toasts?.Show(T7e.Get(title == "Copy Blueprint ID" ? "Blueprint ID copied" : "Path copied"),
+                    type: ToastType.Success, durationSeconds: 3, key: "clipboard:" + title);
+                reset?.Pause();
+                icon.icon = "check";
+                button.tooltip = T7e.Get("Copied");
+                reset = button.schedule.Execute(() =>
+                {
+                    icon.icon = "content_copy";
+                    button.tooltip = T7e.Get(title);
+                }).StartingIn(1200);
+            };
+            return button;
         }
 
         private static void SetStatus(EAUploaderMeta.PrefabStatus status)
         {
-            var prefab = PrefabManager.GetPrefab(EAUploaderCore.selectedPrefabPath);
-            if (prefab == null) return;
-
-            var meta = Utility.GetEAUploaderMeta(prefab);
-            if (meta == null || meta.status == status) return;
-
-            meta.status = status;
-            var info = PrefabManager.GetPrefabInfo(EAUploaderCore.selectedPrefabPath);
-            if (info != null)
-            {
-                info.Status = status;
-            }
-            PrefabManager.ScheduleSaveAssets(meta);
+            if (!PrefabManager.SetPrefabStatus(EAUploaderCore.selectedPrefabPath, status)) return;
 
             // もう一方のトグルと排他になるよう表示を合わせる
             root.Q<SlideToggle>("meta_pinned")
@@ -706,10 +931,11 @@ namespace EAUploader.UI.Setup
 
         private static void DeletePrefab()
         {
-            if (PrefabManager.ShowDeletePrefabDialog(EAUploaderCore.selectedPrefabPath))
+            PrefabManager.ShowDeletePrefabDialog(EAUploaderCore.selectedPrefabPath, deleted =>
             {
-                EAUploader.Navigate(EAUploaderScreen.AvatarList);
-            }
+                if (deleted || string.IsNullOrEmpty(EAUploaderCore.selectedPrefabPath))
+                    EAUploader.Navigate(EAUploaderScreen.AvatarList);
+            });
         }
 
         #endregion

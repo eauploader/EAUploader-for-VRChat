@@ -1038,6 +1038,58 @@
       "value": "最終更新: "
     },
     {
+      "key": "Last Updated",
+      "value": "最終更新"
+    },
+    {
+      "key": "Avatar Height",
+      "value": "アバターの高さ"
+    },
+    {
+      "key": "Blueprint ID",
+      "value": "Blueprint ID"
+    },
+    {
+      "key": "Asset Path",
+      "value": "保存先"
+    },
+    {
+      "key": "Copy Blueprint ID",
+      "value": "Blueprint IDをコピー"
+    },
+    {
+      "key": "Show Blueprint ID",
+      "value": "Blueprint IDを表示"
+    },
+    {
+      "key": "Hide Blueprint ID",
+      "value": "Blueprint IDを非表示"
+    },
+    {
+      "key": "Copy Path",
+      "value": "パスをコピー"
+    },
+    {
+      "key": "Copied",
+      "value": "コピーしました"
+    },
+    {
+      "key": "Blueprint ID copied",
+      "value": "Blueprint IDをコピーしました"
+    },
+    {
+      "key": "Path copied",
+      "value": "保存先のパスをコピーしました"
+    },
+    {
+      "key": "Copied to clipboard",
+      "value": "クリップボードにコピーしました"
+    },
+    {
+      "key": "Close notification",
+      "value": "通知を閉じる"
+    },
+    {
       "key": "Path: ",
       "value": "パス: "
     },
@@ -1068,6 +1120,10 @@
     {
       "key": "Memo",
       "value": "メモ"
+    },
+    {
+      "key": "Add a note...",
+      "value": "メモを入力..."
     },
     {
       "key": "Tag Settings",
@@ -1112,6 +1168,42 @@
     {
       "key": "Add a tag",
       "value": "タグを追加"
+    },
+    {
+      "key": "Search or create a tag",
+      "value": "タグを検索・新規追加"
+    },
+    {
+      "key": "Create new tag",
+      "value": "新しいタグを作成"
+    },
+    {
+      "key": "Type to add a new tag.",
+      "value": "タグ名を入力して追加できます。"
+    },
+    {
+      "key": "Add",
+      "value": "追加"
+    },
+    {
+      "key": "Press Enter to add a tag.",
+      "value": "Enterキーで追加できます。"
+    },
+    {
+      "key": "Tag names can be up to {0} characters.",
+      "value": "タグ名は{0}文字以内で入力してください。"
+    },
+    {
+      "key": "This tag is already added.",
+      "value": "このタグは追加済みです。"
+    },
+    {
+      "key": "Click an existing tag to add",
+      "value": "既存のタグをクリックして追加"
+    },
+    {
+      "key": "Remove tag",
+      "value": "タグを外す"
     },
     {
       "key": "Filter by tag",
@@ -1516,6 +1608,154 @@
     {
       "key": "Back",
       "value": "戻る"
+    },
+    {
+      "key": "The prefab and its preview will be deleted. This cannot be undone.",
+      "value": "Prefabとプレビュー画像を削除します。この操作は元に戻せません。"
+    },
+    {
+      "key": "Also delete related assets",
+      "value": "関連アセットも一緒に削除"
+    },
+    {
+      "key": "Select deletable assets",
+      "value": "削除できるものを全選択"
+    },
+    {
+      "key": "Deselect all",
+      "value": "すべての選択を解除"
+    },
+    {
+      "key": "Select the imported prefab, materials and textures to delete together. Assets used elsewhere are kept. To delete a texture, also select the material or imported prefab using it.",
+      "value": "一緒に削除する取り込み元Prefab・マテリアル・テクスチャを選んでください。他で使われているものは残します。テクスチャを削除するには、それを使うマテリアルや取り込み元Prefabも選択してください。"
+    },
+    {
+      "key": "Search again",
+      "value": "もう一度検索"
+    },
+    {
+      "key": "Checking the selected assets before deletion...",
+      "value": "削除前に選択したアセットの参照関係を再確認しています…"
+    },
+    {
+      "key": "Looking for related assets. You can delete only the prefab without waiting.",
+      "value": "関連アセットを調べています。Prefabのみの削除は、検索を待たずに実行できます。"
+    },
+    {
+      "key": "Could not check related assets. No assets were deleted. Please search again.",
+      "value": "関連アセットを確認できませんでした。削除は行っていません。もう一度検索してください。"
+    },
+    {
+      "key": "No related assets found. Only the prefab and its preview will be deleted.",
+      "value": "関連アセットは見つかりませんでした。Prefabとプレビュー画像のみ削除します。"
+    },
+    {
+      "key": "Related assets found:",
+      "value": "見つかった関連アセット："
+    },
+    {
+      "key": "Related assets changed. Review the selection and confirm deletion again.",
+      "value": "関連アセットの状態が変わりました。選択内容を確認して、もう一度削除を確定してください。"
+    },
+    {
+      "key": "Some assets could not be deleted. Check the paths below.",
+      "value": "削除できなかったアセットがあります。以下のパスを確認してください。"
+    },
+    {
+      "key": "Imported prefab",
+      "value": "取り込み元Prefab"
+    },
+    {
+      "key": "Used by other assets (kept)",
+      "value": "他のアセットでも使用中のため残します"
+    },
+    {
+      "key": "Used by an unselected related asset (kept)",
+      "value": "選択していない関連アセットで使用中のため残します"
+    },
+    {
+      "key": "Will be deleted together",
+      "value": "一緒に削除します"
+    },
+    {
+      "key": "Keep this asset",
+      "value": "このアセットは残します"
+    },
+    {
+      "key": "Prefab to delete:",
+      "value": "削除するPrefab："
+    },
+    {
+      "key": "Related assets selected:",
+      "value": "一緒に削除する関連アセット："
+    },
+    {
+      "key": "Delete prefab only",
+      "value": "Prefabのみ削除"
+    },
+    {
+      "key": "Delete selected assets",
+      "value": "選択したアセットを削除"
+    },
+    {
+      "key": "Unused related assets will also be deleted. Assets used elsewhere are kept. This cannot be undone.",
+      "value": "使われなくなる関連アセットもまとめて削除します。他でも使用中のものは残します。この操作は元に戻せません。"
+    },
+    {
+      "key": "Deletion details",
+      "value": "削除する内容の詳細"
+    },
+    {
+      "key": "Related assets to delete",
+      "value": "一緒に削除するアセット"
+    },
+    {
+      "key": "Delete all together",
+      "value": "すべてまとめて削除"
+    },
+    {
+      "key": "Keep related assets",
+      "value": "関連アセットを残す"
+    },
+    {
+      "key": "Uncheck any related assets you want to keep. Assets needed by them will also be kept.",
+      "value": "残したいものはチェックを外してください。それらが使用しているアセットも残します。"
+    },
+    {
+      "key": "Preparing deletion...",
+      "value": "削除する内容を確認しています…"
+    },
+    {
+      "key": "The prefab and its preview will be deleted.",
+      "value": "Prefabとプレビュー画像を削除します。"
+    },
+    {
+      "key": "The prefab, its preview and {0} related assets will be deleted.",
+      "value": "Prefabとプレビュー画像、関連アセット{0}件を削除します。"
+    },
+    {
+      "key": "No related assets to delete.",
+      "value": "一緒に削除する関連アセットはありません。"
+    },
+    {
+      "key": "Checking deletion targets...",
+      "value": "削除する内容を再確認しています…"
+    },
+    {
+      "key": "Deletion targets changed. Review the list and confirm deletion again.",
+      "value": "削除する内容が変わりました。一覧を確認して、もう一度削除を確定してください。"
+    },
+    {
+      "key": "Preview image",
+      "value": "プレビュー画像"
+    },
+    {
+      "key": "Material",
+      "value": "マテリアル"
+    },
+    {
+      "key": "{0} files will be deleted.",
+      "value": "合計{0}件のファイルを削除します。"
     }
   ]
 }

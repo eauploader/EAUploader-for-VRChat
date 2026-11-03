@@ -98,23 +98,30 @@
                         <eau:DropdownFieldPro name="meta_genre" segmented="true" class="flex-1" />
                     </ui:VisualElement>
 
-                    <ui:VisualElement class="meta-field">
+                    <ui:VisualElement class="meta-field tag-editor">
                         <ui:Label text="Tags" class="meta-field__label" />
-                        <ui:VisualElement name="tag_chips" class="flex-row flex-wrap" />
-                        <ui:Label name="tag_empty" text="No tags are set." class="text-sm pb-1" />
-                        <ui:VisualElement class="flex-row items-center">
-                            <eau:TextFieldPro name="tag_input" placeholder="Add a tag" class="flex-1" />
-                            <eau:ShadowButton name="add_tag" class="ml-2">
-                                <eau:MaterialIcon icon="add" />
-                            </eau:ShadowButton>
+                        <ui:VisualElement name="tag_control" class="tag-editor__control">
+                            <ui:VisualElement name="tag_chips" class="tag-editor__chips">
+                                <eau:TextFieldPro name="tag_input" placeholder="Search or create a tag" class="tag-editor__input" />
+                            </ui:VisualElement>
                         </ui:VisualElement>
-                        <ui:VisualElement name="tag_input_suggestions" class="tag-suggestions hidden" />
-                        <eau:DropdownFieldPro name="tag_suggestions" class="mt-2" />
+                        <eau:Shadow name="tag_suggestions_section" shadow-blur="16" shadow-offset-y="4" shadow-opacity="0.12" class="tag-editor__dropdown-shell hidden">
+                            <ui:VisualElement class="tag-editor__dropdown">
+                                <ui:ScrollView name="tag_input_suggestions" mode="Vertical" class="tag-suggestions" />
+                                <ui:Label name="tag_input_hint" text="Press Enter to add a tag." class="tag-editor__hint" />
+                                <ui:VisualElement name="tag_create_separator" picking-mode="Ignore" class="tag-editor__separator hidden" />
+                                <ui:Button name="add_tag" class="tag-suggestion tag-editor__create">
+                                    <eau:MaterialIcon icon="add" />
+                                    <ui:Label text="Create new tag" />
+                                    <ui:Label name="tag_create_name" class="tag-editor__create-name no-translate" />
+                                </ui:Button>
+                            </ui:VisualElement>
+                        </eau:Shadow>
                     </ui:VisualElement>
 
                     <ui:VisualElement class="meta-field">
                         <ui:Label text="Memo" class="meta-field__label" />
-                        <ui:TextField name="meta_memo" multiline="true" class="memo-field" />
+                        <eau:TextFieldPro name="meta_memo" placeholder="Add a note..." multiline="true" class="memo-field" />
                     </ui:VisualElement>
 
                     <ui:VisualElement class="meta-card">

@@ -81,6 +81,8 @@ namespace EAUploader.UI
 
         private void OnDisable()
         {
+            toasts?.Dispose();
+            toasts = null;
             Setup.EditTools.EditToolModal.CloseActiveImmediate();
             Setup.ViewpointPositionEditor.CloseActive();
             instance = null;
@@ -118,6 +120,7 @@ namespace EAUploader.UI
         public static StyleSheet styles;
         public static StyleSheet tailwind;
         public static Modal modal;
+        public static ToastManager toasts;
 
         internal EAUploaderScreen CurrentScreen => currentScreen;
 
@@ -135,6 +138,9 @@ namespace EAUploader.UI
             // Setup Modal
             modal = new Modal();
             rootVisualElement.Add(modal);
+
+            toasts?.Dispose();
+            toasts = new ToastManager(rootVisualElement, this);
 
             ThemeUtility.ApplyTheme(rootVisualElement, ThemeUtility.GetCurrentTheme());
 

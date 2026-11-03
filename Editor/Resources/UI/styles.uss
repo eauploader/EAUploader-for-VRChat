@@ -1,6 +1,6 @@
 /* Root Styles */
 :root {
-    -unity-font-definition: resource("UI/Noto_Sans_JP");
+    -unity-font-definition: url("EAUploaderFont.asset");
 	background-color: white;
 	--primary: #006FEE;
 	--primary-hover: #338ef7;
@@ -36,12 +36,25 @@
    Placeholder (TextFieldPro)
    ========================================================================== */
 
-/* TextFieldPro はプレースホルダーを実際の値として入れ、このクラスを付けて見分ける */
-.unity-text-field__placeholder,
-.unity-text-field__placeholder .unity-base-text-field__input,
-.unity-text-field__placeholder .unity-text-element--inner-input-field,
+TextFieldPro Label.text-field-pro__placeholder,
 .placeholder {
 	color: var(--placeholder);
+}
+
+TextFieldPro Label.text-field-pro__placeholder {
+	position: absolute;
+	left: 0;
+	top: 0;
+	margin: 0;
+	padding: 0;
+	-unity-text-align: inherit;
+	white-space: inherit;
+	overflow: hidden;
+	transition-property: none;
+}
+
+.text-field-pro__placeholder--hidden {
+	display: none;
 }
 
 /* Transition Styles */
@@ -284,29 +297,26 @@ PrefabItem > Label {
 /* Text Input Styles */
 TextInput {
 	font-size: 14px;
-	padding: 4px 16px;
+	padding: 8px 16px;
 	border-width: 1px;
 	border-radius: 4px;
 	border-color: var(--default);
 	background-color: white;
 	color: black;
-	transition: 150ms
-}
-
-/* Hover uses the same light gray (#f4f4f5) as the buttons and dropdowns. */
-TextInput:hover {
-	background-color: #f4f4f5;
+	transition-property: background-color, border-color;
+	transition-duration: 150ms;
 }
 
 Slider TextInput {
 	font-size: 12px;
-	padding: 4px 4px;
+	padding: 8px 4px;
 	border-width: 1px;
 	border-radius: 4px;
 	border-color: var(--default);
 	background-color: white;
 	color: black;
-	transition: 150ms
+	transition-property: background-color, border-color;
+	transition-duration: 150ms;
 }
 
 TextElement {
@@ -1502,33 +1512,133 @@ RadioButton * {
 	color: #27272a;
 }
 
-/* 入力欄の下に出す候補リスト */
-.tag-suggestions {
-	margin-top: 2px;
-	padding: 2px;
+.tag-editor__control {
 	border-width: 1px;
 	border-color: var(--default);
 	border-radius: 4px;
 	background-color: white;
 }
 
-.tag-suggestion {
-	font-size: 12px;
-	padding: 2px 8px;
+.tag-editor__control--open {
+	border-color: var(--primary);
+}
+
+.tag-editor__chips {
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+	padding: 4px 8px;
+	min-height: 38px;
+}
+
+.tag-editor__chips > .tag-chip--removable {
+	flex-shrink: 0;
+	margin: 1px 4px 1px 0;
+}
+
+.tag-editor__input {
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 128px;
+	min-width: 128px;
+	max-width: 100%;
 	margin: 0;
-	border-radius: 2px;
-	justify-content: flex-start;
+}
+
+.tag-editor__input .unity-base-text-field__input {
+	min-width: 0;
+	min-height: 30px;
+	border-width: 0;
 	background-color: rgba(0, 0, 0, 0);
+	padding: 4px;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.tag-editor__input .unity-text-element {
+	white-space: nowrap;
+}
+
+.tag-editor__dropdown {
+	padding: 4px;
+	border-width: 1px;
+	border-color: var(--default);
+	border-radius: 6px;
+	background-color: white;
+}
+
+Button.tag-suggestion.tag-editor__create {
+	justify-content: flex-start;
+}
+
+.tag-editor__separator {
+	height: 1px;
+	margin: 6px 0;
+	background-color: var(--default);
+}
+
+.tag-editor__create > Label {
+	height: 22px;
+	-unity-text-align: middle-left;
+}
+
+Button.tag-editor__create > MaterialIcon {
+	width: 16px;
+	height: 22px;
+	flex-shrink: 0;
+	margin: 0 6px 0 0;
+	padding: 0;
+	-unity-text-align: middle-center;
+}
+
+.tag-editor__create > .tag-editor__create-name {
+	margin-left: 8px;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.tag-editor__hint {
+	font-size: 11px;
+	color: #71717a;
+	white-space: normal;
+	margin: 4px 8px;
+}
+
+/* 入力欄の下に出す候補リスト */
+.tag-suggestions {
+	max-height: 168px;
+}
+
+Button.tag-suggestion {
+	font-size: 14px;
+	margin: 0;
 	color: black;
 	-unity-font-style: normal;
 	-unity-text-align: middle-left;
 }
 
-.tag-suggestion:hover {
-	background-color: var(--default-hover);
+.tag-suggestion > Label {
+	-unity-font-style: normal;
+	white-space: nowrap;
+	flex-shrink: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
-.dark .tag-suggestions {
+.tag-suggestion > MaterialIcon {
+	font-size: 16px;
+	color: var(--primary);
+	margin-right: 6px;
+}
+
+.dark .tag-editor__hint {
+	color: #a1a1aa;
+}
+
+.dark .tag-editor__dropdown,
+.dark .tag-editor__control {
 	background-color: #333333;
 	border-color: #4a4a4a;
 }
@@ -1537,7 +1647,16 @@ RadioButton * {
 	color: white;
 }
 
-.pastel .tag-suggestions {
+.dark .tag-suggestion > Label {
+	color: white;
+}
+
+.dark .tag-suggestion > MaterialIcon {
+	color: var(--primary);
+}
+
+.pastel .tag-editor__dropdown,
+.pastel .tag-editor__control {
 	background-color: #fffdfc;
 	border-color: #f7d9e1;
 }
@@ -1557,25 +1676,48 @@ RadioButton * {
 .tag-chip--removable {
 	flex-direction: row;
 	align-items: center;
-	font-size: 11px;
-	height: 20px;
+	max-width: 100%;
+	font-size: 12px;
+	min-height: 28px;
 	padding: 0 4px 0 8px;
 	margin-right: 4px;
 	margin-bottom: 4px;
 	border-width: 1px;
 	border-color: var(--default);
-	border-radius: 10px;
-	background-color: rgba(0, 0, 0, 0.04);
+	border-radius: 14px;
+	background-color: white;
 }
 
 .tag-chip--removable:hover {
 	border-color: var(--primary);
 }
 
-.tag-chip__remove {
+.tag-chip--removable > Label {
+	color: black;
+	flex-shrink: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.tag-chip--removable > Button.tag-chip__remove {
+	flex-shrink: 0;
 	font-size: 14px;
-	margin-left: 2px;
-	opacity: 0.6;
+	min-width: 24px;
+	min-height: 24px;
+	padding: 0;
+	margin: 0 0 0 2px;
+	background-color: rgba(0, 0, 0, 0);
+	color: #52525b;
+}
+
+.tag-chip__remove > MaterialIcon {
+	font-size: 14px;
+	color: #52525b;
+}
+
+.tag-chip--removable > .tag-chip__remove:hover > MaterialIcon,
+.tag-chip--removable > .tag-chip__remove:focus > MaterialIcon {
+	color: #18181b;
 }
 
 .dark .tag-chip {
@@ -1587,6 +1729,12 @@ RadioButton * {
 .dark .tag-chip--removable {
 	background-color: #3a3a3a;
 	border-color: #4a4a4a;
+}
+
+.dark .tag-chip--removable > Label,
+.dark .tag-chip__remove,
+.dark .tag-chip__remove > MaterialIcon {
+	color: #f4f4f5;
 }
 
 .pastel .tag-chip {
@@ -1823,6 +1971,7 @@ RadioButton * {
 }
 
 .search-field .unity-base-text-field__input {
+	min-height: 40px;
 	padding-left: 36px;
 }
 
@@ -2001,7 +2150,8 @@ MaterialIcon.dropdown-pro__arrow {
 	bottom: 0;
 }
 
-.dropdown-pro__shadow {
+.dropdown-pro__shadow,
+.tag-editor__dropdown-shell {
 	position: absolute;
 	/* The list fades in and slides to its position (see DropdownFieldPro.ShowMenu). */
 	transition-property: opacity, translate;
@@ -2009,11 +2159,15 @@ MaterialIcon.dropdown-pro__arrow {
 	transition-timing-function: ease-out;
 }
 
-/* Follows shadcn/ui's select: the list uses the same radius as the field, and the items inside use one step smaller. */
+.tag-editor__dropdown-shell--preparing {
+	transition-duration: 0s;
+}
+
+/* The menu follows the tag dropdown's radius; items use a smaller radius. */
 .dropdown-pro__menu {
 	max-height: 320px;
 	border-width: 1px;
-	border-radius: 4px;
+	border-radius: 6px;
 	border-color: var(--default);
 	background-color: white;
 }
@@ -2023,6 +2177,11 @@ MaterialIcon.dropdown-pro__arrow {
 }
 
 .dropdown-pro__item {
+	height: 29px;
+}
+
+.dropdown-pro__item,
+Button.tag-suggestion {
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
@@ -2036,7 +2195,9 @@ MaterialIcon.dropdown-pro__arrow {
 }
 
 /* Only the hovered item is tinted (gray); selected items are marked by the check alone. */
-.dropdown-pro__item:hover {
+.dropdown-pro__item:hover,
+Button.tag-suggestion:hover,
+Button.tag-suggestion:focus {
 	background-color: #f4f4f5;
 }
 
@@ -2050,7 +2211,8 @@ MaterialIcon.dropdown-pro__item-check {
 	color: black;
 }
 
-Label.dropdown-pro__item-label {
+Label.dropdown-pro__item-label,
+.tag-suggestion > Label {
 	margin: 0;
 	padding: 0;
 	font-size: 14px;
@@ -2073,7 +2235,7 @@ Label.dropdown-pro__item-label {
 }
 
 .edit-tool__card {
-	border-radius: 10px;
+	border-radius: 4px;
 	background-color: #ffffff;
 	overflow: hidden;
 }
@@ -2095,7 +2257,7 @@ Label.dropdown-pro__item-label {
 	padding: 10px 12px;
 	border-width: 1px;
 	border-color: var(--default);
-	border-radius: 10px 0 0 10px;
+	border-radius: 4px 0 0 4px;
 	background-color: white;
 	cursor: link;
 }
@@ -2136,7 +2298,7 @@ Label.dropdown-pro__item-label {
 	justify-content: center;
 	border-width: 1px;
 	border-color: var(--default);
-	border-radius: 0 10px 10px 0;
+	border-radius: 0 4px 4px 0;
 	background-color: white;
 	cursor: link;
 }
@@ -2196,7 +2358,7 @@ Label.dropdown-pro__item-label {
 	border-width: 1px;
 	border-top-width: 0;
 	border-color: #e4e4e7;
-	border-radius: 0 0 10px 10px;
+	border-radius: 0 0 4px 4px;
 	background-color: #fafafa;
 }
 
@@ -2227,6 +2389,14 @@ Label.dropdown-pro__item-label {
 	-unity-font-style: bold;
 }
 
+.meta-field > .unity-text-field > .unity-base-text-field__input {
+	padding: 10px 12px;
+}
+
+.meta-field > .unity-text-field > .unity-base-text-field__input--single-line {
+	min-height: 40px;
+}
+
 .meta-thumbnail-actions {
 	margin-top: 8px;
 }
@@ -2250,11 +2420,114 @@ Label.dropdown-pro__item-label {
 	margin-bottom: 8px;
 }
 
-/* Secondary information (last modified, height, path ...) is quieter than the fields above it. */
-#meta_details Label {
-	margin: 2px 0;
+#meta_details .meta-details__summary {
+	flex-direction: row;
+}
+
+#meta_details .meta-details__group {
+	min-width: 0;
+	flex-grow: 1;
+}
+
+#meta_details .meta-details__summary > .meta-details__group {
+	margin-right: 16px;
+}
+
+#meta_details .meta-details__header {
+	flex-direction: row;
+	align-items: center;
+	min-height: 24px;
+}
+
+#meta_details .meta-details__caption {
+	flex-grow: 1;
+	margin: 0;
+	padding: 0;
+	font-size: 11px;
+	color: #71717a;
+}
+
+#meta_details .meta-details__value {
+	min-width: 0;
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 0;
+	margin: 2px 0 0 0;
+	padding: 0;
 	font-size: 12px;
-	opacity: 0.7;
+	color: #27272a;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#meta_details .meta-details__reference {
+	margin-top: 12px;
+}
+
+#meta_details .meta-details__value-row {
+	flex-direction: row;
+	align-items: center;
+}
+
+#meta_details .meta-details__reference > .meta-details__header {
+	min-height: 18px;
+}
+
+#meta_details .meta-details__reference > .meta-details__value-row {
+	min-height: 28px;
+}
+
+#meta_details .meta-details__reference .meta-details__value {
+	margin-top: 0;
+}
+
+#meta_details .meta-details__path .meta-details__value {
+	white-space: normal;
+}
+
+#meta_details .meta-details__icon-button {
+	width: 28px;
+	height: 28px;
+	min-width: 28px;
+	flex-shrink: 0;
+	margin: 0 0 0 4px;
+	padding: 0;
+	border-radius: 4px;
+	background-color: rgba(244, 244, 245, 0);
+}
+
+#meta_details .meta-details__icon-button:hover,
+#meta_details .meta-details__icon-button:focus {
+	background-color: #f4f4f5;
+}
+
+#meta_details .meta-details__icon-button:active {
+	background-color: #e4e4e7;
+}
+
+#meta_details .meta-details__icon-button > MaterialIcon {
+	margin: 0;
+	padding: 0;
+	font-size: 16px;
+	color: #52525b;
+}
+
+.dark #meta_details .meta-details__caption {
+	color: #a1a1aa;
+}
+
+.dark #meta_details .meta-details__value,
+.dark #meta_details .meta-details__icon-button > MaterialIcon {
+	color: #e4e4e7;
+}
+
+.dark #meta_details .meta-details__icon-button:hover,
+.dark #meta_details .meta-details__icon-button:focus {
+	background-color: #3f3f46;
+}
+
+.dark #meta_details .meta-details__icon-button:active {
+	background-color: #52525b;
 }
 
 /* ==========================================================================
@@ -2801,20 +3074,24 @@ Label.dropdown-pro__item-label {
 	flex-direction: row;
 	padding: 3px;
 	border-radius: 6px;
-	background-color: #f1f2f4;
+	background-color: var(--default);
 }
 
 .dropdown-pro__segment-indicator {
 	position: absolute;
 	left: 0;
 	top: 0;
+	transition-property: translate, width, height;
+	transition-duration: 180ms;
+	transition-timing-function: ease-out;
+}
+
+.dropdown-pro__segment-indicator-box {
+	flex-grow: 1;
 	border-width: 1px;
 	border-radius: 4px;
 	border-color: rgba(15, 23, 42, 0.08);
 	background-color: #ffffff;
-	transition-property: translate, width, height;
-	transition-duration: 180ms;
-	transition-timing-function: ease-out;
 }
 
 .dropdown-pro__segments .dropdown-pro__segment {
@@ -3160,4 +3437,199 @@ Label.upload-heading--block {
 	font-size: 12px;
 	color: #52525b;
 	white-space: normal;
+}
+
+.toast-viewport {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+
+.toast-viewport .toast-stack {
+	position: absolute;
+	left: 50%;
+	top: 16px;
+	translate: -50% 0;
+	width: 320px;
+}
+
+.toast-viewport .toast-slot {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	transform-origin: 50% 0;
+	transition-property: translate, scale;
+	transition-duration: 300ms;
+	transition-timing-function: ease-out;
+}
+
+.toast-viewport .toast-shell {
+	flex-shrink: 0;
+	opacity: 1;
+	translate: 0 0;
+	transition-property: translate, opacity;
+	transition-duration: 200ms;
+	transition-timing-function: ease-out;
+}
+
+.toast-viewport .toast-shell--hidden {
+	opacity: 0;
+	translate: 0 -12px;
+}
+
+.toast-viewport .toast-card {
+	min-height: 44px;
+	border-width: 1px;
+	border-color: #e4e4e7;
+	border-radius: 6px;
+	background-color: white;
+	overflow: hidden;
+	transition-property: height;
+	transition-duration: 150ms;
+}
+
+.toast-viewport .toast-card__content {
+	flex-direction: row;
+	align-items: center;
+	flex-shrink: 0;
+	min-height: 42px;
+	padding: 8px 8px 8px 12px;
+	opacity: 1;
+	transition-property: opacity;
+	transition-duration: 150ms;
+}
+
+.toast-viewport .toast-card__text {
+	flex-grow: 1;
+	flex-shrink: 1;
+	min-width: 0;
+}
+
+.toast-viewport Label.toast-card__title {
+	margin: 0;
+	padding: 0;
+	font-size: 13px;
+	-unity-font-style: bold;
+	white-space: normal;
+	color: #18181b;
+}
+
+.toast-viewport Label.toast-card__description {
+	margin: 4px 0 0 0;
+	padding: 0;
+	font-size: 12px;
+	white-space: normal;
+	color: #71717a;
+}
+
+.toast-viewport MaterialIcon.toast-card__icon {
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+	margin: 0 8px 0 0;
+	padding: 0;
+	font-size: 20px;
+	-unity-text-align: middle-center;
+	color: #52525b;
+	transition-property: none;
+}
+
+.toast-viewport .toast-card--success MaterialIcon.toast-card__icon {
+	color: #15803d;
+}
+
+.toast-viewport .toast-card--warning MaterialIcon.toast-card__icon {
+	color: #a16207;
+}
+
+.toast-viewport .toast-card--error MaterialIcon.toast-card__icon {
+	color: #dc2626;
+}
+
+.toast-viewport Button.toast-card__close {
+	flex-shrink: 0;
+	width: 24px;
+	height: 24px;
+	margin: 0 0 0 6px;
+	padding: 0;
+	border-radius: 4px;
+	background-color: rgba(244, 244, 245, 0);
+}
+
+.toast-viewport .toast-card__close > MaterialIcon {
+	margin: 0;
+	padding: 0;
+	font-size: 16px;
+	color: #71717a;
+}
+
+.toast-viewport Button.toast-card__close:hover,
+.toast-viewport Button.toast-card__close:focus {
+	background-color: #f4f4f5;
+}
+
+.toast-viewport .toast-card__close:hover > MaterialIcon,
+.toast-viewport .toast-card__close:focus > MaterialIcon {
+	color: #18181b;
+}
+
+.toast-viewport Button.toast-card__action {
+	flex-shrink: 0;
+	margin: 0 0 0 8px;
+	padding: 5px 8px;
+	border-width: 1px;
+	border-color: #e4e4e7;
+	border-radius: 4px;
+	background-color: white;
+	color: #27272a;
+	font-size: 12px;
+}
+
+.toast-viewport Button.toast-card__action:hover,
+.toast-viewport Button.toast-card__action:focus {
+	background-color: #f4f4f5;
+	border-color: var(--primary);
+}
+
+.dark .toast-viewport .toast-card {
+	background-color: #27272a;
+	border-color: #52525b;
+}
+
+.dark .toast-viewport Label.toast-card__title,
+.dark .toast-viewport MaterialIcon.toast-card__icon,
+.dark .toast-viewport .toast-card__close > MaterialIcon {
+	color: #f4f4f5;
+}
+
+.dark .toast-viewport Label.toast-card__description {
+	color: #a1a1aa;
+}
+
+.dark .toast-viewport .toast-card--success MaterialIcon.toast-card__icon {
+	color: #4ade80;
+}
+
+.dark .toast-viewport .toast-card--warning MaterialIcon.toast-card__icon {
+	color: #facc15;
+}
+
+.dark .toast-viewport .toast-card--error MaterialIcon.toast-card__icon {
+	color: #f87171;
+}
+
+.dark .toast-viewport Button.toast-card__action {
+	background-color: #27272a;
+	border-color: #52525b;
+	color: #f4f4f5;
+}
+
+.dark .toast-viewport Button.toast-card__close:hover,
+.dark .toast-viewport Button.toast-card__close:focus,
+.dark .toast-viewport Button.toast-card__action:hover,
+.dark .toast-viewport Button.toast-card__action:focus {
+	background-color: #3f3f46;
 }

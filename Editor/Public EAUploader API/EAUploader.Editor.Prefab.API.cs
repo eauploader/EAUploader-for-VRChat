@@ -46,10 +46,20 @@ namespace EAUploader.Editor.Prefab.API
         /// プレハブの削除ダイアログを表示します。
         /// </summary>
         /// <param name="prefabPath">プレハブのパス</param>
-        /// <returns>プレハブが削除された場合はtrue、そうでない場合はfalseを返します。</returns>
+        /// <returns>モーダルを開けた場合はtrueを返します。削除結果はコールバック付きのオーバーロードで取得してください。</returns>
+        [Obsolete("Deletion is asynchronous. Use ShowDeletePrefabDialog(prefabPath, completed) to receive the deletion result.")]
         public static bool ShowDeletePrefabDialog(string prefabPath)
         {
-            return PrefabManager.ShowDeletePrefabDialog(prefabPath);
+            return PrefabManager.ShowDeletePrefabDialog(prefabPath, null);
+        }
+
+        /// <summary>画面内の削除確認モーダルを表示します。</summary>
+        /// <param name="prefabPath">プレハブのパス</param>
+        /// <param name="completed">削除成功時にtrue、キャンセル時にfalseを受け取ります。</param>
+        /// <returns>モーダルを開けた場合はtrueを返します。</returns>
+        public static bool ShowDeletePrefabDialog(string prefabPath, Action<bool> completed)
+        {
+            return PrefabManager.ShowDeletePrefabDialog(prefabPath, completed);
         }
 
         /// <summary>
