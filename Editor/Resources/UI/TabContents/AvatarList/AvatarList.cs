@@ -314,7 +314,7 @@ namespace EAUploader.UI.AvatarList
 
                     if (fileExtension == ".prefab" || fileExtension == ".unitypackage")
                     {
-                        if (!ImportModal.ImportAsset(path, false)) invalidPrefab = true;
+                        invalidPrefab |= !ImportModal.ImportAsset(path, false);
                     }
 #if HAS_VRM
                     else if (fileExtension == ".vrm")

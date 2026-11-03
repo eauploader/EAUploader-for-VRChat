@@ -129,10 +129,9 @@ namespace EAUploader.UI.Modals
                 if (!fullPath.StartsWith(prefix, comparison)) return null;
                 return "Assets/" + fullPath.Substring(prefix.Length).Replace('\\', '/');
             }
-            catch (Exception ex) when (ex is ArgumentException || ex is NotSupportedException || ex is PathTooLongException)
-            {
-                return null;
-            }
+            catch (ArgumentException) { return null; }
+            catch (NotSupportedException) { return null; }
+            catch (PathTooLongException) { return null; }
         }
 
         internal static void ShowInvalidPrefabMessage()
