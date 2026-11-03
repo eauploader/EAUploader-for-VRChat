@@ -60,8 +60,16 @@ namespace EAUploader
         }
         static EAUploaderCore()
         {
+            try
+            {
+                Directory.CreateDirectory(EAULogger.LOGFOLDER_PATH);
+                EAULogger.OUTPUT_LOGFILE_NAME = DateTime.UtcNow.ToString("yyyy-MM-dd") + "-" + EAULogger.FetchLogFileNumber().ToString() + ".log";
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                Debug.LogWarning("Could not initialize EAUploader logging: " + ex.Message);
+            }
             Application.logMessageReceived += UI.Windows.Logger.OnReceiveLog;
-            EAULogger.OUTPUT_LOGFILE_NAME = DateTime.UtcNow.ToString("yyyy-MM-dd") + "-" + EAULogger.FetchLogFileNumber().ToString() + ".log";
             Debug.Log("EAUploader is starting...");
             Debug.Log("*** Environment Details ***");
             Debug.Log("Date: " + DateTime.UtcNow.ToString("yyyy-MM-dd"));
@@ -163,7 +171,10 @@ namespace EAUploader
             // Create New folder
             if (!AssetDatabase.IsValidFolder(EAUPLOADER_ASSET_PATH))
             {
-                AssetDatabase.CreateFolder("Assets", "EAUploader");
+                if (Directory.Exists(EAUPLOADER_ASSET_PATH))
+                    AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+                else
+                    AssetDatabase.CreateFolder("Assets", "EAUploader");
             }
 
             string prefabManagerPath = $"{EAUPLOADER_ASSET_PATH}/PrefabManager.json";
