@@ -1,5 +1,6 @@
 using EAUploader.CustomPrefabUtility;
 using EAUploader.UI.Components;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -90,21 +91,53 @@ namespace EAUploader.UI.Modals
 #endif
         }
 
-        private static void ImportAsset(string filePath)
+        internal static bool ImportAsset(string filePath, bool showInvalidPrefabMessage = true)
         {
-            if (string.IsNullOrEmpty(filePath)) return;
+            if (string.IsNullOrEmpty(filePath)) return true;
 
-            var fileExtension = Path.GetExtension(filePath)?.ToLower();
+            var fileExtension = Path.GetExtension(filePath)?.ToLowerInvariant();
 
             if (fileExtension == ".prefab")
             {
-                AssetDatabase.ImportAsset(filePath, ImportAssetOptions.Default);
+                var assetPath = GetProjectPrefabPath(filePath);
+                if (assetPath == null || (ManagedPrefabs.IsInEAUploaderFolder(assetPath) && !ManagedPrefabs.IsManaged(assetPath)))
+                {
+                    if (showInvalidPrefabMessage) ShowInvalidPrefabMessage();
+                    return false;
+                }
+                AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
             }
             else if (fileExtension == ".unitypackage")
             {
                 AssetDatabase.ImportPackage(filePath, false);
             }
             AssetDatabase.Refresh();
+            return true;
+        }
+
+        internal static string GetProjectPrefabPath(string path)
+        {
+            if (string.IsNullOrEmpty(path)) return null;
+            try
+            {
+                var assetsPath = Path.GetFullPath(Application.dataPath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                var projectPath = Path.GetDirectoryName(assetsPath);
+                var fullPath = Path.GetFullPath(Path.IsPathRooted(path) ? path : Path.Combine(projectPath, path));
+                var comparison = Application.platform == RuntimePlatform.WindowsEditor
+                    ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+                var prefix = assetsPath + Path.DirectorySeparatorChar;
+                if (!fullPath.StartsWith(prefix, comparison)) return null;
+                return "Assets/" + fullPath.Substring(prefix.Length).Replace('\\', '/');
+            }
+            catch (ArgumentException) { return null; }
+            catch (NotSupportedException) { return null; }
+            catch (PathTooLongException) { return null; }
+        }
+
+        internal static void ShowInvalidPrefabMessage()
+        {
+            EditorUtility.DisplayDialog(T7e.Get("Cannot import prefab"),
+                T7e.Get("Select a prefab in this project's Assets folder, outside EAUploader's internal folders. To import assets from another project, use a unitypackage."), "OK");
         }
 
         private static void ImportAllAssetsFromFolder(string folderPath)
@@ -112,7 +145,8 @@ namespace EAUploader.UI.Modals
             if (string.IsNullOrEmpty(folderPath)) return;
 
             var allFiles = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories)
-                .Where(s => s.EndsWith(".prefab") || s.EndsWith(".unitypackage")).ToList();
+                .Where(s => s.EndsWith(".prefab", StringComparison.OrdinalIgnoreCase) ||
+                            s.EndsWith(".unitypackage", StringComparison.OrdinalIgnoreCase)).ToList();
 
             if (allFiles.Count == 0)
             {
@@ -129,10 +163,12 @@ namespace EAUploader.UI.Modals
                 T7e.Get("Import"), T7e.Get("Cancel"));
             if (!confirmImport) return;
 
+            bool invalidPrefab = false;
             foreach (var file in allFiles)
             {
-                ImportAsset(file);
+                if (!ImportAsset(file, false)) invalidPrefab = true;
             }
+            if (invalidPrefab) ShowInvalidPrefabMessage();
         }
     }
 }
