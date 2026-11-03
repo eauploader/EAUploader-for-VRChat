@@ -1,0 +1,50 @@
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    xmlns:eau="EAUploader.UI.Components"
+    xsi="http://www.w3.org/2001/XMLSchema-instance"
+    engine="UnityEngine.UIElements"
+    editor="UnityEditor.UIElements"
+    noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
+    editor-extension-mode="False"
+>
+    <ui:VisualElement class="flex-col" style="width: 520px;">
+        <ui:VisualElement class="pb-4">
+            <ui:Label text="Import Avatars" class="text-lg pb-2 font-bold" />
+            <ui:Label text="Import a .prefab file or .unitypackage file." />
+            <eau:HelpButton msg-id="100" class="pb-2" />
+            <eau:ShadowButton class="button-with-icons mb-2" name="import_prefab">
+                <eau:MaterialIcon icon="download" />
+                <ui:Label text="Import" />
+            </eau:ShadowButton>
+            <ui:Label text="Import all prefab or unitypackage in folder." />
+            <eau:ShadowButton name="import_folder" class="button-with-icons">
+                <eau:MaterialIcon icon="folder" />
+                <ui:Label text="Import from folder" />
+            </eau:ShadowButton>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="pb-4">
+            <ui:Label text="Import the .vrm(ver. 0.x) file." />
+            <eau:HelpButton msg-id="101" class="pb-2" />
+            <eau:ShadowButton name="import_vrm" class="button-with-icons">
+                <eau:MaterialIcon icon="download" />
+                <ui:Label text="Import VRM" />
+            </eau:ShadowButton>
+        </ui:VisualElement>
+
+        <ui:VisualElement>
+            <ui:Label text="Import Shaders" class="text-lg pb-2 font-bold" />
+            <ui:Label text="Import the .unitypackage file that contains the shader." />
+            <eau:HelpButton msg-id="102" class="pb-2" />
+            <eau:ShadowButton name="import_shaders" class="pb-2 button-with-icons">
+                <eau:MaterialIcon icon="download" />
+                <ui:Label text="Import Shaders" />
+            </eau:ShadowButton>
+            <eau:ShadowButton name="show_existing_shaders" class="pb-2 button-with-icons">
+                <eau:MaterialIcon icon="visibility" />
+                <ui:Label text="Show existing shaders" />
+            </eau:ShadowButton>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

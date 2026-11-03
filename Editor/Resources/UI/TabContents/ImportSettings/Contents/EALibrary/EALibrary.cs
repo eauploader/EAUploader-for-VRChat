@@ -73,7 +73,7 @@ namespace EAUploader.UI.ImportSettings
                 articleList.Rebuild();
             };
 
-            var filterTag = root.Q<DropdownField>("filter_tag");
+            var filterTag = root.Q<DropdownFieldPro>("filter_tag");
 
             filterTag.choices = new List<string> { T7e.Get("All") };
             filterTag.choices.AddRange(GetArticleIndex().SelectMany(article => article.Tags).Distinct());

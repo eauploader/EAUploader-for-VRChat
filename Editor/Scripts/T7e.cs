@@ -34,12 +34,18 @@ namespace EAUploader
             if (allTranslations != null && allTranslations.ContainsKey(currentLanguage) && allTranslations[currentLanguage].ContainsKey(key))
             {
                 string formatString = allTranslations[currentLanguage][key];
-                return string.Format(formatString, args);
+                return args is { Length: > 0 } ? string.Format(formatString, args) : formatString;
             }
             else
             {
                 return key;
             }
+        }
+
+        internal static void ClearCache()
+        {
+            allTranslations = null;
+            LanguageUtility.InvalidateLanguageCache();
         }
 
         private static void LoadTranslations()

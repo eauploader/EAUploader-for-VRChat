@@ -1,52 +1,19 @@
-using EAUploader.CustomPrefabUtility;
 using EAUploader.UI.Components;
-using System.IO;
-using System.Threading.Tasks;
-using UnityEngine;
-using UnityEngine.UIElements;
-using VRC.SDK3A.Editor;
 
 namespace EAUploader.UI.Upload
 {
+    /// <summary>
+    /// アップロード関連の共通処理。
+    /// アップロード画面は編集画面(Setup)のシートに統合したので、画面としてのUIは持たない。
+    /// </summary>
     internal class Main
     {
-        public static VisualElement root;
-        public static Components.Preview preview;
-        public static VRCSdkControlPanelAvatarBuilder _builder;
-
-        public static void ShowContent(VisualElement rootContainer)
+        /// <summary>
+        /// アップロード完了時など、選択中アバターの変更を一覧に反映する。
+        /// </summary>
+        internal static void RefreshSelectedAvatar()
         {
-            root = rootContainer;
-            var visualTree = Resources.Load<VisualTreeAsset>("UI/TabContents/Upload/Upload");
-            visualTree.CloneTree(root);
-
-            UploadForm.ShowContent(root.Q("upload_form"));
-
-            preview = new Components.Preview(root.Q("avatar_preview"), EAUploaderCore.selectedPrefabPath);
-            preview.ShowContent();
-
-            CreatePrefabList();
-        }
-
-        internal static async void CreatePrefabList()
-        {
-            await Task.Yield();
-            var prefabList = PrefabManager.GetAllPrefabsWithPreview();
-            var prefabListContainer = root.Q("prefab_list_container");
-            prefabListContainer.Clear();
-
-            foreach (var prefab in prefabList)
-            {
-                var prefabButton = new PrefabItemButton(prefab, () =>
-                {
-                    EAUploaderCore.selectedPrefabPath = prefab.Path;
-                    preview.UpdatePreview(prefab.Path);
-
-                }, true);
-
-                prefabListContainer.Add(prefabButton);
-                await Task.Yield();
-            }
+            AvatarList.Main.RequestRefresh();
         }
     }
 }

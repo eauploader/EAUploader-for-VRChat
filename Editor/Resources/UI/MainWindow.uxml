@@ -1,4 +1,4 @@
-<ui:UXML 
+<ui:UXML
     xmlns:ui="UnityEngine.UIElements"
     xmlns:uie="UnityEditor.UIElements"
     xmlns:eau="EAUploader.UI.Components"
@@ -8,20 +8,4 @@
     noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
     editor-extension-mode="False">
     <ui:VisualElement name="contentRoot" class="contentRoot flex-1" style="background-color: rgba(0, 0, 0, 0); background-image: none;" />
-    <eau:Shadow name="tabs_shadow">
-        <ui:VisualElement name="tabs" class="tabs flex-row h-8">
-            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="settings" class="tab-button">
-                <eau:MaterialIcon icon="settings" />
-                <ui:Label text="Import/Settings" />
-            </ui:Button>
-            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="setup" class="tab-button">
-                <eau:MaterialIcon icon="edit" />
-                <ui:Label text="Setup"  />
-            </ui:Button>
-            <ui:Button parse-escape-sequences="true" display-tooltip-when-elided="true" name="upload" class="tab-button">
-                <eau:MaterialIcon icon="upload" />
-                <ui:Label text="Upload" />
-            </ui:Button>
-        </ui:VisualElement>
-    </eau:Shadow>
 </ui:UXML>

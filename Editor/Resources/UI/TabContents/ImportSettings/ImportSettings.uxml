@@ -1,7 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:VisualElement class="flex-1 flex-row">
-        <ui:VisualElement name="import_settings" class="w-one-quarter p-4 border-r border-zinc-300" />
-        <ui:VisualElement name="manage_models" class="flex-1 border-r border-zinc-300 relative p-4" />
-        <ui:VisualElement name="library_container" class="p-4" style="width: 30%"/>
-    </ui:VisualElement>
-</ui:UXML>

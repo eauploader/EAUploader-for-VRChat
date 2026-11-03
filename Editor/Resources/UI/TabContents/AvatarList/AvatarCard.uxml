@@ -1,0 +1,42 @@
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    xmlns:eau="EAUploader.UI.Components"
+    xsi="http://www.w3.org/2001/XMLSchema-instance"
+    engine="UnityEngine.UIElements"
+    editor="UnityEditor.UIElements"
+    noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
+    editor-extension-mode="False"
+>
+    <ui:VisualElement name="thumbnail_area" class="avatar-card__thumbnail">
+        <ui:Image name="thumbnail" class="avatar-card__image" />
+
+        <!-- Hover actions -->
+        <ui:VisualElement name="card_actions" class="avatar-card__actions hidden">
+            <ui:Button name="edit_button" class="avatar-card__action" tooltip="Edit">
+                <eau:MaterialIcon icon="edit" />
+            </ui:Button>
+            <ui:Button name="upload_button" class="avatar-card__action" tooltip="Upload">
+                <eau:MaterialIcon icon="upload" />
+            </ui:Button>
+            <ui:Button name="delete_button" class="avatar-card__action avatar-card__action--danger" tooltip="Delete">
+                <eau:MaterialIcon icon="delete" />
+            </ui:Button>
+        </ui:VisualElement>
+
+        <!-- Status badges -->
+        <ui:VisualElement name="card_badges" class="avatar-card__badges">
+            <eau:MaterialIcon name="pinned_badge" icon="push_pin" class="avatar-card__badge hidden" />
+            <eau:MaterialIcon name="hidden_badge" icon="visibility_off" class="avatar-card__badge hidden" />
+        </ui:VisualElement>
+
+        <!-- Tags, laid over the image -->
+        <ui:VisualElement name="card_tags" class="avatar-card__tags hidden" picking-mode="Ignore" />
+    </ui:VisualElement>
+
+    <ui:VisualElement class="avatar-card__body">
+        <ui:Label name="title" class="avatar-card__title no-translate" />
+        <ui:Label name="last_modified" class="avatar-card__meta no-translate" />
+        <ui:Label name="warning" class="avatar-card__warning warning hidden" />
+    </ui:VisualElement>
+</ui:UXML>

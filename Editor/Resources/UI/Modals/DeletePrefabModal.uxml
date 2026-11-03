@@ -1,0 +1,32 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:eau="EAUploader.UI.Components">
+    <ui:Style src="DeletePrefabModalStyles.uss" />
+    <ui:VisualElement class="delete-prefab">
+        <ui:ScrollView name="delete_scroll" class="delete-prefab__scroll">
+            <ui:Label text="Are you sure you want to delete this prefab?" class="delete-prefab__description" />
+            <ui:VisualElement class="delete-prefab__target">
+                <eau:MaterialIcon icon="view_in_ar" class="delete-prefab__target-icon" picking-mode="Ignore" />
+                <ui:VisualElement class="delete-prefab__target-text">
+                    <ui:Label name="prefab_name" class="delete-prefab__name no-translate" />
+                    <ui:Label text="Prefab" class="delete-prefab__target-caption" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Label text="Unused related assets will also be deleted. Assets used elsewhere are kept. This cannot be undone." class="delete-prefab__help" />
+            <ui:ProgressBar name="search_progress" low-value="0" high-value="100" />
+            <ui:Label name="search_status" class="delete-prefab__status no-translate" />
+            <ui:VisualElement name="details_card" class="perf-card delete-prefab__details">
+                <ui:Button name="toggle_details" class="perf-card__summary">
+                    <eau:MaterialIcon icon="folder_open" class="delete-prefab__details-icon" picking-mode="Ignore" />
+                    <ui:Label text="Deletion details" class="delete-prefab__details-title" />
+                    <ui:Label name="delete_count" class="delete-prefab__count no-translate delete-prefab__hidden" />
+                    <eau:MaterialIcon icon="expand_more" class="delete-prefab__chevron" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:VisualElement name="deletion_details" class="delete-prefab__details-body">
+                    <ui:VisualElement name="deletion_list" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Label name="delete_error" enable-rich-text="false" class="delete-prefab__error no-translate delete-prefab__hidden" />
+            <ui:Button name="retry_search" text="Search again" class="delete-prefab__hidden" />
+        </ui:ScrollView>
+        <ui:Label name="delete_summary" class="delete-prefab__summary no-translate" />
+    </ui:VisualElement>
+</ui:UXML>

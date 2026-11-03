@@ -1,11 +1,12 @@
 /* Root Styles */
 :root {
-    -unity-font-definition: resource("UI/Noto_Sans_JP");
+    -unity-font-definition: url("EAUploaderFont.asset");
 	background-color: white;
 	--primary: #006FEE;
 	--primary-hover: #338ef7;
 	--primary-active: #66aaf9;
 	--primary-selected: #005bc4;
+	--primary-subtle: #e6f1fe;
 	--secondary: #7828c8;
 	--secondary-hover: #9353d3;
 	--secondary-active: #ae7ede;
@@ -26,7 +27,34 @@
 	--danger-hover: #f5337f;
 	--danger-active: #f7549f;
 	--danger-selected: #c10f4e;
+	/* 入力欄のプレースホルダー文字色 */
+	--placeholder: #9ca3af;
 	font-size: 14px;
+}
+
+/* ==========================================================================
+   Placeholder (TextFieldPro)
+   ========================================================================== */
+
+TextFieldPro Label.text-field-pro__placeholder,
+.placeholder {
+	color: var(--placeholder);
+}
+
+TextFieldPro Label.text-field-pro__placeholder {
+	position: absolute;
+	left: 0;
+	top: 0;
+	margin: 0;
+	padding: 0;
+	-unity-text-align: inherit;
+	white-space: inherit;
+	overflow: hidden;
+	transition-property: none;
+}
+
+.text-field-pro__placeholder--hidden {
+	display: none;
 }
 
 /* Transition Styles */
@@ -58,6 +86,7 @@ Button {
 	justify-content: center;
     border-width: 0px;
     border-radius: 4px;
+	border-right-color: var(--default);
 	background-color: var(--primary);
 	color: white;
     -unity-font-style: bold; 
@@ -70,6 +99,19 @@ Button:hover {
 
 Button:active {
 	background-color: var(--primary-active);
+}
+
+Button.button__light {
+	background-color: white;
+	color: var(--primary);
+}
+
+Button.button__light:hover {
+	background-color: var(--default-hover);
+}
+
+Button.button__light:active {
+	background-color: var(--default-active);
 }
 
 /* Header Styles */
@@ -92,20 +134,11 @@ Button:active {
 .group-button {
 	flex-grow: 1;
 	justify-content: center;
+	border-color: var(--primary-active);
 }
 
 .group-button MaterialIcon {
 	font-size: 20px;
-}
-
-.group-button__center {
-	border-radius: 0px;
-	border-bottom-color: var(--primary-active);
-	border-top-color: var(--primary-active);
-	border-bottom-width: 1px;
-	border-top-width: 1px;
-	flex-grow: 1;
-	justify-content: center;
 }
 
 /* Image Button Styles */
@@ -263,29 +296,27 @@ PrefabItem > Label {
 
 /* Text Input Styles */
 TextInput {
-	font-size: 12px;
-	padding: 4px 16px;
+	font-size: 14px;
+	padding: 8px 16px;
 	border-width: 1px;
 	border-radius: 4px;
 	border-color: var(--default);
 	background-color: white;
 	color: black;
-	transition: 150ms
-}
-
-TextInput:hover {
-	background-color: var(--default-hover);
+	transition-property: background-color, border-color;
+	transition-duration: 150ms;
 }
 
 Slider TextInput {
 	font-size: 12px;
-	padding: 4px 4px;
+	padding: 8px 4px;
 	border-width: 1px;
 	border-radius: 4px;
 	border-color: var(--default);
 	background-color: white;
 	color: black;
-	transition: 150ms
+	transition-property: background-color, border-color;
+	transition-duration: 150ms;
 }
 
 TextElement {
@@ -308,13 +339,14 @@ ArticleRenderer {
 .tag-button {
     flex-direction: row;
 	justify-content: center;
-    padding: 2px 12px;
+    padding: 2px 8px 2px 3px;
 	margin-bottom: 4px;
 	margin-right: 4px;
 	background-color: white;
 	border-width: 1px;
 	border-radius: 12px;
 	border-color: var(--default);
+	cursor: link;
 	transition: 150ms;
 }
 
@@ -324,20 +356,51 @@ ArticleRenderer {
 
 .tag-button > Label {
     color: black;
-	margin-left: 4px;
+	margin-left: 6px;
+	-unity-font-style: normal;
+	cursor: link;
 }
 
-.checked {
+/* Round check indicator inside a tag button (white circle, blue with a tick when checked) */
+.tag-check {
+	width: 16px;
+	height: 16px;
+	align-self: center;
+	align-items: center;
+	justify-content: center;
+	cursor: link;
+	background-color: white;
+	border-width: 1px;
+	border-radius: 8px;
+	border-color: var(--default-selected);
+}
+
+.tag-check__mark {
+	display: none;
+	position: absolute;
+	left: 5px;
+	top: 2.5px;
+	width: 4px;
+	height: 8px;
+	margin: 0;
+	border-width: 0 2px 2px 0;
+	border-color: white;
+	rotate: 45deg;
+}
+
+.checked > .tag-check {
 	background-color: var(--primary);
-	color: white;
+	border-color: var(--primary);
 }
 
+.checked > .tag-check > .tag-check__mark {
+	display: flex;
+}
+
+.checked,
 .checked:hover {
-	background-color: var(--primary-hover);
-}
-
-.checked > Label {
-	color: white;
+	background-color: var(--primary-subtle);
+	border-color: var(--primary);
 }
 
 /* Dropdown Field Styles */
@@ -356,7 +419,7 @@ DropdownField > VisualElement {
 }
 
 DropdownField:hover > VisualElement {
-	background-color: var(--default-hover);
+	background-color: #f4f4f5;
 }
 
 DropdownField > Label {
@@ -364,6 +427,7 @@ DropdownField > Label {
 }
 
 DropdownField > VisualElement > PopupTextElement {
+	font-size: 14px;
 	color: black;
 }
 
@@ -383,7 +447,7 @@ PopupField > VisualElement {
 }
 
 PopupField:hover > VisualElement {
-	background-color: var(--default-hover);
+	background-color: #f4f4f5;
 }
 
 PopupField > Label {
@@ -391,6 +455,7 @@ PopupField > Label {
 }
 
 PopupField	 > VisualElement > PopupTextElement {
+	font-size: 14px;
 	color: black;
 }
 
@@ -704,6 +769,84 @@ ValidationItem Label {
     background-color: var(--primary);
 }
 
+/* Check Box Styles */
+.check-box {
+	/* the label is the first child, so reverse the row to put the circle on the left */
+	flex-direction: row-reverse;
+	align-items: center;
+	margin: 0 0 8px 0;
+	padding: 10px 12px;
+	background-color: white;
+	border-width: 1px;
+	border-radius: 8px;
+	border-color: var(--default);
+	cursor: link;
+	transition-property: background-color, border-color;
+	transition-duration: 150ms;
+}
+
+.check-box:hover {
+	background-color: var(--default-hover);
+}
+
+.check-box--checked,
+.check-box--checked:hover {
+	background-color: var(--primary-subtle);
+	border-color: var(--primary);
+}
+
+.check-box .unity-base-field__label {
+	flex-grow: 1;
+	flex-shrink: 1;
+	min-width: 0;
+	width: auto;
+	margin: 0;
+	padding: 0;
+	white-space: normal;
+	cursor: link;
+}
+
+.check-box__input {
+	flex-grow: 0;
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+	min-height: 20px;
+	margin: 0 12px 0 0;
+	padding: 0;
+	align-items: center;
+	justify-content: center;
+	background-color: white;
+	border-width: 1px;
+	border-radius: 10px;
+	border-color: var(--default-selected);
+	transition-property: background-color, border-color;
+	transition-duration: 150ms;
+}
+
+.check-box__input--checked {
+	background-color: var(--primary);
+	border-color: var(--primary);
+}
+
+.check-box__input-mark {
+	display: none;
+	/* absolute so it doesn't depend on how the base field lays out its input; the circle's inner size is 18px */
+	position: absolute;
+	left: 6.5px;
+	top: 3px;
+	width: 5px;
+	height: 10px;
+	margin: 0;
+	border-width: 0 2px 2px 0;
+	border-color: white;
+	rotate: 45deg;
+}
+
+.check-box__input--checked > .check-box__input-mark {
+	display: flex;
+}
+
 .slide-toggle__input--checked > .slide-toggle__input-knob {
     translate: 16px 0px;
 }
@@ -861,6 +1004,7 @@ RadioButton * {
     --primary-hover: #338ef7;
     --primary-active: #66aaf9;
     --primary-selected: #005bc4;
+    --primary-subtle: #e6f1fe;
     --secondary: #7828c8;
     --secondary-hover: #9353d3;
     --secondary-active: #ae7ede;
@@ -887,6 +1031,7 @@ RadioButton * {
     --primary-hover: #00cfff;
     --primary-active: #b3efff;
     --primary-selected: #005bc4;
+    --primary-subtle: #e1f4fb;
     --secondary: #7828c8;
     --secondary-hover: #9353d3;
     --secondary-active: #ae7ede;
@@ -903,6 +1048,7 @@ RadioButton * {
     --success-hover: #43d589;
     --success-active: #6ee1ae;
     --success-selected: #0faa4d;
+    --placeholder: #8b8b8b;
     color: white;
 }
 
@@ -1049,4 +1195,2441 @@ RadioButton * {
 	width: 100%;
 	justify-content: center;
 	align-items: center;
+}
+
+/* Modal Styles */
+.modal__container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background-color: rgba(0,0,0, 0.3);
+	justify-content: center;
+	align-items: center;
+}
+
+.modal__shadow {
+	min-width: 320px;
+	max-width: 80%;
+	max-height: 80%;
+}
+
+/* Modal open / close animation, as in shadcn/ui's Dialog: the backdrop fades in, and the dialog fades in while zooming
+   from 95% to full size, both over 150ms. Closing runs the same transitions backwards (Modal.Hide waits for them
+   before hiding). The starting backdrop is black at zero alpha, so the fade stays a plain darkening. */
+.modal__container.modal--animated {
+	background-color: rgba(0, 0, 0, 0);
+	transition-property: background-color;
+	transition-duration: 150ms;
+	transition-timing-function: ease-out;
+}
+
+.modal--animated .modal__shadow {
+	opacity: 0;
+	scale: 0.95 0.95;
+	transition-property: opacity, scale;
+	transition-duration: 150ms;
+	transition-timing-function: ease-out;
+}
+
+.modal__container.modal--shown {
+	background-color: rgba(0, 0, 0, 0.3);
+}
+
+.modal--shown .modal__shadow {
+	opacity: 1;
+	scale: 1 1;
+}
+
+.modal {
+	padding: 16px;
+	background-color: white;
+	border-radius: 6px;
+}
+
+.modal__title {
+	font-size: 18px;
+	-unity-font-style: bold;
+	margin-bottom: 16px;
+}
+
+.modal__footer {
+		flex-direction: row;
+	justify-content: flex-end;
+}
+
+.modal__button {
+	margin-left: 8px;
+}
+
+.modal__content {
+	font-size: 16px;
+	padding-bottom: 16px;
+}
+
+/* Pastel Theme */
+.pastel {
+    /* 全体の背景色 (エディタ背景) */
+    background-color: #fdf8f5; /* やや薄いクリーム色 */
+
+    --primary: #F28CA7;
+    --primary-hover: #F7ABC2;
+    --primary-active: #FFD9E4;
+    --primary-selected: #D97087;
+    --primary-subtle: #ffeff4;
+
+    --secondary: #A3D6CC;
+    --secondary-hover: #C3E3DD;
+    --secondary-active: #E2F2EF;
+    --secondary-selected: #81B6AD;
+
+    --default: #d4d4d8;
+    --default-hover: #dddde0;
+    --default-active: #e4e4e7;
+    --default-selected: #a1a1aa;
+
+    --warning: #F4B257;
+    --warning-hover: #F7C180;
+    --warning-active: #FAD1A9;
+    --warning-selected: #C98E43;
+
+    --success: #9ADCA5;
+    --success-hover: #B3E2BB;
+    --success-active: #DAF0DD;
+    --success-selected: #7FB48A;
+
+    --danger: #E28288;
+    --danger-hover: #EEA1A6;
+    --danger-active: #FCD4D6;
+    --danger-selected: #C66064;
+
+    --placeholder: #c2a496;
+
+    /* テキストのメインカラー */
+    color: #8b4513; /* 黒に近いダークグレー */
+}
+
+.pastel #header-text {
+    color: #8b4513; /* ヘッダー文字 */
+}
+
+.pastel Button {
+    background-color: var(--primary);
+	border-color: #FCD4D6;
+}
+
+.pastel Button:hover {
+    background-color: var(--primary-hover);
+}
+
+.pastel Button:active {
+    background-color: var(--primary-active);
+}
+
+.pastel Button > Label {
+    color: #faebd7;
+}
+
+.pastel MaterialIcon {
+    color: #faebd7;
+}
+
+.pastel .selected {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.pastel .selected Label {
+    color: white;
+}
+
+.pastel .selected:hover {
+    background-color: var(--primary-hover);
+}
+
+.pastel .pinned {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+}
+
+.pastel .pinned:hover {
+    background-color: var(--default-hover);
+}
+
+.pastel .selected.pinned {
+    background-color: var(--secondary);
+}
+
+/* ==========================================================================
+   Avatar list (grid of cards)
+   ========================================================================== */
+
+.avatar-grid {
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: flex-start;
+}
+
+.avatar-card {
+	width: 180px;
+	margin: 8px;
+	border-width: 1px;
+	border-color: var(--default);
+	border-radius: 8px;
+	background-color: rgba(255, 255, 255, 0.6);
+	overflow: hidden;
+	/* The card fades in when it is added, and its border color fades on hover. */
+	transition-property: opacity, border-color;
+	transition-duration: 150ms;
+	transition-timing-function: ease-out;
+}
+
+.avatar-card--entering {
+	opacity: 0;
+}
+
+.avatar-card:hover {
+	border-color: var(--primary);
+}
+
+/* The card's rounded corners do not clip its children, so the thumbnail rounds its own top corners
+   (card radius 8px minus the 1px border). */
+.avatar-card__thumbnail {
+	height: 135px;
+	background-color: rgba(0, 0, 0, 0.04);
+	border-top-left-radius: 7px;
+	border-top-right-radius: 7px;
+}
+
+.avatar-card__image {
+	flex-grow: 1;
+	height: 135px;
+	border-top-left-radius: 7px;
+	border-top-right-radius: 7px;
+	-unity-background-scale-mode: scale-to-fit;
+}
+
+/* The action buttons fade in; AvatarCard adds the --visible class on hover. */
+.avatar-card__actions {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	flex-direction: row;
+	opacity: 0;
+	transition-property: opacity;
+	transition-duration: 150ms;
+	transition-timing-function: ease-out;
+}
+
+.avatar-card__actions--visible {
+	opacity: 1;
+}
+
+.avatar-card__action {
+	width: 28px;
+	height: 28px;
+	margin-left: 2px;
+	padding: 0;
+	justify-content: center;
+	align-items: center;
+	border-radius: 4px;
+}
+
+.avatar-card__action--danger {
+	background-color: var(--warning);
+}
+
+/* Without these the global Button hover colors would turn the delete button blue. */
+.avatar-card__action--danger:hover {
+	background-color: var(--warning-hover);
+}
+
+.avatar-card__action--danger:active {
+	background-color: var(--warning-active);
+}
+
+.avatar-card__badges {
+	position: absolute;
+	top: 4px;
+	left: 4px;
+	flex-direction: row;
+}
+
+.avatar-card__badge {
+	font-size: 16px;
+	margin-right: 2px;
+}
+
+.avatar-card__body {
+	padding: 8px;
+}
+
+.avatar-card__title {
+	-unity-font-style: bold;
+	font-size: 13px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.avatar-card__meta {
+	font-size: 11px;
+	opacity: 0.7;
+}
+
+.avatar-card__warning {
+	font-size: 11px;
+}
+
+/* サムネイル画像の上に重ねて表示する */
+.avatar-card__tags {
+	position: absolute;
+	left: 4px;
+	right: 4px;
+	bottom: 4px;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+}
+
+/* ==========================================================================
+   Tags
+   ========================================================================== */
+
+/* 一覧のカードに並べる読み取り専用のタグ */
+/* 画像の上に重なるので、背景を敷いて読めるようにする */
+.tag-chip {
+	font-size: 10px;
+	padding: 0 6px;
+	margin-right: 4px;
+	margin-bottom: 2px;
+	border-width: 1px;
+	border-color: rgba(255, 255, 255, 0.6);
+	border-radius: 8px;
+	background-color: rgba(255, 255, 255, 0.85);
+	color: #27272a;
+}
+
+.tag-editor__control {
+	border-width: 1px;
+	border-color: var(--default);
+	border-radius: 4px;
+	background-color: white;
+}
+
+.tag-editor__control--open {
+	border-color: var(--primary);
+}
+
+.tag-editor__chips {
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+	padding: 4px 8px;
+	min-height: 38px;
+}
+
+.tag-editor__chips > .tag-chip--removable {
+	flex-shrink: 0;
+	margin: 1px 4px 1px 0;
+}
+
+.tag-editor__input {
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 128px;
+	min-width: 128px;
+	max-width: 100%;
+	margin: 0;
+}
+
+.tag-editor__input .unity-base-text-field__input {
+	min-width: 0;
+	min-height: 30px;
+	border-width: 0;
+	background-color: rgba(0, 0, 0, 0);
+	padding: 4px;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.tag-editor__input .unity-text-element {
+	white-space: nowrap;
+}
+
+.tag-editor__dropdown {
+	padding: 4px;
+	border-width: 1px;
+	border-color: var(--default);
+	border-radius: 6px;
+	background-color: white;
+}
+
+Button.tag-suggestion.tag-editor__create {
+	justify-content: flex-start;
+}
+
+.tag-editor__separator {
+	height: 1px;
+	margin: 6px 0;
+	background-color: var(--default);
+}
+
+.tag-editor__create > Label {
+	height: 22px;
+	-unity-text-align: middle-left;
+}
+
+Button.tag-editor__create > MaterialIcon {
+	width: 16px;
+	height: 22px;
+	flex-shrink: 0;
+	margin: 0 6px 0 0;
+	padding: 0;
+	-unity-text-align: middle-center;
+}
+
+.tag-editor__create > .tag-editor__create-name {
+	margin-left: 8px;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.tag-editor__hint {
+	font-size: 11px;
+	color: #71717a;
+	white-space: normal;
+	margin: 4px 8px;
+}
+
+/* 入力欄の下に出す候補リスト */
+.tag-suggestions {
+	max-height: 168px;
+}
+
+Button.tag-suggestion {
+	font-size: 14px;
+	margin: 0;
+	color: black;
+	-unity-font-style: normal;
+	-unity-text-align: middle-left;
+}
+
+.tag-suggestion > Label {
+	-unity-font-style: normal;
+	white-space: nowrap;
+	flex-shrink: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.tag-suggestion > MaterialIcon {
+	font-size: 16px;
+	color: var(--primary);
+	margin-right: 6px;
+}
+
+.dark .tag-editor__hint {
+	color: #a1a1aa;
+}
+
+.dark .tag-editor__dropdown,
+.dark .tag-editor__control {
+	background-color: #333333;
+	border-color: #4a4a4a;
+}
+
+.dark .tag-suggestion {
+	color: white;
+}
+
+.dark .tag-suggestion > Label {
+	color: white;
+}
+
+.dark .tag-suggestion > MaterialIcon {
+	color: var(--primary);
+}
+
+.pastel .tag-editor__dropdown,
+.pastel .tag-editor__control {
+	background-color: #fffdfc;
+	border-color: #f7d9e1;
+}
+
+/* タグ絞り込みモーダルのグリッド */
+.tag-filter-grid {
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.tag-filter-cell {
+	width: 170px;
+	padding: 2px 4px;
+}
+
+/* 編集画面で表示する、削除できるタグ */
+.tag-chip--removable {
+	flex-direction: row;
+	align-items: center;
+	max-width: 100%;
+	font-size: 12px;
+	min-height: 28px;
+	padding: 0 4px 0 8px;
+	margin-right: 4px;
+	margin-bottom: 4px;
+	border-width: 1px;
+	border-color: var(--default);
+	border-radius: 14px;
+	background-color: white;
+}
+
+.tag-chip--removable:hover {
+	border-color: var(--primary);
+}
+
+.tag-chip--removable > Label {
+	color: black;
+	flex-shrink: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.tag-chip--removable > Button.tag-chip__remove {
+	flex-shrink: 0;
+	font-size: 14px;
+	min-width: 24px;
+	min-height: 24px;
+	padding: 0;
+	margin: 0 0 0 2px;
+	background-color: rgba(0, 0, 0, 0);
+	color: #52525b;
+}
+
+.tag-chip__remove > MaterialIcon {
+	font-size: 14px;
+	color: #52525b;
+}
+
+.tag-chip--removable > .tag-chip__remove:hover > MaterialIcon,
+.tag-chip--removable > .tag-chip__remove:focus > MaterialIcon {
+	color: #18181b;
+}
+
+.dark .tag-chip {
+	background-color: rgba(30, 30, 30, 0.85);
+	border-color: rgba(255, 255, 255, 0.25);
+	color: #f4f4f5;
+}
+
+.dark .tag-chip--removable {
+	background-color: #3a3a3a;
+	border-color: #4a4a4a;
+}
+
+.dark .tag-chip--removable > Label,
+.dark .tag-chip__remove,
+.dark .tag-chip__remove > MaterialIcon {
+	color: #f4f4f5;
+}
+
+.pastel .tag-chip {
+	background-color: rgba(255, 253, 252, 0.9);
+	border-color: #f7d9e1;
+	color: #8b4513;
+}
+
+.pastel .tag-chip--removable {
+	background-color: #fdf3f6;
+	border-color: #f7d9e1;
+}
+
+/* ==========================================================================
+   Screen header (title centered, actions on the right)
+   ========================================================================== */
+
+.screen-header {
+	position: relative;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+.screen-header__actions {
+	position: absolute;
+	right: 0;
+}
+
+/* Setup screen : metadata panel */
+/* Height follows the width at 4:3 (AspectRatioFitter.Keep in Setup.cs). */
+.meta-thumbnail {
+	width: 100%;
+}
+
+.memo-field {
+	min-height: 72px;
+}
+
+.memo-field .unity-base-text-field__input {
+	min-height: 72px;
+	white-space: normal;
+}
+
+/* Dark / pastel variants */
+.dark .avatar-card {
+	background-color: #333333;
+	border-color: #4a4a4a;
+}
+
+.dark .avatar-card__thumbnail {
+	background-color: #2b2b2b;
+}
+
+.pastel .avatar-card {
+	background-color: #fffdfc;
+	border-color: #f7d9e1;
+}
+
+.pastel .avatar-card__thumbnail {
+	background-color: #fdf3f6;
+}
+
+/* ==========================================================================
+   Screen header title (help button does not affect centering)
+   ========================================================================== */
+
+.screen-header__title {
+	flex-direction: row;
+	align-items: center;
+}
+
+.screen-header__title-help {
+	position: absolute;
+	left: 100%;
+	margin-left: 8px;
+}
+
+/* ==========================================================================
+   Footer navigation (split into two full-size halves)
+   ========================================================================== */
+
+.footer-nav {
+	flex-direction: row;
+	flex-shrink: 0;
+	height: 52px;
+	border-top-width: 1px;
+	border-top-color: var(--default);
+}
+
+.footer-nav__button {
+	flex-grow: 1;
+	flex-basis: 0;
+	height: 100%;
+	margin: 0;
+	border-radius: 0;
+	border-width: 0;
+}
+
+.footer-nav__button > Label {
+	font-size: 16px;
+}
+
+.footer-nav__button > MaterialIcon {
+	margin-right: 6px;
+}
+
+.footer-nav__button--secondary {
+	background-color: var(--default-active);
+}
+
+.footer-nav__button--secondary > Label,
+.footer-nav__button--secondary > MaterialIcon {
+	color: var(--primary);
+}
+
+.footer-nav__button--secondary:hover {
+	background-color: var(--default-hover);
+}
+
+/* ==========================================================================
+   Edit tool modal
+   ========================================================================== */
+
+.edit-tool-modal__container {
+	padding: 24px;
+	align-items: stretch;
+	justify-content: flex-start;
+}
+
+.edit-tool-modal {
+	flex-grow: 1;
+	background-color: white;
+	border-radius: 14px;
+	overflow: hidden;
+}
+
+.dark .edit-tool-modal {
+	background-color: #292929;
+}
+
+.pastel .edit-tool-modal {
+	background-color: #fdf8f5;
+}
+
+.edit-tool-modal Button {
+	margin-right: 6px;
+	margin-bottom: 4px;
+}
+
+/* ==========================================================================
+   Avatar list toolbar
+   Rows use the same 8px side inset as the card margin so the left and right
+   edges of every row line up with the card grid.
+   ========================================================================== */
+
+.list-row {
+	flex-direction: row;
+	align-items: center;
+	flex-shrink: 0;
+	margin: 0 0 8px 0;
+}
+
+.list-row--header {
+	justify-content: space-between;
+	margin-bottom: 0;
+}
+
+.list-row--filters {
+	justify-content: space-between;
+	margin-bottom: 0;
+}
+
+.list-row__group {
+	flex-direction: row;
+	align-items: center;
+}
+
+/* ==========================================================================
+   Outlined buttons (secondary actions). Declared after the theme blocks so they
+   win over `.dark Button` / `.pastel Button`.
+   ========================================================================== */
+
+.button-outline Button {
+	background-color: white;
+	border-width: 1px;
+	border-color: var(--default);
+}
+
+.button-outline Button > Label,
+.button-outline Button > MaterialIcon {
+	color: var(--primary);
+}
+
+.button-outline Button:hover {
+	background-color: var(--primary-subtle);
+	border-color: var(--primary);
+}
+
+/* Hover is a light tint of the primary color; pressed is a deeper tint (20% of --primary), so the two read differently. */
+.button-outline Button:active {
+	background-color: #cce2fc;
+	border-color: var(--primary-selected);
+}
+
+.button-outline--danger Button > Label,
+.button-outline--danger Button > MaterialIcon {
+	color: var(--danger);
+}
+
+/* Soft red border at rest (40% of --danger). */
+.button-outline--danger Button {
+	border-color: rgba(243, 18, 96, 0.4);
+}
+
+/* Soft red at rest; the border takes the full color on hover. */
+.button-outline--danger Button:hover {
+	background-color: #fee7ef;
+	border-color: var(--danger);
+}
+
+.button-outline--danger Button:active {
+	background-color: #fccfdf;
+	border-color: var(--danger-selected);
+}
+
+/* ==========================================================================
+   Search field (magnifier icon inside the field, text starts after it)
+   ========================================================================== */
+
+.search-field {
+	flex-grow: 1;
+	flex-direction: row;
+}
+
+.search-field .unity-base-text-field__input {
+	min-height: 40px;
+	padding-left: 36px;
+}
+
+.search-field > MaterialIcon.search-field__icon {
+	position: absolute;
+	left: 12px;
+	top: 0;
+	bottom: 0;
+	-unity-text-align: middle-center;
+	font-size: 20px;
+	color: var(--placeholder);
+}
+
+/* ==========================================================================
+   Buttons with an icon (gap between the icon and the label)
+   ========================================================================== */
+
+.button-with-icons Button {
+	padding-left: 12px;
+	padding-right: 12px;
+}
+
+.button-with-icons Button > MaterialIcon {
+	margin-right: 8px;
+}
+
+/* ==========================================================================
+   Card size slider (icons instead of a label)
+   ========================================================================== */
+
+MaterialIcon.card-size-icon {
+	color: var(--default-selected);
+	/* Same fixed box for both icons, glyph centered in it, so they share one center line whatever their font size. */
+	width: 24px;
+	height: 24px;
+	margin: 0;
+	padding: 0;
+	-unity-text-align: middle-center;
+	/* The icon font's glyphs sit slightly above the middle of the box. */
+	top: 1px;
+}
+
+.card-size-icon--small {
+	font-size: 16px;
+}
+
+.card-size-icon--large {
+	font-size: 24px;
+}
+
+.card-size-bar {
+	margin: 0 8px;
+}
+
+/* Unity's slider draws its track above the vertical center of its box, so nudge it down to line up with its neighbours. */
+.card-size-slider {
+	margin: 0;
+	top: 5px;
+}
+
+/* ==========================================================================
+   Avatar list sections. Each section spans the full width and ends in a divider;
+   the card grid adds 8px of padding on top of the cards' own 8px margin.
+   ========================================================================== */
+
+.list-section {
+	flex-shrink: 0;
+	padding: 12px 16px;
+	border-bottom-width: 1px;
+	border-bottom-color: var(--default);
+}
+
+.list-grid {
+	padding: 8px;
+}
+
+/* The large title's glyphs sit lower than the center of its line box; nudge it up to the center line of the header buttons. */
+.list-title {
+	top: -2px;
+}
+
+/* ==========================================================================
+   Shadow cast by the toolbar onto the card grid while it is scrolled.
+   The shadow's box is the strip above the grid; the area clips everything outside itself,
+   so only the blur spilling down into the grid shows. The side overhang keeps the blur's
+   fade at the left and right ends out of view.
+   ========================================================================== */
+
+.list-scroll-area {
+	flex-grow: 1;
+	overflow: hidden;
+}
+
+.list-scroll-shadow {
+	position: absolute;
+	left: -32px;
+	right: -32px;
+	top: -40px;
+	height: 40px;
+}
+
+.list-scroll-shadow--bottom {
+	position: absolute;
+	left: -32px;
+	right: -32px;
+	bottom: -40px;
+	height: 40px;
+}
+
+/* ==========================================================================
+   Dropdown (DropdownFieldPro): the field, and the list drawn over the window when it is opened
+   ========================================================================== */
+
+.dropdown-pro {
+	flex-direction: row;
+	align-items: center;
+	flex-grow: 1;
+	margin: 0;
+}
+
+.dropdown-pro__input {
+	flex-grow: 1;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	margin: 0;
+	padding: 4px 8px 4px 16px;
+	border-width: 1px;
+	border-radius: 4px;
+	border-color: var(--default);
+	background-color: white;
+	cursor: link;
+	transition: 150ms;
+}
+
+/* Hover is light gray; while pressed or while the list is open it is one step darker. */
+.dropdown-pro:hover > .dropdown-pro__input {
+	background-color: #f4f4f5;
+}
+
+.dropdown-pro:active > .dropdown-pro__input,
+.dropdown-pro.dropdown-pro--open > .dropdown-pro__input {
+	background-color: #e4e4e7;
+}
+
+/* The field's own label (when it has one) stays black in every theme, like DropdownField's. */
+.dropdown-pro > Label {
+	color: black;
+}
+
+Label.dropdown-pro__text {
+	flex-grow: 1;
+	flex-shrink: 1;
+	margin: 0;
+	padding: 0;
+	font-size: 14px;
+	color: black;
+	/* Several ticked names can be longer than the field. */
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+MaterialIcon.dropdown-pro__arrow {
+	margin: 0;
+	padding: 0;
+	font-size: 20px;
+	color: var(--default-selected);
+}
+
+.dropdown-pro__overlay {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+}
+
+.dropdown-pro__shadow,
+.tag-editor__dropdown-shell {
+	position: absolute;
+	/* The list fades in and slides to its position (see DropdownFieldPro.ShowMenu). */
+	transition-property: opacity, translate;
+	transition-duration: 150ms;
+	transition-timing-function: ease-out;
+}
+
+.tag-editor__dropdown-shell--preparing {
+	transition-duration: 0s;
+}
+
+/* The menu follows the tag dropdown's radius; items use a smaller radius. */
+.dropdown-pro__menu {
+	max-height: 320px;
+	border-width: 1px;
+	border-radius: 6px;
+	border-color: var(--default);
+	background-color: white;
+}
+
+.dropdown-pro__menu .unity-scroll-view__content-container {
+	padding: 4px;
+}
+
+.dropdown-pro__item {
+	height: 29px;
+}
+
+.dropdown-pro__item,
+Button.tag-suggestion {
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	padding: 6px 8px;
+	border-radius: 2px;
+	cursor: link;
+	/* Fades the hover tint in and out, like the buttons. The resting color is the hover color at zero alpha:
+	   fading from plain transparent (black at zero alpha) would pass through a dark gray. */
+	background-color: rgba(244, 244, 245, 0);
+	transition: 150ms;
+}
+
+/* Only the hovered item is tinted (gray); selected items are marked by the check alone. */
+.dropdown-pro__item:hover,
+Button.tag-suggestion:hover,
+Button.tag-suggestion:focus {
+	background-color: #f4f4f5;
+}
+
+/* The check sits at the right end of the row, as in shadcn/ui. */
+MaterialIcon.dropdown-pro__item-check {
+	width: 16px;
+	margin: 0 0 0 16px;
+	padding: 0;
+	font-size: 16px;
+	-unity-text-align: middle-center;
+	color: black;
+}
+
+Label.dropdown-pro__item-label,
+.tag-suggestion > Label {
+	margin: 0;
+	padding: 0;
+	font-size: 14px;
+	color: black;
+}
+
+/* The scroll bar floats over the right edge instead of taking its own column, so showing or hiding it
+   never narrows the content (and never makes the layout jump). */
+#avatar_editor_list .unity-scroll-view__vertical-scroller,
+#meta_panel .unity-scroll-view__vertical-scroller,
+#upload_scroll .unity-scroll-view__vertical-scroller {
+	position: absolute;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+
+#avatar_editor_list .unity-scroll-view__content-container {
+	padding: 8px 12px 0 12px;
+}
+
+.edit-tool__card {
+	border-radius: 4px;
+	background-color: #ffffff;
+	overflow: hidden;
+}
+
+.edit-tool__group {
+	flex-direction: row;
+}
+
+/* The card's rounded corners do not clip its children, so the buttons round their own outer corners.
+   Both halves look like the light buttons elsewhere (white, primary-coloured text, pointer cursor)
+   so it is clear they can be clicked. */
+.edit-tool__group .edit-tool__main {
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+	margin: 0;
+	padding: 10px 12px;
+	border-width: 1px;
+	border-color: var(--default);
+	border-radius: 4px 0 0 4px;
+	background-color: white;
+	cursor: link;
+}
+
+/* Same states as the outlined buttons elsewhere (.button-outline). */
+.edit-tool__group .edit-tool__main:hover {
+	background-color: var(--primary-subtle);
+	border-color: var(--primary);
+}
+
+.edit-tool__group .edit-tool__main:active {
+	background-color: #cce2fc;
+	border-color: var(--primary-selected);
+}
+
+.edit-tool__group .edit-tool__main:disabled {
+	background-color: #f4f4f5;
+	opacity: 0.6;
+}
+
+.edit-tool__group Label.edit-tool__name {
+	flex-grow: 1;
+	margin: 0;
+	padding: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-size: 13px;
+	-unity-font-style: bold;
+	-unity-text-align: middle-left;
+	color: var(--primary);
+}
+
+.edit-tool__group .edit-tool__toggle {
+	width: 36px;
+	margin: 0 0 0 -1px;
+	padding: 0;
+	justify-content: center;
+	border-width: 1px;
+	border-color: var(--default);
+	border-radius: 0 4px 4px 0;
+	background-color: white;
+	cursor: link;
+}
+
+.edit-tool__group .edit-tool__toggle:hover {
+	background-color: var(--primary-subtle);
+	border-color: var(--primary);
+}
+
+.edit-tool__group .edit-tool__toggle.edit-tool__toggle--seam {
+	border-left-color: var(--primary);
+}
+
+.edit-tool__group .edit-tool__toggle:active {
+	background-color: #cce2fc;
+	border-color: var(--primary-selected);
+}
+
+/* The chevron turns over as the card opens */
+.edit-tool__group .edit-tool__toggle > MaterialIcon {
+	font-size: 20px;
+	color: var(--primary);
+	rotate: 0deg;
+	transition-property: rotate;
+	transition-duration: 180ms;
+	transition-timing-function: ease-out;
+}
+
+.edit-tool--open .edit-tool__group .edit-tool__toggle > MaterialIcon {
+	rotate: 180deg;
+}
+
+.edit-tool__warning {
+	flex-direction: row;
+	align-items: center;
+	padding: 0 12px 8px 12px;
+}
+
+/* The details sheet slides out from under the button card by animating the height and opacity of this wrapper
+   from code (see EditorItem in Setup.cs; a USS transition starts late when the editor has been idle).
+   The wrapper always tucks 10px under the button card (negative margin and a minimum height of 10px), so the
+   card's shadow falls on the sheet's top edge and nothing moves but the height. Closed, it is invisible. */
+.edit-tool__details-wrap {
+	height: 10px;
+	margin-top: -10px;
+	overflow: hidden;
+	opacity: 0;
+}
+
+/* Absolute, so its height is its content's height however short the wrapper is. */
+.edit-tool__details {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	padding: 20px 12px 12px 12px;
+	border-width: 1px;
+	border-top-width: 0;
+	border-color: #e4e4e7;
+	border-radius: 0 0 4px 4px;
+	background-color: #fafafa;
+}
+
+.edit-tool__details Label {
+	margin: 2px 0;
+	font-size: 12px;
+	opacity: 0.7;
+}
+
+.edit-tool__details .link {
+	margin-top: 6px;
+	font-size: 14px;
+	-unity-font-style: bold;
+}
+
+/* ==========================================================================
+   Item info panel (right pane of the edit screen)
+   ========================================================================== */
+
+.meta-field {
+	margin-bottom: 16px;
+}
+
+.meta-field__label {
+	margin: 0 0 6px 0;
+	padding: 0;
+	font-size: 13px;
+	-unity-font-style: bold;
+}
+
+.meta-field > .unity-text-field > .unity-base-text-field__input {
+	padding: 10px 12px;
+}
+
+.meta-field > .unity-text-field > .unity-base-text-field__input--single-line {
+	min-height: 40px;
+}
+
+.meta-thumbnail-actions {
+	margin-top: 8px;
+}
+
+.meta-section {
+	padding-top: 16px;
+	margin-bottom: 16px;
+	border-top-width: 1px;
+	border-top-color: var(--default);
+}
+
+/* The last section ends the panel; the panel's own padding already gives the bottom gap. */
+.meta-section.meta-actions {
+	margin-bottom: 0;
+}
+
+.meta-toggle-row {
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+}
+
+#meta_details .meta-details__summary {
+	flex-direction: row;
+}
+
+#meta_details .meta-details__group {
+	min-width: 0;
+	flex-grow: 1;
+}
+
+#meta_details .meta-details__summary > .meta-details__group {
+	margin-right: 16px;
+}
+
+#meta_details .meta-details__header {
+	flex-direction: row;
+	align-items: center;
+	min-height: 24px;
+}
+
+#meta_details .meta-details__caption {
+	flex-grow: 1;
+	margin: 0;
+	padding: 0;
+	font-size: 11px;
+	color: #71717a;
+}
+
+#meta_details .meta-details__value {
+	min-width: 0;
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 0;
+	margin: 2px 0 0 0;
+	padding: 0;
+	font-size: 12px;
+	color: #27272a;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#meta_details .meta-details__reference {
+	margin-top: 12px;
+}
+
+#meta_details .meta-details__value-row {
+	flex-direction: row;
+	align-items: center;
+}
+
+#meta_details .meta-details__reference > .meta-details__header {
+	min-height: 18px;
+}
+
+#meta_details .meta-details__reference > .meta-details__value-row {
+	min-height: 28px;
+}
+
+#meta_details .meta-details__reference .meta-details__value {
+	margin-top: 0;
+}
+
+#meta_details .meta-details__path .meta-details__value {
+	white-space: normal;
+}
+
+#meta_details .meta-details__icon-button {
+	width: 28px;
+	height: 28px;
+	min-width: 28px;
+	flex-shrink: 0;
+	margin: 0 0 0 4px;
+	padding: 0;
+	border-radius: 4px;
+	background-color: rgba(244, 244, 245, 0);
+}
+
+#meta_details .meta-details__icon-button:hover,
+#meta_details .meta-details__icon-button:focus {
+	background-color: #f4f4f5;
+}
+
+#meta_details .meta-details__icon-button:active {
+	background-color: #e4e4e7;
+}
+
+#meta_details .meta-details__icon-button > MaterialIcon {
+	margin: 0;
+	padding: 0;
+	font-size: 16px;
+	color: #52525b;
+}
+
+.dark #meta_details .meta-details__caption {
+	color: #a1a1aa;
+}
+
+.dark #meta_details .meta-details__value,
+.dark #meta_details .meta-details__icon-button > MaterialIcon {
+	color: #e4e4e7;
+}
+
+.dark #meta_details .meta-details__icon-button:hover,
+.dark #meta_details .meta-details__icon-button:focus {
+	background-color: #3f3f46;
+}
+
+.dark #meta_details .meta-details__icon-button:active {
+	background-color: #52525b;
+}
+
+/* ==========================================================================
+   Studio layout (edit screen)
+   The 3D view fills the screen. The header, the tool pane and the side pane float above it as rounded cards.
+   Each card is a Shadow (the shell, which is positioned and animated) around the pane itself.
+   Selectors start with a parent class so they win over the theme blocks' `.dark Button` and similar.
+   ========================================================================== */
+
+.studio {
+	position: relative;
+}
+
+.studio__viewport {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+}
+
+/* The preview's own help badge sits in the free area between the panes. */
+.studio .studio__viewport > HelpButton {
+	left: 304px;
+	top: 72px;
+}
+
+.studio__header-shell {
+	position: absolute;
+	left: 16px;
+	top: 16px;
+}
+
+.studio__header {
+	flex-direction: row;
+	align-items: center;
+	height: 44px;
+	padding: 0 16px 0 6px;
+	border-radius: 6px;
+	background-color: rgba(255, 255, 255, 0.95);
+}
+
+.studio__shell {
+	position: absolute;
+	bottom: 16px;
+	width: 272px;
+	transition-property: opacity, translate;
+	transition-duration: 220ms;
+	transition-timing-function: ease-out;
+}
+
+.studio__shell--left {
+	left: 16px;
+	top: 72px;
+}
+
+.studio__shell--right {
+	right: 16px;
+	top: 16px;
+	width: 400px;
+}
+
+/* A closed pane fades and slides a little towards its edge before it is hidden (see Setup.SetPaneOpen). */
+.studio__shell--left.studio__shell--closed {
+	opacity: 0;
+	translate: -20px 0px;
+}
+
+.studio__shell--right.studio__shell--closed {
+	opacity: 0;
+	translate: 20px 0px;
+}
+
+.studio__pane {
+	flex-grow: 1;
+	border-width: 1px;
+	border-radius: 6px;
+	border-color: rgba(15, 23, 42, 0.08);
+	background-color: rgba(255, 255, 255, 0.97);
+	overflow: hidden;
+}
+
+.studio__pane-header {
+	flex-direction: row;
+	align-items: center;
+	flex-shrink: 0;
+	height: 44px;
+	padding: 0 6px 0 16px;
+	border-bottom-width: 1px;
+	border-bottom-color: #f0f0f2;
+}
+
+.studio__pane-body {
+	flex-grow: 1;
+	padding: 12px 0;
+}
+
+.studio .studio__icon-button {
+	width: 32px;
+	height: 32px;
+	margin: 0;
+	padding: 0;
+	border-radius: 4px;
+	background-color: rgba(244, 244, 245, 0);
+}
+
+.studio .studio__icon-button:hover {
+	background-color: #f4f4f5;
+}
+
+.studio .studio__icon-button:active {
+	background-color: #e4e4e7;
+}
+
+.studio .studio__icon-button > MaterialIcon {
+	font-size: 20px;
+	color: #52525b;
+}
+
+/* Rails: the way back while a pane is collapsed. */
+.studio .studio__rail {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	align-items: center;
+	justify-content: center;
+}
+
+.studio .studio__rail--left {
+	left: 16px;
+	top: 72px;
+	width: 56px;
+	height: 64px;
+	flex-direction: column;
+	border-width: 1px;
+	border-radius: 6px;
+	border-color: rgba(15, 23, 42, 0.06);
+	background-color: rgba(255, 255, 255, 0.95);
+}
+
+.studio .studio__rail--left > Label {
+	font-size: 11px;
+	color: var(--primary);
+}
+
+.studio .studio__rail--left > MaterialIcon {
+	font-size: 20px;
+	color: var(--primary);
+}
+
+.studio .studio__rail--right {
+	right: 16px;
+	bottom: 16px;
+	height: 52px;
+	padding: 0 22px 0 18px;
+	flex-direction: row;
+	border-width: 0;
+	border-radius: 6px;
+}
+
+.studio .studio__rail--right > Label {
+	font-size: 15px;
+}
+
+.studio .studio__rail--right > MaterialIcon {
+	margin-right: 10px;
+	font-size: 20px;
+	color: #ffffff;
+}
+
+/* ==========================================================================
+   Upload form (inside the side pane of the edit screen)
+   ========================================================================== */
+
+.upload-card {
+	padding: 12px;
+	margin-bottom: 16px;
+	border-width: 1px;
+	border-radius: 4px;
+	border-color: var(--default);
+}
+
+.upload-section {
+	padding-bottom: 16px;
+	margin-bottom: 16px;
+	border-bottom-width: 1px;
+	border-bottom-color: var(--default);
+}
+
+.upload-footer {
+	flex-shrink: 0;
+	padding: 16px;
+	border-top-width: 1px;
+	border-top-color: #f0f0f2;
+	background-color: white;
+}
+
+/* The main action: the same blue block as the Upload tab, a little taller than other buttons. */
+.upload-primary Button {
+	padding: 10px 16px;
+}
+
+.upload-primary Button > Label {
+	font-size: 15px;
+}
+
+/* ==========================================================================
+   3D view toolbar (grid / axes toggles and the view reset), floating at the bottom center
+   ========================================================================== */
+
+.preview-toolbar-shell {
+	position: absolute;
+	bottom: 16px;
+	left: 50%;
+	translate: -50% 0px;
+}
+
+.preview-toolbar {
+	flex-direction: row;
+	align-items: center;
+	padding: 4px;
+	border-radius: 6px;
+	background-color: rgba(255, 255, 255, 0.95);
+}
+
+.preview-toolbar .preview-toolbar__button {
+	flex-direction: row;
+	height: 32px;
+	margin: 0 1px;
+	padding: 0 12px;
+	border-width: 0;
+	border-radius: 4px;
+	background-color: rgba(244, 244, 245, 0);
+}
+
+.preview-toolbar .preview-toolbar__button:hover {
+	background-color: #f4f4f5;
+}
+
+.preview-toolbar .preview-toolbar__button:active {
+	background-color: #e4e4e7;
+}
+
+.preview-toolbar .preview-toolbar__button > Label {
+	font-size: 12px;
+	color: #52525b;
+}
+
+.preview-toolbar .preview-toolbar__button > MaterialIcon {
+	margin-right: 6px;
+	font-size: 16px;
+	color: #52525b;
+}
+
+/* On: the same light blue as the other toggled-on cards. */
+.preview-toolbar .preview-toolbar__button--on,
+.preview-toolbar .preview-toolbar__button--on:hover {
+	background-color: var(--primary-subtle);
+}
+
+.preview-toolbar .preview-toolbar__button--on > Label,
+.preview-toolbar .preview-toolbar__button--on > MaterialIcon {
+	color: var(--primary);
+}
+
+.preview-toolbar .preview-toolbar__button--icon {
+	width: 32px;
+	padding: 0;
+	justify-content: center;
+}
+
+.preview-toolbar .preview-toolbar__button--icon > MaterialIcon {
+	margin-right: 0;
+}
+
+.preview-toolbar__divider {
+	width: 1px;
+	height: 20px;
+	margin: 0 4px;
+	background-color: var(--default);
+}
+
+/* ==========================================================================
+   Studio: item info footer and the upload sheet
+   ========================================================================== */
+
+.studio__pane-footer {
+	flex-shrink: 0;
+	padding: 16px;
+	border-top-width: 1px;
+	border-top-color: #f0f0f2;
+}
+
+/* The upload sheet covers about 60% of the screen from the right. */
+.studio__shell--sheet {
+	right: 16px;
+	top: 16px;
+	width: 62%;
+	min-width: 600px;
+}
+
+.studio__shell--sheet.studio__shell--closed {
+	opacity: 0;
+	translate: 48px 0px;
+}
+
+.studio__sheet-header {
+	flex-direction: row;
+	align-items: center;
+	flex-shrink: 0;
+	height: 64px;
+	padding: 0 16px 0 24px;
+	border-bottom-width: 1px;
+	border-bottom-color: #f0f0f2;
+}
+
+.studio--uploading .studio__viewport > HelpButton {
+	left: 16px;
+	top: 72px;
+}
+
+/* Collapsed item info: a small button at the top right brings it back. */
+.studio .studio__rail--info {
+	right: 16px;
+	top: 16px;
+	width: 44px;
+	height: 44px;
+	border-width: 1px;
+	border-radius: 6px;
+	border-color: rgba(15, 23, 42, 0.06);
+	background-color: rgba(255, 255, 255, 0.95);
+}
+
+.studio .studio__rail--info > MaterialIcon {
+	font-size: 20px;
+	color: #3f3f46;
+}
+
+/* Upload form inside the sheet */
+#meta_panel .unity-scroll-view__content-container {
+	padding: 16px;
+}
+
+.upload-body {
+	padding: 0;
+}
+
+.upload-body .unity-scroll-view__content-container {
+	padding: 20px 24px;
+}
+
+.upload-columns {
+	flex-direction: row;
+	align-items: flex-start;
+}
+
+.upload-column {
+	flex-grow: 1;
+	flex-basis: 0;
+	min-width: 0;
+}
+
+.upload-column--left {
+	margin-right: 32px;
+}
+
+.upload-footer {
+	padding: 24px;
+}
+
+.upload-confirm {
+	flex-grow: 1;
+	flex-shrink: 1;
+	margin: 0 16px 0 0;
+}
+
+/* The status area takes no room while it is empty, so the footer's padding is even on all sides. */
+.upload-footer #upload_status > * {
+	margin-top: 8px;
+}
+
+.upload-primary--wide {
+	width: 200px;
+}
+
+/* ==========================================================================
+   Upload form: platform cards and the performance accordion
+   Selectors start with a parent class so they win over the theme blocks' `.dark Button`.
+   ========================================================================== */
+
+.upload-column .platform-card {
+	flex-direction: row;
+	align-items: center;
+	margin: 0 0 8px 0;
+	padding: 10px 12px;
+	border-width: 1px;
+	border-radius: 4px;
+	border-color: #e4e4e7;
+	background-color: #ffffff;
+	transition: 150ms;
+}
+
+.upload-column .platform-card:hover {
+	background-color: #f4f4f5;
+}
+
+.upload-column .platform-card--on,
+.upload-column .platform-card--on:hover {
+	border-color: var(--primary);
+	background-color: var(--primary-subtle);
+}
+
+/* Windows is always uploaded, so it is shown as on but quieter and not clickable. */
+.upload-column .platform-card--locked,
+.upload-column .platform-card--locked:hover {
+	border-color: #bcd7fb;
+	background-color: #f6f9ff;
+}
+
+.platform-card__text {
+	flex-grow: 1;
+}
+
+.upload-column .platform-card Label.platform-card__name {
+	-unity-text-align: middle-left;
+	margin: 0;
+	padding: 0;
+	font-size: 13px;
+	-unity-font-style: bold;
+	color: #18181b;
+}
+
+.upload-column .platform-card Label.platform-card__note {
+	-unity-text-align: middle-left;
+	margin: 0;
+	padding: 0;
+	font-size: 12px;
+	-unity-font-style: normal;
+	color: #52525b;
+}
+
+.platform-card__check {
+	width: 20px;
+	height: 20px;
+	border-width: 1px;
+	border-radius: 10px;
+	border-color: #a1a1aa;
+	background-color: #ffffff;
+	align-items: center;
+	justify-content: center;
+}
+
+.upload-column .platform-card__check > MaterialIcon {
+	font-size: 14px;
+	color: #ffffff;
+	display: none;
+}
+
+.platform-card--on > .platform-card__check {
+	border-color: var(--primary);
+	background-color: var(--primary);
+}
+
+.upload-column .platform-card--on > .platform-card__check > MaterialIcon {
+	display: flex;
+}
+
+.perf-card {
+	border-width: 1px;
+	border-radius: 4px;
+	border-color: #e4e4e7;
+	overflow: hidden;
+}
+
+.perf-card .perf-card__summary {
+	flex-direction: row;
+	align-items: center;
+	margin: 0;
+	padding: 10px 12px;
+	border-width: 0;
+	border-radius: 0;
+	background-color: #ffffff;
+}
+
+.perf-card .perf-card__summary:hover {
+	background-color: #f4f4f5;
+}
+
+.perf-card__icon {
+	width: 28px;
+	height: 28px;
+	margin-right: 12px;
+}
+
+.perf-card__text {
+	flex-grow: 1;
+}
+
+.perf-card .perf-card__summary Label.perf-card__rating {
+	-unity-text-align: middle-left;
+	margin: 0;
+	padding: 0;
+	font-size: 15px;
+	-unity-font-style: bold;
+	color: #18181b;
+}
+
+.perf-card .perf-card__summary Label.perf-card__hint {
+	-unity-text-align: middle-left;
+	margin: 0;
+	padding: 0;
+	font-size: 12px;
+	-unity-font-style: normal;
+	color: #52525b;
+}
+
+.perf-card .perf-card__summary > MaterialIcon.perf-card__chevron {
+	font-size: 22px;
+	color: #71717a;
+}
+
+.perf-card__list {
+	padding: 4px 12px 8px 12px;
+	border-top-width: 1px;
+	border-top-color: #f0f0f2;
+}
+
+.perf-card__footer {
+	flex-direction: row;
+	align-items: center;
+	padding: 8px 12px;
+	border-top-width: 1px;
+	border-top-color: #f0f0f2;
+	background-color: #fafafa;
+}
+
+/* ==========================================================================
+   Dropdown as a segmented control (DropdownFieldPro segmented="true")
+   ========================================================================== */
+
+.dropdown-pro__segments {
+	position: relative;
+	flex-grow: 1;
+	flex-direction: row;
+	padding: 3px;
+	border-radius: 6px;
+	background-color: var(--default);
+}
+
+.dropdown-pro__segment-indicator {
+	position: absolute;
+	left: 0;
+	top: 0;
+	transition-property: translate, width, height;
+	transition-duration: 180ms;
+	transition-timing-function: ease-out;
+}
+
+.dropdown-pro__segment-indicator-box {
+	flex-grow: 1;
+	border-width: 1px;
+	border-radius: 4px;
+	border-color: rgba(15, 23, 42, 0.08);
+	background-color: #ffffff;
+}
+
+.dropdown-pro__segments .dropdown-pro__segment {
+	flex-grow: 1;
+	flex-basis: 0;
+	height: 30px;
+	margin: 0;
+	padding: 0 8px;
+	border-width: 1px;
+	border-radius: 4px;
+	border-color: rgba(15, 23, 42, 0);
+	background-color: rgba(255, 255, 255, 0);
+}
+
+.dropdown-pro__segments .dropdown-pro__segment:hover {
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+.dropdown-pro__segments .dropdown-pro__segment > Label {
+	white-space: nowrap;
+	font-size: 12px;
+	color: #52525b;
+	-unity-font-style: normal;
+}
+
+.dropdown-pro__segments .dropdown-pro__segment--active,
+.dropdown-pro__segments .dropdown-pro__segment--active:hover {
+	background-color: rgba(255, 255, 255, 0);
+}
+
+.dropdown-pro__segments .dropdown-pro__segment--active > Label {
+	color: #18181b;
+	-unity-font-style: bold;
+}
+
+/* ==========================================================================
+   Upload sheet: quiet headings, fields with the label above, the thumbnail and the main button
+   ========================================================================== */
+
+.upload-heading-row {
+	flex-direction: row;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+Label.upload-heading {
+	margin: 0;
+	padding: 0;
+	font-size: 13px;
+	-unity-font-style: bold;
+	color: #52525b;
+}
+
+/* Label above the field, as in the mock */
+.upload-column .upload-field {
+	flex-direction: column;
+	align-items: stretch;
+	margin: 0 0 14px 0;
+}
+
+.upload-column .upload-field > Label {
+	min-width: 0;
+	width: auto;
+	margin: 0 0 6px 0;
+	padding: 0;
+	font-size: 12px;
+	-unity-font-style: bold;
+	color: #3f3f46;
+}
+
+.upload-thumbnail {
+	margin-bottom: 16px;
+}
+
+/* The picture fills the frame at 4:3, the same as VRChat's avatar thumbnails (AspectRatioFitter.Keep in UploadForm.cs). */
+.upload-thumbnail__frame {
+	border-radius: 4px;
+}
+
+.upload-thumbnail__image {
+	width: 100%;
+}
+
+.upload-thumbnail__actions {
+	position: absolute;
+	right: 10px;
+	bottom: 10px;
+	flex-direction: row;
+	align-items: center;
+}
+
+.upload-thumbnail__icon-button Button {
+	width: 32px;
+	padding: 6px 0;
+	justify-content: center;
+}
+
+/* Account card once everything is fine: one green line */
+.upload-card__ok-icon {
+	display: none;
+}
+
+.upload-card--ok {
+	flex-direction: row;
+	align-items: center;
+	padding: 10px 12px;
+	border-color: #c9ecd8;
+	background-color: #ecf8f1;
+}
+
+.upload-card--ok .upload-card__body {
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+.upload-card--ok #loginSDKLabel,
+.upload-card--ok #checkPermissionLabel {
+	display: none;
+}
+
+.upload-card--ok #permission_status_container {
+	padding-top: 0;
+	margin-left: 12px;
+}
+
+.upload-card--ok MaterialIcon.upload-card__ok-icon {
+	display: flex;
+	margin-right: 8px;
+	font-size: 20px;
+	color: #0a7a38;
+}
+
+.upload-card--ok Label {
+	color: #0a5c2c;
+}
+
+/* Content warnings: label above the tags */
+.upload-column ContentWarningsField.upload-warnings {
+	flex-direction: column;
+}
+
+.upload-column ContentWarningsField.upload-warnings > Label {
+	margin: 0 0 10px 0;
+	padding: 0;
+	font-size: 13px;
+	-unity-font-style: bold;
+	color: #52525b;
+}
+
+/* Main button: an icon, "Upload" and where it sends, on two lines */
+.upload-primary Button {
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+.upload-primary Button > MaterialIcon {
+	margin-right: 10px;
+	font-size: 20px;
+}
+
+.upload-primary .upload-primary__text {
+	align-items: flex-start;
+}
+
+.upload-primary Label.upload-primary__title {
+	margin: 0;
+	padding: 0;
+	font-size: 15px;
+	-unity-font-style: bold;
+	color: #ffffff;
+}
+
+.upload-primary Label.upload-primary__sub {
+	margin: 0;
+	padding: 0;
+	font-size: 11px;
+	-unity-font-style: normal;
+	color: rgba(255, 255, 255, 0.9);
+}
+
+/* While the confirmation is not ticked, the main button stays blue but light, so it still reads as the main action. */
+.upload-primary:disabled Button {
+	background-color: #9cc3f5;
+}
+
+/* ==========================================================================
+   Edit screen: header item name and genre, status banners, item info pieces
+   ========================================================================== */
+
+.studio__header-divider {
+	width: 1px;
+	height: 20px;
+	margin-right: 12px;
+	background-color: #e4e4e7;
+}
+
+Label.studio__item-name {
+	margin: 0 10px 0 0;
+	padding: 0;
+	font-size: 15px;
+	-unity-font-style: bold;
+	color: #18181b;
+}
+
+Label.studio__badge {
+	height: 20px;
+	margin: 0;
+	padding: 0 8px;
+	border-width: 1px;
+	border-radius: 10px;
+	border-color: #e4e4e7;
+	background-color: #f4f4f5;
+	font-size: 11px;
+	-unity-font-style: bold;
+	-unity-text-align: middle-center;
+	color: #3f3f46;
+}
+
+/* Status rows in the tool pane read as coloured banners */
+.status-row {
+	padding: 8px 12px;
+	border-radius: 4px;
+}
+
+.status-row--success {
+	background-color: #ecf8f1;
+}
+
+.status-row--warning {
+	background-color: #fff6e5;
+}
+
+.status-row--info {
+	background-color: #eef5ff;
+}
+
+.status-row--success > Label,
+.status-row--success > MaterialIcon {
+	color: #0a5c2c;
+	-unity-font-style: bold;
+}
+
+.status-row--warning > Label,
+.status-row--warning > MaterialIcon {
+	color: #8a5300;
+}
+
+.status-row--info > Label,
+.status-row--info > MaterialIcon {
+	color: #1e4f9c;
+}
+
+/* Item info: the thumbnail frame, and the pin / hide switches in one card */
+.meta-thumbnail-frame {
+	padding: 0;
+}
+
+.meta-card {
+	margin-bottom: 16px;
+	padding: 4px 12px;
+	border-width: 1px;
+	border-radius: 4px;
+	border-color: #e4e4e7;
+}
+
+.meta-card .meta-toggle-row {
+	margin: 0;
+	padding: 6px 0;
+}
+
+/* ==========================================================================
+   Upload form: after the avatar has been uploaded (save bar, VRChat information, blueprint)
+   Selectors start with a parent class so they win over the theme blocks.
+   ========================================================================== */
+
+/* Buttons side by side, sharing the row */
+.upload-action-row {
+	flex-direction: row;
+	margin-bottom: 16px;
+}
+
+.upload-action-row .upload-action-row__button {
+	flex-grow: 1;
+	flex-basis: 0;
+}
+
+/* One height for every button in the row, whatever its outline style adds. */
+.upload-action-row .upload-action-row__button Button {
+	height: 34px;
+	margin: 0;
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+Label.upload-heading--block {
+	margin: 16px 0 10px 0;
+}
+
+.upload-info-card {
+	margin-bottom: 16px;
+	padding: 4px 12px;
+	border-width: 1px;
+	border-radius: 10px;
+	border-color: #e4e4e7;
+	background-color: #fafafa;
+}
+
+.upload-info-row {
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	padding: 6px 0;
+	border-bottom-width: 1px;
+	border-bottom-color: #f0f0f2;
+}
+
+.upload-info-row.upload-info-row--last {
+	border-bottom-width: 0;
+}
+
+.upload-info-card Label.upload-info-row__key {
+	margin: 0 12px 0 0;
+	padding: 0;
+	font-size: 12px;
+	color: #71717a;
+}
+
+.upload-info-card Label.upload-info-row__value {
+	flex-shrink: 1;
+	margin: 0;
+	padding: 0;
+	font-size: 13px;
+	-unity-font-style: bold;
+	-unity-text-align: middle-right;
+	color: #18181b;
+}
+
+.upload-info-card Label.upload-info-id {
+	margin: 4px 0;
+	padding: 0;
+	font-size: 12px;
+	color: #52525b;
+	white-space: normal;
+}
+
+.toast-viewport {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+
+.toast-viewport .toast-stack {
+	position: absolute;
+	left: 50%;
+	top: 16px;
+	translate: -50% 0;
+	width: 320px;
+}
+
+.toast-viewport .toast-slot {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	transform-origin: 50% 0;
+	transition-property: translate, scale;
+	transition-duration: 300ms;
+	transition-timing-function: ease-out;
+}
+
+.toast-viewport .toast-shell {
+	flex-shrink: 0;
+	opacity: 1;
+	translate: 0 0;
+	transition-property: translate, opacity;
+	transition-duration: 200ms;
+	transition-timing-function: ease-out;
+}
+
+.toast-viewport .toast-shell--hidden {
+	opacity: 0;
+	translate: 0 -12px;
+}
+
+.toast-viewport .toast-card {
+	min-height: 44px;
+	border-width: 1px;
+	border-color: #e4e4e7;
+	border-radius: 6px;
+	background-color: white;
+	overflow: hidden;
+	transition-property: height;
+	transition-duration: 150ms;
+}
+
+.toast-viewport .toast-card__content {
+	flex-direction: row;
+	align-items: center;
+	flex-shrink: 0;
+	min-height: 42px;
+	padding: 8px 8px 8px 12px;
+	opacity: 1;
+	transition-property: opacity;
+	transition-duration: 150ms;
+}
+
+.toast-viewport .toast-card__text {
+	flex-grow: 1;
+	flex-shrink: 1;
+	min-width: 0;
+}
+
+.toast-viewport Label.toast-card__title {
+	margin: 0;
+	padding: 0;
+	font-size: 13px;
+	-unity-font-style: bold;
+	white-space: normal;
+	color: #18181b;
+}
+
+.toast-viewport Label.toast-card__description {
+	margin: 4px 0 0 0;
+	padding: 0;
+	font-size: 12px;
+	white-space: normal;
+	color: #71717a;
+}
+
+.toast-viewport MaterialIcon.toast-card__icon {
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+	margin: 0 8px 0 0;
+	padding: 0;
+	font-size: 20px;
+	-unity-text-align: middle-center;
+	color: #52525b;
+	transition-property: none;
+}
+
+.toast-viewport .toast-card--success MaterialIcon.toast-card__icon {
+	color: #15803d;
+}
+
+.toast-viewport .toast-card--warning MaterialIcon.toast-card__icon {
+	color: #a16207;
+}
+
+.toast-viewport .toast-card--error MaterialIcon.toast-card__icon {
+	color: #dc2626;
+}
+
+.toast-viewport Button.toast-card__close {
+	flex-shrink: 0;
+	width: 24px;
+	height: 24px;
+	margin: 0 0 0 6px;
+	padding: 0;
+	border-radius: 4px;
+	background-color: rgba(244, 244, 245, 0);
+}
+
+.toast-viewport .toast-card__close > MaterialIcon {
+	margin: 0;
+	padding: 0;
+	font-size: 16px;
+	color: #71717a;
+}
+
+.toast-viewport Button.toast-card__close:hover,
+.toast-viewport Button.toast-card__close:focus {
+	background-color: #f4f4f5;
+}
+
+.toast-viewport .toast-card__close:hover > MaterialIcon,
+.toast-viewport .toast-card__close:focus > MaterialIcon {
+	color: #18181b;
+}
+
+.toast-viewport Button.toast-card__action {
+	flex-shrink: 0;
+	margin: 0 0 0 8px;
+	padding: 5px 8px;
+	border-width: 1px;
+	border-color: #e4e4e7;
+	border-radius: 4px;
+	background-color: white;
+	color: #27272a;
+	font-size: 12px;
+}
+
+.toast-viewport Button.toast-card__action:hover,
+.toast-viewport Button.toast-card__action:focus {
+	background-color: #f4f4f5;
+	border-color: var(--primary);
+}
+
+.dark .toast-viewport .toast-card {
+	background-color: #27272a;
+	border-color: #52525b;
+}
+
+.dark .toast-viewport Label.toast-card__title,
+.dark .toast-viewport MaterialIcon.toast-card__icon,
+.dark .toast-viewport .toast-card__close > MaterialIcon {
+	color: #f4f4f5;
+}
+
+.dark .toast-viewport Label.toast-card__description {
+	color: #a1a1aa;
+}
+
+.dark .toast-viewport .toast-card--success MaterialIcon.toast-card__icon {
+	color: #4ade80;
+}
+
+.dark .toast-viewport .toast-card--warning MaterialIcon.toast-card__icon {
+	color: #facc15;
+}
+
+.dark .toast-viewport .toast-card--error MaterialIcon.toast-card__icon {
+	color: #f87171;
+}
+
+.dark .toast-viewport Button.toast-card__action {
+	background-color: #27272a;
+	border-color: #52525b;
+	color: #f4f4f5;
+}
+
+.dark .toast-viewport Button.toast-card__close:hover,
+.dark .toast-viewport Button.toast-card__close:focus,
+.dark .toast-viewport Button.toast-card__action:hover,
+.dark .toast-viewport Button.toast-card__action:focus {
+	background-color: #3f3f46;
 }

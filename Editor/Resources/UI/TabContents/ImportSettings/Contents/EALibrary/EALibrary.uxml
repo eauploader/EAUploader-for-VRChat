@@ -14,7 +14,7 @@
             <ui:TextField name="search_query" picking-mode="Ignore" class="flex-1" />
             <eau:ShadowButton name="search_button" text="Search" parse-escape-sequences="true" display-tooltip-when-elided="true" class="ml-2 search-button" />
         </ui:VisualElement>
-        <ui:DropdownField label="Filter by Tag" name="filter_tag" class="ml-2"/>
+        <eau:DropdownFieldPro label="Filter by Tag" name="filter_tag" class="ml-2"/>
     </ui:VisualElement>
     <ui:VisualElement name="article_container" class="flex-1">
         <ui:ListView name="article_list" class="flex-1" />

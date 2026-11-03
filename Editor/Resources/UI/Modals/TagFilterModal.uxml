@@ -1,0 +1,17 @@
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    xmlns:eau="EAUploader.UI.Components"
+    xsi="http://www.w3.org/2001/XMLSchema-instance"
+    engine="UnityEngine.UIElements"
+    editor="UnityEditor.UIElements"
+    noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
+    editor-extension-mode="False"
+>
+    <ui:VisualElement class="flex-col" style="width: 560px;">
+        <ui:Label text="Items having all of the selected tags are shown." class="pb-2" />
+
+        <ui:ScrollView name="tag_filter_list" class="border border-gray-400 p-2" style="max-height: 400px;" />
+        <ui:Label name="tag_filter_empty" text="No tags yet." class="p-2 hidden" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,6 +1,7 @@
 using UnityEngine;
 using VRC.Core;
 using VRC.SDKBase;
+using EAUploader.Components;
 #if HAS_VRM
 using VRM;
 #endif
@@ -56,6 +57,16 @@ namespace EAUploader.CustomPrefabUtility
         public static PipelineManager GetPipelineManager(GameObject avatar)
         {
             return avatar.GetComponent<PipelineManager>();
+        }
+
+        public static EAUploaderMeta GetEAUploaderMeta(GameObject avatar)
+        {
+            var eaUploaderMeta = avatar.GetComponent<EAUploaderMeta>();
+            if (eaUploaderMeta == null)
+            {
+                eaUploaderMeta = avatar.AddComponent<EAUploaderMeta>();
+            }
+            return eaUploaderMeta;
         }
     }
 }
