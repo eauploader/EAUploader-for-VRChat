@@ -68,3 +68,5 @@ registry/
 
 # for mac
 .DS_Store
+
+.claude/settings.local.json

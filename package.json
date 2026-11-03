@@ -1,10 +1,23 @@
 {
   "name": "tech.uslog.eauploader",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "displayName": "Easy Avatar Uploader for VRChat",
   "description": "Tools for more concise and easier uploading of avatars.\nアバターを簡単に管理し、VRChatへアップロードするためのUnity簡易化ツールです。",
   "unity": "2022.3",
-  "changelogUrl": "https://github.com/Project-EAUploader/EAUploader-for-VRChat/releases",
+  "changelogUrl": "https://github.com/eauploader/EAUploader-for-VRChat/releases",
+  "files": [
+    "Editor/",
+    "Editor.meta",
+    "Runtime/",
+    "Runtime.meta",
+    "Docs/",
+    "Docs.meta",
+    "CHANGELOG.md",
+    "CHANGELOG.md.meta",
+    "README.md",
+    "LICENSE",
+    "LICENSE.meta"
+  ],
   "vpmDependencies": {
     "com.vrchat.base": "^3.7.0",
     "com.vrchat.avatars": "^3.7.0"

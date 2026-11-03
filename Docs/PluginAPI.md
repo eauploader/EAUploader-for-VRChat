@@ -76,3 +76,7 @@ Static methods marked with `[EAUPlugin]` (either `EAUploader.EAUPluginAttribute`
 ## Internal API changes in 1.5.1
 
 `AvatarUploader.GetVRCAvatar` and `AvatarUploader.UpdateVRCAvatar` were renamed to `GetVRCAvatarAsync` and `UpdateVRCAvatarAsync`. The old names still exist and are marked `[Obsolete]`. Plugins should keep using `UploadAPI`, whose method names did not change.
+
+## Prefab deletion in 1.6.0
+
+Use `PrefabAPI.ShowDeletePrefabDialog(path, completed)` to open the in-window UI Toolkit confirmation. Its return value indicates whether the modal opened, and `completed` receives `true` after successful deletion or `false` on cancellation. The obsolete one-argument overload keeps its synchronous native dialog and its original deletion-result return value for compatibility.

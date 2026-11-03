@@ -1327,7 +1327,7 @@ RadioButton * {
     background-color: var(--primary-active);
 }
 
-.pastel Button:label {
+.pastel Button > Label {
     color: #faebd7;
 }
 

@@ -64,8 +64,7 @@ namespace EAUploader.CustomPrefabUtility
                 return;
             }
 
-            Migrate(legacyPaths);
-            MarkDone();
+            if (Migrate(legacyPaths)) MarkDone();
         }
 
         private static void MarkDone()
@@ -95,10 +94,12 @@ namespace EAUploader.CustomPrefabUtility
             return prefab != null && prefab.GetComponent<EAUploaderMeta>() != null;
         }
 
-        private static void Migrate(List<string> legacyPaths)
+        private static bool Migrate(List<string> legacyPaths)
         {
             // 移行中はAssetPostprocessorが勝手にVariantを作らないようにする
+            var previousSuppression = PrefabManager.SuppressAutoVariantCreation;
             PrefabManager.SuppressAutoVariantCreation = true;
+            var succeeded = true;
 
             try
             {
@@ -117,6 +118,7 @@ namespace EAUploader.CustomPrefabUtility
                     }
                     catch (Exception e)
                     {
+                        succeeded = false;
                         Debug.LogError($"Failed to migrate {path}: {e.Message}");
                     }
                 }
@@ -124,37 +126,45 @@ namespace EAUploader.CustomPrefabUtility
             finally
             {
                 EditorUtility.ClearProgressBar();
-                PrefabManager.SuppressAutoVariantCreation = false;
+                PrefabManager.SuppressAutoVariantCreation = previousSuppression;
             }
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             PrefabManager.InvalidateCache();
+            return succeeded;
         }
 
-        private static void MigrateOne(string sourcePath)
+        private static void MigrateOne(string sourcePath, Func<string, Action<EAUploaderMeta>, string> createVariant = null)
         {
             var legacy = ReadLegacyMeta(sourcePath);
             if (legacy == null) return;
-
-            // 先に取り込み元からメタ情報を取り除く。
-            // Variantを作ってから消すと、継承しているメタ情報ごと消えてしまう。
-            RemoveMetaFromSource(sourcePath);
-
             if (ManagedPrefabs.HasVariantOf(sourcePath)) return;
 
-            var variantPath = ManagedPrefabs.CreateVariant(sourcePath, meta =>
+            var originalPrefab = File.ReadAllBytes(sourcePath);
+            string variantPath;
+            try
             {
-                meta.status = legacy.Status;
-                meta.type = legacy.Type;
-                meta.genre = legacy.Genre;
-                meta.lastModifiedTicks = legacy.LastModifiedTicks;
-                meta.genreConfirmed = legacy.GenreConfirmed;
-                meta.memo = legacy.Memo;
-                meta.tags = new List<string>(legacy.Tags);
-            });
-
-            if (variantPath == null) return;
+                RemoveMetaFromSource(sourcePath);
+                if (createVariant == null) createVariant = ManagedPrefabs.CreateVariant;
+                variantPath = createVariant(sourcePath, meta =>
+                {
+                    meta.status = legacy.Status;
+                    meta.type = legacy.Type;
+                    meta.genre = legacy.Genre;
+                    meta.lastModifiedTicks = legacy.LastModifiedTicks;
+                    meta.genreConfirmed = legacy.GenreConfirmed;
+                    meta.memo = legacy.Memo;
+                    meta.tags = new List<string>(legacy.Tags);
+                });
+                if (string.IsNullOrEmpty(variantPath)) throw new IOException("Could not create the managed prefab variant.");
+            }
+            catch
+            {
+                File.WriteAllBytes(sourcePath, originalPrefab);
+                AssetDatabase.ImportAsset(sourcePath, ImportAssetOptions.ForceUpdate);
+                throw;
+            }
 
             MovePreview(sourcePath, variantPath);
         }
@@ -183,7 +193,7 @@ namespace EAUploader.CustomPrefabUtility
         private static void RemoveMetaFromSource(string sourcePath)
         {
             var contents = PrefabUtility.LoadPrefabContents(sourcePath);
-            if (contents == null) return;
+            if (contents == null) throw new IOException("Could not load prefab contents: " + sourcePath);
 
             try
             {
@@ -195,7 +205,8 @@ namespace EAUploader.CustomPrefabUtility
                     Object.DestroyImmediate(meta, true);
                 }
 
-                PrefabUtility.SaveAsPrefabAsset(contents, sourcePath);
+                PrefabUtility.SaveAsPrefabAsset(contents, sourcePath, out var success);
+                if (!success) throw new IOException("Could not save prefab contents: " + sourcePath);
             }
             finally
             {

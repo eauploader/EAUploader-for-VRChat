@@ -97,7 +97,7 @@ Import entry points: drag & drop onto the Avatar List, the Import modal (`.prefa
 4. Reuses completed search results while the asset database dependency version and project revision are unchanged. Asset changes invalidate the cache; stale results are searched again before deletion. GUIDs are checked on every deletion. A changed target list requires confirmation again. A deletion failure stops further deletion and is reported in the modal.
 5. Removes the item folder if empty, clears the selection if needed, and calls `completed(true)` on success or `completed(false)` on cancellation.
 
-The return value indicates whether the modal opened. The legacy one-argument overload is obsolete: deletion is asynchronous, so callers must use the callback to determine its outcome.
+The callback overload returns whether the modal opened; its callback reports the deletion outcome. The obsolete one-argument overload retains the original synchronous native confirmation for existing plugins and returns true only after deletion completes. All built-in deletion buttons use the callback overload and the UI Toolkit modal.
 
 ## Legacy migration (`LegacyPrefabMigration`)
 
@@ -106,6 +106,8 @@ Older versions attached `EAUploaderMeta` directly to imported Prefabs. On startu
 1. Read the legacy metadata from the source Prefab.
 2. Remove `EAUploaderMeta` from the source Prefab (before creating the Variant, so it is not inherited).
 3. Create a Variant carrying the metadata, and move the old name-based preview to the GUID-based path.
+
+If creation fails, the original Prefab bytes are restored, including all metadata. Migration is marked complete only if every item succeeds; existing managed Variants are left untouched.
 
 Automatic Variant creation is suppressed during the migration. Declining asks again on the next startup.
 

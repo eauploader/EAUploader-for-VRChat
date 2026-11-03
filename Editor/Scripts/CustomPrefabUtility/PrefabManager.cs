@@ -435,11 +435,36 @@ namespace EAUploader.CustomPrefabUtility
             return null;
         }
 
-        /// <summary>削除確認モーダルを開く。戻り値はモーダルを開けたかどうか。</summary>
-        [Obsolete("Deletion is asynchronous. Use ShowDeletePrefabDialog(prefabPath, completed) to receive the deletion result.")]
+        /// <summary>旧プラグイン向けの同期確認。削除が完了した場合だけtrueを返す。</summary>
+        [Obsolete("Use the callback overload for the in-window UI Toolkit confirmation.")]
         public static bool ShowDeletePrefabDialog(string prefabPath)
         {
-            return ShowDeletePrefabDialog(prefabPath, null);
+            if (string.IsNullOrEmpty(prefabPath) || !prefabPath.StartsWith("Assets/", StringComparison.Ordinal) ||
+                !prefabPath.EndsWith(".prefab", StringComparison.OrdinalIgnoreCase) || GetPrefab(prefabPath) == null)
+                return false;
+
+            var plan = new PrefabDeletionPlan(prefabPath);
+            var scan = plan.Scan();
+            try
+            {
+                while (scan.MoveNext()) { }
+            }
+            finally
+            {
+                (scan as IDisposable)?.Dispose();
+            }
+
+            var targets = new HashSet<string>(plan.Assets.Where(a => !plan.UsedElsewhere.Contains(a.Path)).Select(a => a.Path));
+            targets.ExceptWith(plan.GetBlockedAssets(targets));
+            var message = T7e.Get("Are you sure you want to delete this prefab?") + "\n\n" + prefabPath;
+            if (targets.Count > 0)
+                message += "\n\n" + T7e.Get("The following related assets are used only by this prefab and will also be deleted:") +
+                    "\n" + string.Join("\n", targets.OrderBy(p => p));
+            if (!EditorUtility.DisplayDialog(T7e.Get("Delete Prefab"), message, T7e.Get("Delete"), T7e.Get("Cancel")))
+                return false;
+
+            plan.Delete(targets);
+            return true;
         }
 
         /// <summary>削除確認モーダルを開き、削除完了時またはキャンセル時に結果を通知する。</summary>

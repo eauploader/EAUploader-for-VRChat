@@ -26,7 +26,7 @@ if (!process.env.GITHUB_ACTIONS) {
   // ローカルデバッグ
   process.env.TAG_NAME
     = 'v' + (await openupmRegistryClient.fetchPackument(env.registry, name, npmClient))['dist-tags'].latest;
-  process.env.GITHUB_REPOSITORY = 'Project-EAUploader/EAUploader-for-VRChat';
+  process.env.GITHUB_REPOSITORY = 'eauploader/EAUploader-for-VRChat';
 }
 const latestVersion = process.env.TAG_NAME.replace('v', '');
 
