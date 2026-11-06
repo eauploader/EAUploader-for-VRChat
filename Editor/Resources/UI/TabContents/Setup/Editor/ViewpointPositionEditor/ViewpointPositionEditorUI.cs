@@ -29,6 +29,7 @@ namespace EAUploader.UI.Setup
         {
             _root = new VisualElement();
             _root.styleSheets.Add(EAUploader.styles);
+            LanguageUtility.ApplyLanguageFont(_root);
             _root.styleSheets.Add(EAUploader.tailwind);
 
             var visualTree = Resources.Load<VisualTreeAsset>("UI/TabContents/Setup/Editor/ViewpointPositionEditor/ViewpointPositionEditor");

@@ -301,7 +301,11 @@ namespace EAUploader.UI.Upload
                 {
                     if (EditorUtility.DisplayDialog(T7e.Get("Unlink VRChat from this avatar"), T7e.Get("Are you sure you want to unlink VRChat from this avatar?"), T7e.Get("Yes"), T7e.Get("No")))
                     {
-                        pipelineManager.AssignId();
+                        // 手元で新しいIDを振るとVRCSDKに「所有していないアバター」として扱われ、
+                        // 次回のアップロードに失敗するため、空にしてSDKに新規作成させる
+                        pipelineManager.blueprintId = "";
+                        EditorUtility.SetDirty(pipelineManager);
+                        AssetDatabase.SaveAssets();
                         Main.RefreshSelectedAvatar();
                     }
                 }

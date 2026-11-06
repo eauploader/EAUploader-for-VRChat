@@ -1,0 +1,8 @@
+<txt>
+<size=20><b>Blueprint</b></size>
+
+<size=20><color=red>请不要将 Blueprint 公开给他人</color></size>
+<size=14>Blueprint 是 VRChat 为模型分配的唯一 ID。使用此 ID 可以下载、更新、删除 VRChat 上的模型。因此公开给他人可能会导致模型数据被盗，请务必谨慎处理。
+
+解除与 VRChat 的关联后，可以作为另一个模型上传到 VRChat。另外，使用 ID 也可以用其他模型进行覆盖。</size>
+</txt>

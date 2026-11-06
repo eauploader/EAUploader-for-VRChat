@@ -30,6 +30,7 @@ namespace EAUploader.UI.Modals
 
             modalContent = new VisualElement();
             modalContent.styleSheets.Add(EAUploader.styles);
+            LanguageUtility.ApplyLanguageFont(modalContent);
             modalContent.styleSheets.Add(EAUploader.tailwind);
 
             var visualTree = Resources.Load<VisualTreeAsset>("UI/Modals/SettingsModal");

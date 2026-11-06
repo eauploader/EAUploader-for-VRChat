@@ -262,6 +262,7 @@ namespace EAUploader.UI.Windows
                 // モーダル用 VisualElement
                 var modalContent = new VisualElement();
                 modalContent.styleSheets.Add(EAUploader.styles);
+                LanguageUtility.ApplyLanguageFont(modalContent);
                 modalContent.styleSheets.Add(EAUploader.tailwind);
 
                 // UI テンプレートを読み込み

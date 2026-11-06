@@ -1,0 +1,22 @@
+<t>― 使用 VRM 模型 ―</t>
+<txt>
+<size=16> 在 EAUploader 中，额外安装 VRM Converter for VRChat 后即可上传 VRM 模型。
+VRM 是人形虚拟形象的一种标准格式。VRM 模型无法直接在 VRChat 中使用，但转换后上传即可使用。
+VRM 模型可以在 VRoid Hub 等网站获取，也可以使用 VRoid Studio 像游戏捏人一样轻松制作。
+
+　安装 VRM Converter for VRChat 后，导入栏中会显示“导入 VRM”按钮。导入后会打开转换窗口。关于转换，请参阅窗口中的帮助。
+<color=red>　转换后的 VRM 模型需要设置视点位置。请从“配置”标签页的编辑工具中打开视点位置设置并调整视点。</color>
+视点位置的设置方法请参阅工具中的帮助。</size>
+
+<size=20><b>〇 支持的 VRM 版本</b></size>
+<size=16>VRM 的 <color=blue>VRM 0.x</color> 和 <color=blue>VRM 1.x</color> 版本规格差异很大。
+VRM Converter 目前（截至 2024/4/1）<color=red>仅支持 VRM 0.x 版本，不支持 VRM 1.x 版本。</color>
+请注意。
+</txt>
+
+<button>安装 VRM Converter, Link, https://booth.pm/ja/items/1025226</button>
+<button>前往 VRoid Hub, Link, https://hub.vroid.com/</button>
+<button>使用 VRoid Studio 自制模型, Link, https://vroid.com/studio</button>
+<hr>black, 12</hr>
+<button>加入 Discord, Main, https://discord.gg/mkDJ7xm94Z</button>
+<button>访问官网, Sub, https://uslog.tech/eauploader</button>

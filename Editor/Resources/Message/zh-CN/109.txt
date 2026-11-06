@@ -1,0 +1,20 @@
+<t>上传设置</t>
+<txt>
+<size=20>名称</size>
+<size=16>　请为模型设置名称。<color=red>此项为必填项。</color>
+</size>
+<size=20>说明</size>
+<size=16>　模型的说明栏，可作为自己的备注使用。不填写也可以上传。
+</size>
+<size=20>内容警告设置</size>
+<size=16>　请正确设置标签。
+如果模型包含性暗示、暴力、极端恐怖等内容却未添加标签，可能会构成违规。
+</size>
+<size=20>公开设置</size>
+<size=16>・Private：仅自己可用
+・Public：公开，任何人都可以使用
+</size><size=12><color=red>
+【注意】网上发布或销售的模型原则上禁止以 Public 公开。
+如果不是自己制作的模型，请不要以 Public 上传。
+</color></size>
+</txt>

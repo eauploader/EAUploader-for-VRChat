@@ -1,0 +1,54 @@
+<t>― 简介 ―</t>
+<txt>
+<size=20>本工具可以做什么
+
+<color=blue>〇 上传模型</color>
+<color=red>✕ 改造模型</color></size>
+<size=16> EAUploader 仅支持已经为 VRChat 制作完成的模型，或 VRM 模型。不支持非 VRChat 用的 3D 模型，也无法进行换装、添加配饰、更改表情等操作。
+（编辑功能正在作为扩展功能开发中）
+
+对于使用 EAUploader 造成的任何损失，<color=red>EAUploader 概不负责</color>。Unity 时常会发生问题，可能导致项目或数据损坏。请务必经常备份，并在项目以外的文件夹中备份模型等数据。</size>
+</txt>
+<hr>black, 12</hr>
+<txt>
+<size=20>EALIBRARY</size>
+<size=16> EALIBRARY 中有本工具的使用方法，以及关于模型和上传的说明。遇到不明白的地方，可以先在这里查找。</size>
+</txt>
+<hr>black, 12</hr>
+<txt>
+<size=20><b>― 三个标签页 ―</b></size>
+<size=16>工具上方有三个按钮。
+这些按钮用于切换本工具的基本标签页。
+<color=blue>导入标签页</color>
+在这里导入模型。更改语言、发送反馈也在此标签页中。
+<color=blue>配置标签页</color>
+可以从这里打开用于调整、编辑模型的工具。
+可以通过安装扩展功能（参见教程⑤）来添加工具。（扩展功能的发布情况请查看官网）
+<color=blue>上传标签页</color>
+用于将模型上传到 VRChat 的标签页。</size>
+</txt>
+<image>image1.png</image>
+<txt>
+
+<size=20><b>― 编辑方法 ―</b></size>
+<size=16>位于<color=blue>配置标签页</color>的右侧。
+可以从这里打开 VRM 转换、视点位置设置以及已安装的扩展功能。</size>
+</txt>
+<image>image2.png</image>
+<txt>
+<size=16>扩展功能请查看官网。</size>
+</txt>
+<button>查找扩展功能, Link, https://www.uslog.tech/eauploader-plug-ins</button>
+<hr>black, 12</hr>
+<txt>
+<size=20><b>― 关于模型管理 ―</b></size>
+<size=16> 本工具运行在 Unity 上，因此所做的所有更改都会实时保存。请注意，从本工具中删除的模型也会从 Unity 中删除。
+　结束工作时，请点击设置中的“退出”按钮，或直接关闭 Unity。
+
+
+关于本工具的介绍就到这里。
+接下来是关于导入模型的说明。</size>
+</txt>
+<button>加入 Discord, Main, https://discord.gg/mkDJ7xm94Z</button>
+<button>关注开发者 X / Twitter, Sub, https://twitter.com/intent/follow?screen_name=fu_virtual</button>
+<button>访问官网, Sub, https://uslog.tech/eauploader</button>

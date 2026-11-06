@@ -26,6 +26,7 @@ namespace EAUploader
             var root = rootVisualElement;
 
             root.styleSheets.Add(Resources.Load<StyleSheet>("UI/styles"));
+            LanguageUtility.ApplyLanguageFont(root);
 
             var titleLabel = new Label(T7e.Get("Send Feedback"));
             titleLabel.style.unityFontStyleAndWeight = FontStyle.Bold;

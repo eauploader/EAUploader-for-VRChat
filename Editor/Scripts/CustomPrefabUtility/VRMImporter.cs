@@ -87,6 +87,7 @@ namespace EAUploader.CustomPrefabUtility
         public void CreateGUI()
         {
             rootVisualElement.styleSheets.Add(UI.EAUploader.styles);
+            LanguageUtility.ApplyLanguageFont(rootVisualElement);
             rootVisualElement.styleSheets.Add(UI.EAUploader.tailwind);
 
             rootVisualElement.schedule.Execute(() =>

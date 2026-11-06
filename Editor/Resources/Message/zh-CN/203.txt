@@ -1,0 +1,6 @@
+<txt>
+<size=20><color=red>请安装 AvatarOptimizer</color></size>
+<size=16>此功能会使用 AvatarOptimizer（by anatawa12）的功能。请通过下方按钮将 AvatarOptimizer 添加到本项目。
+</size>
+</txt>
+<button>安装 AvatarOptimizer（Booth）, Link, https://booth.pm/ja/items/4885109</button>

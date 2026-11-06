@@ -1,0 +1,16 @@
+<txt>
+<size=20>将 VRM 模型转换为 VRChat 模型</size>
+<size=16>
+〇 肩部高度
+可以调整肩部高度。如果转换后的模型肩膀过于下垂或抬得过高，请进行调整。
+
+〇 Armature 高度
+更改 Armature 的高度。
+
+〇 合并网格
+合并网格后再转换，可以优化网格。
+
+〇 For Quest
+设置为 Quest 用的模型。
+</size>
+</txt>

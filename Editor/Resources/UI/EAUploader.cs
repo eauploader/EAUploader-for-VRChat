@@ -129,6 +129,7 @@ namespace EAUploader.UI
             styles = Resources.Load<StyleSheet>("UI/styles");
             tailwind = Resources.Load<StyleSheet>("UI/tailwind");
             rootVisualElement.styleSheets.Add(styles);
+            LanguageUtility.ApplyLanguageFont(rootVisualElement);
             rootVisualElement.styleSheets.Add(tailwind);
 
             // Import UXML

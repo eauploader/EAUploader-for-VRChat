@@ -1,0 +1,8 @@
+<txt>
+<size=20>什么是 VRM</size>
+<size=16>VRM 是一种专为虚拟形象设计的 3D 模型文件格式，可以使用 VRoid Studio 等软件轻松制作。
+VRM 格式无法直接上传到 VRChat，需要先进行转换。
+
+要使用 VRM，请下载 VRM Converter 并导入，或将其添加到 VCC。</size>
+</txt>
+<button>下载 VRM Converter, Main, https://booth.pm/ja/items/1025226</button>

@@ -1,0 +1,28 @@
+<t>― 导入模型 ―</t>
+<txt>
+<size=16>导入模型，开始工作吧。
+首先，本工具支持的模型是
+<color=red>为 VRChat 制作的模型</color>。
+请准备好作为 VRChat 用途销售或发布的模型。
+如果想使用 VRM，请参阅“使用 VRM 模型”一文。
+
+要导入模型，请点击<color=blue>“导入/设置”</color>标签页左侧的
+<color=red>“导入”</color>按钮。
+如果想一次导入多个模型，
+可以通过导入按钮下方的按钮指定文件夹。</size>
+</txt>
+<hr>black, 12</hr>
+<t> 详细说明 </t>
+<txt>
+支持导入的文件格式为 Prefab（.prefab）或 Package（.unitypackage）。
+它们都是 Unity 使用的文件格式。
+
+Prefab 是将多个对象（对于模型来说就是身体、衣服等各个部分）组合在一起的文件，基本上 Prefab = 模型本体。
+本工具将 Prefab 视为模型进行管理和列表显示。
+
+Package 常用于发布 Unity 资源（作品）。对于模型来说，模型本体、着色器、换装用的衣服等通常会打包在一起发布。
+
+另外，即使不使用本工具的按钮，在 Unity 运行时直接打开文件也可以导入。
+</txt>
+<button>加入 Discord, Main, https://discord.gg/mkDJ7xm94Z</button>
+<button>访问官网, Sub, https://uslog.tech/eauploader</button>

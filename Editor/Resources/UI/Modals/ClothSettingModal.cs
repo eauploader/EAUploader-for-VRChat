@@ -60,6 +60,7 @@ namespace EAUploader.UI.Modals
             visualTree.CloneTree(modalContent);
 
             modalContent.styleSheets.Add(EAUploader.styles);
+            LanguageUtility.ApplyLanguageFont(modalContent);
             modalContent.styleSheets.Add(EAUploader.tailwind);
 
             // ScrollViewを取得

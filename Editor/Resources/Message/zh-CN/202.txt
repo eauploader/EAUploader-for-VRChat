@@ -1,0 +1,10 @@
+<t>模型自动优化</t>
+<txt>
+<size=16>在项目中导入另一个工具“AAO: AvatarOptimizer（by anatawa12）”后，即可使用模型的自动优化功能。可以在不改变模型规格的情况下进行非破坏性优化。
+优化结果可以通过构建来确认。另外，优化设置无法在 EAUploader 中更改。如需更改设置或使用其他优化功能，需要在 Unity 编辑器中进行。</size>
+</txt>
+<button>安装 Avatar Optimizer（Booth）, Link, https://booth.pm/ja/items/4885109</button>
+<txt>
+<size=16>功能说明</size>
+<size=12>为模型添加或移除 AAO 的自动优化组件“TraceAndOptimize”。
+</txt>

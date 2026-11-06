@@ -1,0 +1,10 @@
+<t>― 安装插件【扩展功能】 ―</t>
+<txt>
+<size=16> 对于 EAUploader 不支持的模型设置和编辑，可以通过添加其他工具来实现。
+添加的工具会显示在<color=blue>“配置”</color>标签页右侧的工具列表中。扩展功能请在以下 EAUploader 官网或网络上搜索。</size>
+</txt>
+<button>查找扩展功能, Link, https://www.uslog.tech/eauploader-plug-ins</button>
+
+<button>致开发者, Link, https://www.uslog.tech/eauploader/fordev</button>
+<button>加入 Discord, Main, https://discord.gg/mkDJ7xm94Z</button>
+<button>访问官网, Sub, https://uslog.tech/eauploader</button>

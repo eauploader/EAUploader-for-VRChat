@@ -1,0 +1,29 @@
+{
+  "name": "简体中文",
+  "items": [
+    {
+      "key": "Apply",
+      "value": "应用"
+    },
+    {
+      "key": "Close",
+      "value": "关闭"
+    },
+    {
+      "key": "Actual View",
+      "value": "实际视图"
+    },
+    {
+      "key": "Viewpoint Position Editor",
+      "value": "视点位置编辑器"
+    },
+    {
+      "key": "A powerful viewpoint position editor for Unity.",
+      "value": "适用于 Unity 的强大视点位置编辑器"
+    },
+    {
+      "key": "The selected model must have a VRCAvatarDescriptor component.",
+      "value": "所选模型必须带有 VRCAvatarDescriptor 组件。"
+    }
+  ]
+}

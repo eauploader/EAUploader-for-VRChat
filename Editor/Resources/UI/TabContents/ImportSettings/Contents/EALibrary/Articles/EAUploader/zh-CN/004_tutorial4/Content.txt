@@ -1,0 +1,10 @@
+<t>― 上传 ―</t>
+<txt>
+<size=16>前往<color=blue>“上传”</color>标签页，选择要上传的模型。在右侧登录 VRChat 账号后，即可进入上传界面。
+ 设置各项内容后进行上传。各项的说明请查看各项中的“帮助”。
+
+另外，<color=red>信任等级需要达到 New User 或以上。</color></size>
+
+</txt>
+<button>加入 Discord, Main, https://discord.gg/mkDJ7xm94Z</button>
+<button>访问官网, Sub, https://uslog.tech/eauploader</button>

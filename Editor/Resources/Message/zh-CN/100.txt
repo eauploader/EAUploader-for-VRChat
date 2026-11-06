@@ -1,0 +1,9 @@
+<txt>
+<size=20>　本工具支持的模型文件格式为<color=red>.prefab</color>和<color=red>.unitypackage</color>。大多数发布的模型都采用这两种格式。
+请点击按钮，在弹出的选择窗口中选择已下载的模型进行导入。
+如果要使用<color=green>VRM</color>，请点击下方的<color=green>Import VRM</color>按钮进行选择。
+
+　如果下载的模型不在可导入的选项中，说明本工具不支持该模型，需要使用常规的 Unity 编辑器。
+请确认你要使用的模型的文件格式，并查看对应的上传方法。
+</size>
+</txt>

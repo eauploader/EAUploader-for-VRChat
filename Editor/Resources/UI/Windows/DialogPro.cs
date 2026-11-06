@@ -42,6 +42,7 @@ namespace EAUploader.UI.Windows
 
             var container = new VisualElement();
             container.styleSheets.Add(EAUploader.styles);
+            LanguageUtility.ApplyLanguageFont(container);
             container.styleSheets.Add(EAUploader.tailwind);
 
             var visualTree = Resources.Load<VisualTreeAsset>("UI/Windows/DialogPro");
@@ -128,6 +129,7 @@ namespace EAUploader.UI.Windows
 
             var container = new VisualElement();
             container.styleSheets.Add(EAUploader.styles);
+            LanguageUtility.ApplyLanguageFont(container);
             container.styleSheets.Add(EAUploader.tailwind);
 
             var visualTree = Resources.Load<VisualTreeAsset>("UI/Windows/DialogPro");

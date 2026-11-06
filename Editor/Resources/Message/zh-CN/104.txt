@@ -1,0 +1,6 @@
+<t>添加扩展功能</t>
+<txt>
+<size=16>添加支持 EAUploader 的编辑器扩展后，可以联动完成各种各样的编辑工作。
+目前扩展功能还不多。欢迎工具开发者加入 Project EAUploader！</size>
+</txt>
+<button>致开发者, Link, https://www.uslog.tech/fordev</button> 

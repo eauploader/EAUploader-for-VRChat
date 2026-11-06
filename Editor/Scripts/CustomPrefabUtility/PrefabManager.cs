@@ -157,12 +157,23 @@ namespace EAUploader.CustomPrefabUtility
                 : ImportSourcePrefab(prefabPath);
         }
 
+        private static bool IsSdkTemporaryBuildPrefab(string prefabPath)
+        {
+            if (AvatarUploader.IsUploading || AvatarUploader.IsMultiPlatformBuildInProgress) return true;
+
+            return Path.GetFileName(prefabPath).StartsWith("prefab-id-v", StringComparison.OrdinalIgnoreCase);
+        }
+
         /// <summary>
         /// 取り込まれたPrefabのVariantを作って管理下に置く。
         /// </summary>
         private static string ImportSourcePrefab(string sourcePrefabPath)
         {
             if (SuppressAutoVariantCreation) return null;
+
+            // VRChat SDKはビルド中に一時的なPrefab(prefab-id-v1_...)を作り、ビルド後に消す。
+            // これを取り込むと、元が消えた壊れたVariantが管理フォルダに残るため対象外にする。
+            if (IsSdkTemporaryBuildPrefab(sourcePrefabPath)) return null;
 
             // EAUploader自身が使うフォルダの中身(プレビュー画像など)は対象外
             if (ManagedPrefabs.IsInEAUploaderFolder(sourcePrefabPath)) return null;
