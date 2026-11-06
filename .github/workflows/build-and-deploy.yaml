@@ -59,11 +59,15 @@ jobs:
               uses: actions/upload-pages-artifact@v3
               with:
                 path: ./.vpm/registry/
+                # 次回リリース時にレジストリのキャッシュとして再利用するため、既定の1日より長く保持する
+                retention-days: 90
 
     deploy:
         needs: build
 
-        timeout-minutes: 1
+        # GitHub Pages側のデプロイ待ち (deployment_queued) が1分を超えることがあるため、
+        # deploy-pagesの既定タイムアウト (10分) に合わせる
+        timeout-minutes: 10
         permissions:
             pages: write
             id-token: write
