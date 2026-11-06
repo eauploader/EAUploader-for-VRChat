@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UIElements;
+using FontAsset = UnityEngine.TextCore.Text.FontAsset;
 using static EAUploader.Config;
 using static EAUploader.T7e;
 
@@ -110,6 +111,11 @@ namespace EAUploader
                     continue;
                 }
                 var path = $"{LocalizationFolderPath}/{language.name}.json";
+                // プラグインなどは一部の言語のファイルしか持たないことがあるため、無い言語は飛ばす
+                if (!File.Exists(path))
+                {
+                    continue;
+                }
                 Debug.Log($"Loading translations from {path}");
                 var json = File.ReadAllText(path);
                 var translations = JsonUtility.FromJson<LocalizationData>(json);
@@ -161,8 +167,9 @@ namespace EAUploader
                     }
                     allTranslations.Add(language.name, translationDict);
                 }
-                else
+                else if (language.name == GetCurrentLanguage())
                 {
+                    // 使っていない言語のファイルが無いのは普通なので、選択中の言語だけ知らせる
                     Debug.LogWarning($"Translation file not found for language: {language.name}");
                 }
             }
@@ -212,6 +219,91 @@ namespace EAUploader
 
             return languages;
         }
+
+        #region Language font
+
+        // 同梱のNoto Sans JPには簡体字の多くが含まれていないため、
+        // 中国語ではOSに入っている中国語フォントを使い、足りない文字は同梱フォントで補う。
+        private static readonly string[] CHINESE_FONT_FAMILIES =
+        {
+            "Microsoft YaHei UI",
+            "Microsoft YaHei",
+            "PingFang SC",
+            "Noto Sans CJK SC",
+            "Noto Sans SC",
+            "SimHei",
+        };
+
+        private static FontAsset languageFont;
+        private static string languageFontFor;
+
+        /// <summary>
+        /// 現在の言語に合わせたフォントを要素に設定する。
+        /// styles.uss の :root はスタイルシートを追加した要素ごとに当たるため、
+        /// スタイルシートを追加した要素それぞれで呼ぶ。
+        /// </summary>
+        public static void ApplyLanguageFont(VisualElement root)
+        {
+            if (root == null) return;
+
+            var font = GetLanguageFont();
+            if (font == null) return;
+
+            root.style.unityFontDefinition = FontDefinition.FromSDFFont(font);
+        }
+
+        private static FontAsset GetLanguageFont()
+        {
+            var language = GetCurrentLanguage();
+            if (languageFontFor == language && languageFont != null)
+            {
+                return languageFont;
+            }
+
+            languageFontFor = language;
+            languageFont = null;
+
+            if (!language.StartsWith("zh", StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            foreach (var family in CHINESE_FONT_FAMILIES)
+            {
+                FontAsset font;
+                try
+                {
+                    font = FontAsset.CreateFontAsset(family, "Regular");
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"Failed to load font {family}: {e.Message}");
+                    continue;
+                }
+
+                if (font == null) continue;
+
+                // シーン切り替えなどで破棄されないようにし、保存もしない
+                font.hideFlags = HideFlags.DontSave;
+
+                var baseFont = Resources.Load<FontAsset>("UI/EAUploaderFont");
+                font.fallbackFontAssetTable = baseFont != null
+                    ? new List<FontAsset> { baseFont }
+                    : new List<FontAsset>();
+
+                languageFont = font;
+                break;
+            }
+
+            if (languageFont == null)
+            {
+                Debug.LogWarning("No Chinese font was found on this system. Some characters may not be displayed.");
+            }
+
+            return languageFont;
+        }
+
+        #endregion
 
         // SaveSettingsメソッドを削除（Config.SaveSettingsを使用するため）
     }

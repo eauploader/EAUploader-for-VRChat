@@ -60,6 +60,9 @@ namespace EAUploader
         // VRCMultiPlatformBuild自体はinternalのため、キーを直接参照する。
         private const string VRC_MPB_SESSION_KEY = "VRCSdkControlPanel.MultiPlatformBuild";
 
+        // アップロード中のPrefabのパス。ドメインリロード後にBlueprint IDを書き戻すために使う。
+        private const string UPLOAD_PREFAB_SESSION_KEY = "EAUploader.UploadingPrefabPath";
+
         private static CancellationTokenSource uploadCts;
 
         /// <summary>
@@ -134,9 +137,10 @@ namespace EAUploader
                 return null;
             }
 
-            // 新規アバターの場合はここでBlueprint IDを確定させ、Prefabアセット側にも保存しておく。
-            // プラットフォーム切り替えでドメインリロードが挟まっても、同じアバターへ紐づけ続けるため。
-            EnsureBlueprintId(prefabAsset, prefabPath);
+            // 新規アバターのBlueprint IDはここでは付けない。
+            // VRCSDK 3.10以降は、IDが空のときにだけサーバー側でアバターのレコードを作ってIDを払い出す。
+            // 手元でAssignId()した値はサーバーに存在しないため「所有していないアバター」として
+            // SDKに消され、"You must assign an ID to the avatar before building a bundle." で失敗する。
 
             var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefabAsset);
             if (instance == null)
@@ -154,23 +158,51 @@ namespace EAUploader
             return instance;
         }
 
-        private static void EnsureBlueprintId(GameObject prefabAsset, string prefabPath)
+        /// <summary>
+        /// サーバーに存在しない(または自分が所有していない)Blueprint IDを、
+        /// ビルド用インスタンスとPrefabアセットの両方から取り除く。
+        /// 1.6.2以前で手元で割り当てたIDが残っている場合に、SDKへ新規作成させるために使う。
+        /// </summary>
+        private static void ClearBlueprintId(GameObject instance, string prefabPath)
         {
-            var pipelineManager = prefabAsset.GetComponent<PipelineManager>();
-            if (pipelineManager == null)
+            var instancePipeline = instance != null ? instance.GetComponent<PipelineManager>() : null;
+            if (instancePipeline != null)
             {
-                return;
+                instancePipeline.blueprintId = "";
             }
 
-            if (!string.IsNullOrWhiteSpace(pipelineManager.blueprintId))
+            var prefabAsset = PrefabManager.GetPrefab(prefabPath);
+            var assetPipeline = prefabAsset != null ? prefabAsset.GetComponent<PipelineManager>() : null;
+            if (assetPipeline != null && !string.IsNullOrEmpty(assetPipeline.blueprintId))
             {
-                return;
+                Debug.Log($"Clearing unknown blueprint id from {prefabPath}: {assetPipeline.blueprintId}");
+                assetPipeline.blueprintId = "";
+                EditorUtility.SetDirty(assetPipeline);
+                AssetDatabase.SaveAssets();
             }
+        }
 
-            pipelineManager.AssignId();
-            EditorUtility.SetDirty(pipelineManager);
-            AssetDatabase.SaveAssets();
-            Debug.Log($"Assigned new blueprint id to {prefabPath}: {pipelineManager.blueprintId}");
+        private static string GetBlueprintId(GameObject target)
+        {
+            var pipelineManager = target != null ? target.GetComponent<PipelineManager>() : null;
+            return pipelineManager != null ? pipelineManager.blueprintId : null;
+        }
+
+        /// <summary>
+        /// Blueprint IDに対応するアバター情報を取得する。
+        /// 見つからない(404)ときはnotFoundをtrueにして返す。
+        /// 通信エラーなど判断できないときは例外をそのまま投げる。
+        /// </summary>
+        private static async Task<(VRCAvatar? avatar, bool notFound)> FetchOwnedAvatarAsync(string blueprintId)
+        {
+            try
+            {
+                return (await VRCApi.GetAvatar(blueprintId, true), false);
+            }
+            catch (ApiErrorException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                return (null, true);
+            }
         }
 
         private static void DestroyBuildInstance(GameObject instance)
@@ -188,13 +220,26 @@ namespace EAUploader
             // マルチプラットフォームビルドの最中は、SDKがこのインスタンスをビルド対象として参照しているので消さない
             if (IsMultiPlatformBuildInProgress) return;
 
+            var uploadingPrefabPath = SessionState.GetString(UPLOAD_PREFAB_SESSION_KEY, "");
+            SessionState.EraseString(UPLOAD_PREFAB_SESSION_KEY);
+
             var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
             if (!scene.IsValid()) return;
+
+            var expectedName = string.IsNullOrEmpty(uploadingPrefabPath)
+                ? null
+                : Path.GetFileNameWithoutExtension(uploadingPrefabPath) + TEMP_INSTANCE_SUFFIX;
 
             foreach (var root in scene.GetRootGameObjects())
             {
                 if (root != null && root.name.EndsWith(TEMP_INSTANCE_SUFFIX, StringComparison.Ordinal))
                 {
+                    // マルチプラットフォームビルドで新規作成されたアバターのIDをPrefabへ書き戻す
+                    if (expectedName != null && root.name == expectedName)
+                    {
+                        SyncBlueprintIdBackToPrefab(root, uploadingPrefabPath);
+                    }
+
                     Debug.Log("Removing leftover EAUploader upload instance: " + root.name);
                     UnityEngine.Object.DestroyImmediate(root);
                 }
@@ -371,7 +416,28 @@ namespace EAUploader
 
                 token.ThrowIfCancellationRequested();
 
-                var avatarData = await GetVRCAvatarAsync(prefabPath);
+                // 既存アバターの情報を取得する。
+                // サーバーに見つからないIDは、1.6.2以前で手元で割り当てたIDか他人のアバターのIDなので、
+                // 消してSDKに新規作成させる(そのままだとSDK側で消されてビルドに失敗する)。
+                VRCAvatar? avatarData = null;
+                var blueprintId = GetBlueprintId(instance);
+                if (!string.IsNullOrWhiteSpace(blueprintId))
+                {
+                    var (fetched, notFound) = await FetchOwnedAvatarAsync(blueprintId);
+                    if (notFound)
+                    {
+                        ClearBlueprintId(instance, prefabPath);
+                    }
+                    else
+                    {
+                        avatarData = fetched;
+                    }
+                }
+
+                // マルチプラットフォームビルドではドメインリロードを挟むため、
+                // 払い出されたIDを後からPrefabへ書き戻せるよう対象のPrefabを覚えておく。
+                SessionState.SetString(UPLOAD_PREFAB_SESSION_KEY, prefabPath);
+
                 VRCAvatar avatar;
 
                 if (avatarData == null)
@@ -408,8 +474,6 @@ namespace EAUploader
                     await builder.BuildAndUpload(instance, avatar, thumbnailPath, token);
                 }
 
-                SyncBlueprintIdBackToPrefab(instance, prefabPath);
-
                 DialogPro.Show(DialogPro.DialogType.Success, T7e.Get("Upload Succeed"),
                     T7e.Get("Avatar updated successfully"));
             }
@@ -431,7 +495,10 @@ namespace EAUploader
                 // 残ったインスタンスは次回のEAUploader初期化時に掃除する。
                 if (!IsMultiPlatformBuildInProgress)
                 {
+                    // 失敗時も、SDKが作成済みのアバターIDは残しておき、次回のアップロードで同じアバターを使う
+                    SyncBlueprintIdBackToPrefab(instance, prefabPath);
                     DestroyBuildInstance(instance);
+                    SessionState.EraseString(UPLOAD_PREFAB_SESSION_KEY);
                 }
 
                 EndUpload();

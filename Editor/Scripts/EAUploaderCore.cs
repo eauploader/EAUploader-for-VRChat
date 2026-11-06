@@ -5,7 +5,9 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Newtonsoft.Json;
 using EAULogger = EAUploader.UI.Windows.Logger;
 
@@ -37,6 +39,8 @@ namespace EAUploader
         }
 
         private const string EAUPLOADER_ASSET_PATH = "Assets/EAUploader";
+        private const string DEFAULT_SCENE_PATH = EAUPLOADER_ASSET_PATH + "/eauploader.unity";
+        private const string DEFAULT_SCENE_OPENED_SESSION_KEY = "EAUploader.DefaultSceneOpened";
         private static bool initializationPerformed = false;
         public static bool HasVRM = false;
         public static bool HasAAO = false;
@@ -101,6 +105,7 @@ namespace EAUploader
                 // プラットフォーム切り替えを伴うアップロードの途中でドメインリロードが挟まると、
                 // ビルド用の一時インスタンスがシーンに残ることがあるため取り除く
                 AvatarUploader.CleanupLeftoverBuildInstances();
+                EnsureDefaultScene();
                 EAUploaderEditorManager.OnEditorManagerLoad();
                 ShaderChecker.CheckShaders();
                 PrefabManager.Initialize();
@@ -181,6 +186,69 @@ namespace EAUploader
             if (!File.Exists(prefabManagerPath))
             {
                 File.WriteAllText(prefabManagerPath, "{}");
+            }
+        }
+
+        /// <summary>
+        /// 未保存のシーン(Untitled)のまま作業している場合に、
+        /// EAUploaderフォルダへ eauploader.unity として保存する。
+        /// ビルド用のインスタンスはアクティブなシーンに置かれるため、保存済みのシーンで作業できるようにしておく。
+        /// 既に eauploader.unity がある場合は、エディタ起動後の最初の1回だけそのシーンを開く。
+        /// </summary>
+        private static void EnsureDefaultScene()
+        {
+            try
+            {
+                // プラットフォーム切り替え中のシーンには触らない
+                if (AvatarUploader.IsMultiPlatformBuildInProgress) return;
+                if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+
+                Scene untitled = default;
+                for (int i = 0; i < SceneManager.sceneCount; i++)
+                {
+                    var scene = SceneManager.GetSceneAt(i);
+                    if (!scene.IsValid() || !scene.isLoaded) continue;
+
+                    // ユーザーが保存済みのシーンを開いている場合はそのまま使う
+                    if (scene.path.StartsWith("Assets/", StringComparison.Ordinal)) return;
+
+                    if (string.IsNullOrEmpty(scene.path) && !untitled.IsValid())
+                    {
+                        untitled = scene;
+                    }
+                }
+
+                if (!untitled.IsValid()) return;
+
+                if (!File.Exists(DEFAULT_SCENE_PATH))
+                {
+                    if (EditorSceneManager.SaveScene(untitled, DEFAULT_SCENE_PATH))
+                    {
+                        SceneManager.SetActiveScene(untitled);
+                        Debug.Log("Saved the default scene to " + DEFAULT_SCENE_PATH);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Could not save the default scene to " + DEFAULT_SCENE_PATH);
+                    }
+                    return;
+                }
+
+                // 既にシーンがある場合は、起動直後の何も変更していないUntitledシーンのときだけ開く。
+                // 作業中のUntitledシーンを勝手に閉じないようにする。
+                if (SessionState.GetBool(DEFAULT_SCENE_OPENED_SESSION_KEY, false)) return;
+                SessionState.SetBool(DEFAULT_SCENE_OPENED_SESSION_KEY, true);
+                if (untitled.isDirty) return;
+
+                var opened = EditorSceneManager.OpenScene(DEFAULT_SCENE_PATH, OpenSceneMode.Additive);
+                if (!opened.IsValid()) return;
+
+                SceneManager.SetActiveScene(opened);
+                EditorSceneManager.CloseScene(untitled, true);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("Could not prepare the default scene: " + e.Message);
             }
         }
 

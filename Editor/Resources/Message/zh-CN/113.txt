@@ -1,0 +1,16 @@
+<t>模型性能</t>
+<txt>
+<size=16>　VRChat 会根据模型的负载给出 5 个等级的评价。玩家可以根据该评价隐藏模型，因此负载较高的模型可能不会显示给部分玩家。
+　另外，Android（Quest / 手机）用的模型有各种限制，超出限制的模型无法使用，Quest 一体机和 Android 用户也看不到该模型。
+
+　从轻到重依次评价为 <b><color=green>Excellent</color> - <color=green>Good</color> - <color=orange>Medium</color> - <color=red>Poor</color> - <color=red>Very Poor</color></b>。
+<b>　模型的综合评价是最上方 Overall: 的值。</b>
+　VRChat 推荐将模型优化 / 轻量化到 Good，但即使是 Very Poor 也可以正常上传。如果要在 Quest 一体机或手机上使用 VRChat，请准备支持 Android 的模型。
+</size>
+</txt>
+<t>优化方法</t>
+<txt>
+<size=16>　安装 AvatarOptimizer 后，即可在 EAUploader 中使用自动优化功能。
+　请从右侧的“模型优化”安装 AvatarOptimizer。由于自动优化的结果要在构建后才能知道，即使开启自动优化，此处的性能显示也不会反映优化后的结果。如需进一步优化，请在 Unity 编辑器中尝试 AvatarOptimizer 的各种功能。
+</size>
+</txt>

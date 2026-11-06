@@ -51,6 +51,7 @@ namespace EAUploader.UI.Modals
 
             // Tailwindや共通スタイルを適用する
             modalContent.styleSheets.Add(EAUploader.styles);
+            LanguageUtility.ApplyLanguageFont(modalContent);
             modalContent.styleSheets.Add(EAUploader.tailwind);
 
             // UI要素を取得

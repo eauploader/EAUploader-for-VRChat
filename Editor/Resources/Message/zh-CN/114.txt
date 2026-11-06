@@ -1,0 +1,8 @@
+<t>选择平台</t>
+<txt>
+<size=14>模型分为仅能在桌面（PCVR）使用的模型，以及也能在 Android（Quest / 手机）上使用的模型。
+仅支持桌面的模型请选择 Windows 构建，需要支持 Android 时请选择 Android 构建。
+
+不过，Android 构建需要在 Unity 中添加 Android Build 模块。另外，Android 构建对模型有一些限制。
+请确认模型是否支持 Quest 后再切换平台。</size>
+</txt>

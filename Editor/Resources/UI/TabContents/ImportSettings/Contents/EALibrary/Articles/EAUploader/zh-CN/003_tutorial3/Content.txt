@@ -1,0 +1,64 @@
+<t>― 关于着色器 ―</t>
+<txt>
+<size=18>什么是“着色器”</size>
+
+<size=14>着色器（Shader）是“将对象（模型等）绘制到屏幕上的程序”。
+更换着色器可以改变颜色和质感。
+由于使用的是已经编写好的程序，因此不需要自己编程。
+
+着色器可以通过<color=blue>“导入”</color>标签页左侧的
+<color=blue>“导入着色器”</color>进行安装。
+部分着色器支持 VCC，也可以通过 VCC 安装。
+已安装的着色器请在<color=blue>“已安装的着色器”</color>中确认。（部分不支持 VRC 的着色器不会显示在列表中）
+
+<color=red>必须安装着色器。</color>
+请务必安装模型所使用的着色器。安装后的着色器会自动应用到模型上。
+
+<size=16>〇 导入模型后出现着色器错误时</size>
+<color=red>部分模型指定了需要使用的着色器。</color>
+发布者会指定所需的着色器，请搜索并下载、安装该着色器。</size>
+
+</txt>
+<hr>black, 12</hr>
+<t>常见的 VRChat 标准以外的着色器</t>
+<txt>
+<size=14>以下介绍模型常用的几种着色器。</size>
+
+<size=18>Unity-chan Toon Shader 2.0（UTS2）</size>
+
+<size=14>为满足赛璐璐风格 3DCG 动画制作现场的需求而设计的、面向影像制作的卡通着色器。</size>
+</txt>
+<button>UTS2 下载页面, Link, https://unity-chan.com/download/releaseNote.php?id=UTS2_0</button>
+
+<hr>black, 12</hr>
+
+<section>lilToon_thumbnail.png, 50, <size=18>lilToon</size>
+
+<size=14>为使用虚拟形象的服务（VRChat 等）开发的着色器。调整简单、画面精美且轻量，因此被 VRChat 模型广泛使用。</size></section>
+<button>lilToon 下载页面, Link, https://booth.pm/ja/items/3087170</button>
+
+<hr>black, 12</hr>
+
+<txt>
+<size=18>UnlitWF</size>
+
+<size=14>UnlitWF/UnToon 是一款以“在直接绘制纹理的 Unlit 着色器上添加各种效果”为理念设计的卡通着色器。
+除了根据光源调整明暗/色调外，还擅长 NormalMap/MetallicMap/Matcap 等各种效果，以及阶调阴影/描边等卡通渲染。
+只需简单设置就能实现动态变化的渲染效果。</size>
+</txt>
+<button>UnlitWF 安装说明页面, Link, https://github.com/whiteflare/Unlit_WF_ShaderSuite/wiki/UnlitWF-VPM-package-Installation-procedure</button>
+
+<hr>black, 12</hr>
+
+<t>着色器的种类</t>
+<txt>
+着色器大致可以分为几类。
+模型常用的是 standard 系和 toon 系。
+表现写实阴影时常用 standard 系，
+动漫风格的模型常用 toon 系。
+
+当前的 EAUploader 不支持更换着色器。如需更换或调整着色器，请使用 Unity 编辑器。
+</txt>
+
+<button>加入 Discord, Main, https://discord.gg/mkDJ7xm94Z</button>
+<button>访问官网, Sub, https://uslog.tech/eauploader</button>

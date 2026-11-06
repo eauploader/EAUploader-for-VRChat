@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.6.3
+
+- Fixed first-time uploads failing with "You must assign an ID to the avatar before building a bundle." EAUploader no longer assigns a local blueprint ID before uploading; the VRChat SDK now reserves the avatar ID, which is written back to the Prefab, including after multi-platform builds.
+- Prefabs that still hold an unknown blueprint ID from earlier versions are cleared and uploaded as new avatars. "Unlink from VRChat" now clears the ID instead of assigning a local one.
+- The temporary `prefab-id-v1_...` Prefab that the VRChat SDK creates during a build is no longer imported as a managed Prefab, which left a broken Variant with a missing parent after each build.
+- Added Simplified Chinese (简体中文) for the UI, help messages, EALibrary articles and the Viewpoint Position Editor. Chinese text uses the system Chinese font (such as Microsoft YaHei).
+- An unsaved (Untitled) scene is now saved automatically as `Assets/EAUploader/eauploader.unity`, which is opened on later launches.
+
 ## 1.6.2
 
 - Fixed importing existing project Prefabs from the file picker, folders, and drag and drop by using Unity project-relative paths.

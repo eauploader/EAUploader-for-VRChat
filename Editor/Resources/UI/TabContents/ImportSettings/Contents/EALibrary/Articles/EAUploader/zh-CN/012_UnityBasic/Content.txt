@@ -1,0 +1,10 @@
+<t>― 写给 VRChat 玩家的 Unity 基础 ―</t>
+<txt>
+<size=20>了解 Unity，更好地享受模型</size>
+
+<size=16>　EAUploader 能做的事情是有限的。换装、更改表情、添加机关等模型改造都需要在 Unity 中进行。但是，大量参考文章都是以具备 Unity 和模型的基础知识与技能为前提写的，读起来会觉得很难。
+　因此，建议先掌握 Unity 的基础。完全不了解 Unity 的人，请务必读一读这篇文章。（文章为日语）</size>
+<size=12>文章作者　きくじん</size>
+</txt>
+<button>阅读文章, Link, https://note.com/kikjin/n/n013030dfec82</button>
+<image>thumbnail.png</image>

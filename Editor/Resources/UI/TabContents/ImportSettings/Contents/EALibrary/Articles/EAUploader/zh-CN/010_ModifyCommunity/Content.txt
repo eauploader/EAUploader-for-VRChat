@@ -1,0 +1,36 @@
+<t>― 使用原创模型 ―</t>
+<txt>
+<size=18>尝试改造模型，或者制作原创模型吧</size>
+
+<size=12>改造模型最简单的方法是换衣服。
+EAUploader 目前不支持标准的换装功能。
+除扩展功能外，如果想改造模型，需要使用常规的 Unity 编辑器。
+网上有很多相关文章，可以查阅后尝试一下。
+（今后也计划以扩展功能的形式提供改造功能。）</size>
+
+<size=18>遇到困难时可以来这个社区！
+<b>「アバター改変なんもわからん集会」（模型改造啥都不懂集会）</b></size>
+</txt>
+<image>community_poster.png</image>
+<txt>
+<size=12>改造模型遇到困难时，推荐加入这个社区。
+这是一个很好的社区，提问很方便，有经验的人也会热心解答。
+在不定期举办的活动中，还可以和其他改造新手一起学习改造技巧。（社区主要使用日语）</size>
+
+</txt>
+<button>查看官方 X, Link, https://twitter.com/wakaran_vrc</button>
+<button>加入社区！, Link, https://discord.gg/JrVHTCkFK3</button>
+<txt>
+
+<size=18>想从零开始制作模型的人</size>
+
+<size=12>无需 3D 建模知识！！
+推荐使用 VRoid Studio 制作 VRM 模型。
+这是一款只需调整参数就能轻松制作模型的软件。
+可以像游戏捏人一样制作模型。
+除了自带丰富的服装外，还有许多创作者制作的服装和配饰。
+
+使用 EAUploader 上传 VRM 模型的步骤，请参阅<color=blue>“使用 VRM 模型”</color>一文。</size>
+</txt>
+<button>查看 VRoid Studio, Main, https://vroid.com/studio</button>
+<button>在 VRoid Hub 查看大家的作品, Main, https://hub.vroid.com/</button>

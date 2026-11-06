@@ -23,6 +23,7 @@ namespace EAUploader.UI.Components
             // 2. コンテンツ（VisualElement）作成
             var container = new VisualElement();
             container.styleSheets.Add(Resources.Load<StyleSheet>("UI/styles"));
+            LanguageUtility.ApplyLanguageFont(container);
 
             // ScrollView
             var scrollView = new ScrollView

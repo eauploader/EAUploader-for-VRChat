@@ -1,0 +1,6 @@
+<t>请支持我们</t>
+<txt>
+<size=16>EAUploader 是免费开发和提供的，开发、项目运营以及其他宣传活动的费用全部由开发者承担。如果你愿意支持本工具的开发与发展，我们将非常感激。
+</size>
+</txt>
+<button>了解支持方式, Link, https://www.uslog.tech/eauploader/donate</button>

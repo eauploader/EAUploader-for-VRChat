@@ -1,0 +1,8 @@
+<t>操作说明</t>
+<image>Controll_EN.png</image>
+<txt>
+<size=18><color=green>左键拖动</color>：旋转
+<color=green>右键拖动</color>：移动
+<color=green>滚轮上下</color>：缩放
+<color=green>左下角图标</color>：重置位置</size>
+</txt>

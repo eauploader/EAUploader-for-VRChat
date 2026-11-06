@@ -1,0 +1,1769 @@
+{
+  "name": "简体中文",
+  "items": [
+    {
+      "key": "Import/Settings",
+      "value": "导入/设置"
+    },
+    {
+      "key": "Setup",
+      "value": "配置"
+    },
+    {
+      "key": "Upload",
+      "value": "上传"
+    },
+    {
+      "key": "Import",
+      "value": "导入"
+    },
+    {
+      "key": "Import Avatars",
+      "value": "导入模型"
+    },
+    {
+      "key": "Import all prefab or unitypackage in folder.",
+      "value": "导入文件夹中所有的 Prefab 和 Unitypackage"
+    },
+    {
+      "key": "Import from folder",
+      "value": "从文件夹导入"
+    },
+    {
+      "key": "Import VRM",
+      "value": "导入 VRM"
+    },
+    {
+      "key": "Import the .vrm(ver. 0.x) file.",
+      "value": "导入 .vrm（ver. 0.x）文件"
+    },
+    {
+      "key": "Import the .unitypackage file that contains the shader.",
+      "value": "导入包含着色器的 .unitypackage 文件"
+    },
+    {
+      "key": "Import Shaders",
+      "value": "导入着色器"
+    },
+    {
+      "key": "Show existing shaders",
+      "value": "查看已安装的着色器"
+    },
+    {
+      "key": "Existing Shaders",
+      "value": "已安装的着色器"
+    },
+    {
+      "key": "Settings",
+      "value": "设置"
+    },
+    {
+      "key": "Send feedback",
+      "value": "发送反馈"
+    },
+    {
+      "key": "Manage Model",
+      "value": "管理模型"
+    },
+    {
+      "key": "Search",
+      "value": "搜索"
+    },
+    {
+      "key": "Change Name",
+      "value": "重命名"
+    },
+    {
+      "key": "Copy as New Name",
+      "value": "复制为新名称"
+    },
+    {
+      "key": "Delete",
+      "value": "删除"
+    },
+    {
+      "key": "Preview",
+      "value": "预览"
+    },
+    {
+      "key": "Reset View",
+      "value": "重置视图"
+    },
+    {
+      "key": "Pin prefab",
+      "value": "固定 Prefab"
+    },
+    {
+      "key": "Select a avatar",
+      "value": "选择要编辑的模型"
+    },
+    {
+      "key": "Import Asset",
+      "value": "导入资源"
+    },
+    {
+      "key": "Import a .prefab file or .unitypackage file.",
+      "value": "选择 Prefab 或 Unitypackage 进行导入"
+    },
+    {
+      "key": "Asset not found",
+      "value": "找不到资源"
+    },
+    {
+      "key": "Cannot import prefab",
+      "value": "无法导入 Prefab"
+    },
+    {
+      "key": "Select a prefab in this project's Assets folder, outside EAUploader's internal folders. To import assets from another project, use a unitypackage.",
+      "value": "请选择本项目 Assets 文件夹中的 Prefab。EAUploader 的内部文件夹不在此范围内。如需从其他项目导入，请使用 Unitypackage。"
+    },
+    {
+      "key": "There are no prefab or unitypackage files in the selected folder.",
+      "value": "所选文件夹中没有 Prefab 或 Unitypackage 文件。"
+    },
+    {
+      "key": "Confirm Import",
+      "value": "确认导入"
+    },
+    {
+      "key": "The following files will be imported",
+      "value": "将导入以下文件"
+    },
+    {
+      "key": "Cancel",
+      "value": "取消"
+    },
+    {
+      "key": "Language: ",
+      "value": "语言："
+    },
+    {
+      "key": "Version: ",
+      "value": "版本："
+    },
+    {
+      "key": "Help",
+      "value": "帮助"
+    },
+    {
+      "key": "Now selecting Prefab: ",
+      "value": "当前选择的 Prefab："
+    },
+    {
+      "key": "Height: ",
+      "value": "模型高度："
+    },
+    {
+      "key": "Edit tool",
+      "value": "编辑工具"
+    },
+    {
+      "key": "Description: ",
+      "value": "说明："
+    },
+    {
+      "key": "Author: ",
+      "value": "作者："
+    },
+    {
+      "key": "Open the link",
+      "value": "打开链接"
+    },
+    {
+      "key": "Find extentions",
+      "value": "查找其他扩展"
+    },
+    {
+      "key": "Select an Avatar to Upload",
+      "value": "选择要上传的模型"
+    },
+    {
+      "key": "Logged in as ",
+      "value": "当前登录用户："
+    },
+    {
+      "key": "You need to login to upload avatar",
+      "value": "上传模型前请先登录 VRChat。"
+    },
+    {
+      "key": "Login",
+      "value": "登录"
+    },
+    {
+      "key": "You have permission to upload avatar",
+      "value": "你有上传模型的权限。"
+    },
+    {
+      "key": "You cannot upload an avatar with your current trust rank. You can immediately increase your rank by spending time on VRChat and adding friends. Or you can join VRChat+ (for a fee) to raise your rank immediately.",
+      "value": "以你当前的信任等级无法上传模型。需要达到 New User 或以上等级才能上传模型。\n多在 VRChat 中活动、增加好友即可快速提升等级。也可以加入 VRChat+（付费）立即提升等级。"
+    },
+    {
+      "key": "Uploading avatar...",
+      "value": "正在上传模型..."
+    },
+    {
+      "key": "Login to VRChat",
+      "value": "登录 VRChat"
+    },
+    {
+      "key": "Check you are allowed to upload avatar",
+      "value": "模型上传权限"
+    },
+    {
+      "key": "Avatar Info",
+      "value": "模型信息"
+    },
+    {
+      "key": "Set thumbnail",
+      "value": "缩略图"
+    },
+    {
+      "key": "Name",
+      "value": "模型名称"
+    },
+    {
+      "key": "Please enter a name for your avatar",
+      "value": "请输入模型名称"
+    },
+    {
+      "key": "Description",
+      "value": "模型说明"
+    },
+    {
+      "key": "Describe your avatar so it is easier to remember!",
+      "value": "输入说明作为备注"
+    },
+    {
+      "key": "Content Warnings",
+      "value": "内容警告设置"
+    },
+    {
+      "key": "Visibility",
+      "value": "公开设置"
+    },
+    {
+      "key": "Change Thumbnail",
+      "value": "更换缩略图"
+    },
+    {
+      "key": "Using preview image (Default)",
+      "value": "使用预览图（默认）"
+    },
+    {
+      "key": "Build",
+      "value": "构建"
+    },
+    {
+      "key": "Test",
+      "value": "测试"
+    },
+    {
+      "key": "Sexually Suggestive",
+      "value": "性暗示"
+    },
+    {
+      "key": "Adult Language and Themes",
+      "value": "成人用语与主题"
+    },
+    {
+      "key": "Graphic Violence",
+      "value": "暴力画面"
+    },
+    {
+      "key": "Excessive Gore",
+      "value": "过度血腥"
+    },
+    {
+      "key": "Extreme Horror",
+      "value": "极端恐怖"
+    },
+    {
+      "key": "Selected Platform",
+      "value": "切换 PC / Quest"
+    },
+    {
+      "key": "Build Target Switcher",
+      "value": "更改构建目标"
+    },
+    {
+      "key": "Are you sure you want to switch your build target to Windows? This could take a while.",
+      "value": "要将构建目标切换为 Windows 吗？（切换需要一些时间）"
+    },
+    {
+      "key": "Are you sure you want to switch your build target to Android? This could take a while.",
+      "value": "要将构建目标切换为 Android（Quest、手机）吗？（切换需要一些时间）"
+    },
+    {
+      "key": "Are you sure you want to switch your build target to iOS? This could take a while.",
+      "value": "要将构建目标切换为 iOS 吗？（切换需要一些时间）"
+    },
+    {
+      "key": "Confirm",
+      "value": "确认"
+    },
+    {
+      "key": "Select a prefab to preview",
+      "value": "请选择模型。"
+    },
+    {
+      "key": "Select the avatar you wish to set up from the list on the left.",
+      "value": "请从左侧列表中选择要设置的模型。"
+    },
+    {
+      "key": "Filter by Tag",
+      "value": "按标签筛选"
+    },
+    {
+      "key": "Upload Succeed",
+      "value": "上传成功"
+    },
+    {
+      "key": "Upload Failed",
+      "value": "上传失败"
+    },
+    {
+      "key": "Select a prefab to upload",
+      "value": "请选择要上传的模型"
+    },
+    {
+      "key": "Send Feedback",
+      "value": "发送反馈"
+    },
+    {
+      "key": "Open log report",
+      "value": "显示日志报告"
+    },
+    {
+      "key": "Press the \"Send\" button to send the log report.\nSubmissions are irrevocable.",
+      "value": "已打开日志报告所在的文件夹。\n\n点击发送按钮，即可将日志报告发送给开发者。"
+    },
+    {
+      "key": "Could not find log file to send.",
+      "value": "找不到要发送的日志文件。"
+    },
+    {
+      "key": "Transmission was failed.",
+      "value": "发送失败。"
+    },
+    {
+      "key": "Your name (option)",
+      "value": "名字（可选）"
+    },
+    {
+      "key": "Mail address (option)",
+      "value": "邮箱地址（可选）"
+    },
+    {
+      "key": "Subject (option)",
+      "value": "主题（可选）"
+    },
+    {
+      "key": "Message",
+      "value": "消息"
+    },
+    {
+      "key": "Submissions are irrevocable. \nDo not include personal information.",
+      "value": "发送后无法撤回。请勿填写个人信息。"
+    },
+    {
+      "key": "Transmission was successful. Thank you.",
+      "value": "发送成功，谢谢！"
+    },
+    {
+      "key": "Submit",
+      "value": "发送"
+    },
+    {
+      "key": "Close",
+      "value": "关闭"
+    },
+    {
+      "key": "Prefabs with missing or problematic shaders:",
+      "value": "缺少着色器或着色器有问题的 Prefab："
+    },
+    {
+      "key": "Please confirm the required shaders from the avatar distributor.",
+      "value": "请向模型发布者确认所需的着色器。"
+    },
+    {
+      "key": "Why am I seeing this?",
+      "value": "为什么会显示这个？"
+    },
+    {
+      "key": "Shader Issues Found",
+      "value": "发现着色器问题"
+    },
+    {
+      "key": "Polygons",
+      "value": "多边形数"
+    },
+    {
+      "key": "Bounds",
+      "value": "包围盒"
+    },
+    {
+      "key": "Skinned Meshes",
+      "value": "蒙皮网格"
+    },
+    {
+      "key": "Meshes",
+      "value": "网格"
+    },
+    {
+      "key": "Material Slots",
+      "value": "材质槽"
+    },
+    {
+      "key": "Animators",
+      "value": "Animator 数"
+    },
+    {
+      "key": "Bones",
+      "value": "骨骼"
+    },
+    {
+      "key": "Lights",
+      "value": "灯光"
+    },
+    {
+      "key": "Particle Systems",
+      "value": "粒子系统"
+    },
+    {
+      "key": "Total Max Particles",
+      "value": "最大粒子总数"
+    },
+    {
+      "key": "Mesh Particle Max Polygons",
+      "value": "网格粒子最大多边形数"
+    },
+    {
+      "key": "Particle Trails Enabled",
+      "value": "已启用粒子拖尾"
+    },
+    {
+      "key": "Particle Collision Enabled",
+      "value": "已启用粒子碰撞"
+    },
+    {
+      "key": "Trail Renderers",
+      "value": "拖尾渲染器"
+    },
+    {
+      "key": "Line Renderers",
+      "value": "线渲染器"
+    },
+    {
+      "key": "Dynamic Bone Components",
+      "value": "Dynamic Bone 组件"
+    },
+    {
+      "key": "Dynamic Bone Transforms",
+      "value": "Dynamic Bone Transform"
+    },
+    {
+      "key": "Dynamic Bone Colliders",
+      "value": "Dynamic Bone 碰撞体"
+    },
+    {
+      "key": "Dynamic Bone Collision Check Count",
+      "value": "Dynamic Bone 碰撞检测数"
+    },
+    {
+      "key": "Cloths",
+      "value": "布料"
+    },
+    {
+      "key": "Total Cloth Vertices",
+      "value": "布料顶点数"
+    },
+    {
+      "key": "Physics Colliders",
+      "value": "物理碰撞体"
+    },
+    {
+      "key": "Physics Rigidbodies",
+      "value": "物理刚体"
+    },
+    {
+      "key": "Audio Sources",
+      "value": "音频源"
+    },
+    {
+      "key": "Download Size",
+      "value": "下载大小"
+    },
+    {
+      "key": "Uncompressed Size",
+      "value": "未压缩大小"
+    },
+    {
+      "key": "Contact Count",
+      "value": "Contact 数"
+    },
+    {
+      "key": "PhysBone Components",
+      "value": "PhysBone 组件"
+    },
+    {
+      "key": "PhysBone Transforms",
+      "value": "PhysBone Transform"
+    },
+    {
+      "key": "PhysBone Colliders",
+      "value": "PhysBone 碰撞体"
+    },
+    {
+      "key": "PhysBone Collision Check Count",
+      "value": "PhysBone 碰撞检测数"
+    },
+    {
+      "key": "Texture Memory",
+      "value": "纹理内存"
+    },
+    {
+      "key": "Constraints",
+      "value": "约束"
+    },
+    {
+      "key": "None",
+      "value": "无"
+    },
+    {
+      "key": "No VRCAvatarDescriptor",
+      "value": "没有 VRCAvatarDescriptor"
+    },
+    {
+      "key": "No Shader",
+      "value": "没有着色器"
+    },
+    {
+      "key": "Unsupported Platform",
+      "value": "不支持的平台"
+    },
+    {
+      "key": "Avatar testing is only supported on Windows.",
+      "value": "模型测试仅支持 Windows。"
+    },
+    {
+      "key": "Avatar Performance",
+      "value": "模型性能"
+    },
+    {
+      "key": "Platform",
+      "value": "平台"
+    },
+    {
+      "key": "The information provided above is accurate and I have the rights to upload this content to VRChat",
+      "value": "以上设置无误，我确认拥有将此模型上传到 VRChat 的权利。"
+    },
+    {
+      "key": "VRM Avatar needs to convert to VRChat Avatar",
+      "value": "需要将 VRM 模型转换为 VRChat 模型"
+    },
+    {
+      "key": "Convert to VRChat Avatar",
+      "value": "转换为 VRChat 模型"
+    },
+    {
+      "key": "Ready to upload",
+      "value": "可以上传"
+    },
+    {
+      "key": "Can't be uploaded",
+      "value": "无法上传"
+    },
+    {
+      "key": "This avatar can't be uploaded for the following reasons:",
+      "value": "由于以下原因，无法上传此模型："
+    },
+    {
+      "key": "Cannot find the configured shader.",
+      "value": "找不到所设置的着色器"
+    },
+    {
+      "key": "Avatar is a VRM model",
+      "value": "该模型是 VRM 模型"
+    },
+    {
+      "key": "Last Modified Descending",
+      "value": "最后修改时间（新→旧）"
+    },
+    {
+      "key": "Last Modified Ascending",
+      "value": "最后修改时间（旧→新）"
+    },
+    {
+      "key": "Name Ascending",
+      "value": "名称 A-Z"
+    },
+    {
+      "key": "Name Descending",
+      "value": "名称 Z-A"
+    },
+    {
+      "key": "Do not show hidden models",
+      "value": "不显示已隐藏的模型"
+    },
+    {
+      "key": "Show hidden models",
+      "value": "同时显示已隐藏的模型"
+    },
+    {
+      "key": "Show only hidden models",
+      "value": "仅显示已隐藏的模型"
+    },
+    {
+      "key": "Show",
+      "value": "在列表中显示"
+    },
+    {
+      "key": "Hide",
+      "value": "隐藏"
+    },
+    {
+      "key": "Exit Unity",
+      "value": "退出 Unity"
+    },
+    {
+      "key": "Confirm Exit",
+      "value": "确认退出"
+    },
+    {
+      "key": "Are you sure you want to exit Unity?",
+      "value": "确定要退出 Unity 吗？\n（通常会保存当前的工作状态）"
+    },
+    {
+      "key": "Yes",
+      "value": "是"
+    },
+    {
+      "key": "No",
+      "value": "否"
+    },
+    {
+      "key": "Language Change Confirmation",
+      "value": "确认更改语言"
+    },
+    {
+      "key": "Are you sure you want to change the language?",
+      "value": "确定要更改语言吗？"
+    },
+    {
+      "key": "Light",
+      "value": "浅色"
+    },
+    {
+      "key": "Dark",
+      "value": "深色"
+    },
+    {
+      "key": "Experimental",
+      "value": "实验性功能"
+    },
+    {
+      "key": "Theme: ",
+      "value": "主题："
+    },
+    {
+      "key": "Save",
+      "value": "保存"
+    },
+    {
+      "key": "Discard",
+      "value": "放弃"
+    },
+    {
+      "key": "Convert VRM 0.x Avatar",
+      "value": "将 VRM 0.x 模型转换为 VRChat 模型"
+    },
+    {
+      "key": "Convert",
+      "value": "转换"
+    },
+    {
+      "key": "Shoulder Height",
+      "value": "肩部高度"
+    },
+    {
+      "key": "Armature Height",
+      "value": "骨架高度"
+    },
+    {
+      "key": "Combine Meshes",
+      "value": "合并网格"
+    },
+    {
+      "key": "Use Shape Key Normals and Tangents",
+      "value": "使用形态键的法线和切线"
+    },
+    {
+      "key": "Swinging Object",
+      "value": "摇摆物"
+    },
+    {
+      "key": "Take Over Swinging Parameters",
+      "value": "沿用摇摆参数"
+    },
+    {
+      "key": "Settings for Quest",
+      "value": "Quest 设置"
+    },
+    {
+      "key": "Settings for PC",
+      "value": "PC 设置"
+    },
+    {
+      "key": "For Quest",
+      "value": "Quest 用"
+    },
+    {
+      "key": "Error Report",
+      "value": "错误报告"
+    },
+    {
+      "key": "An error has occurred",
+      "value": "发生错误"
+    },
+    {
+      "key": "An error has occurred. Please try to resolve the issue based on this error or seek help from the community or other sources. However, if the error is caused by EAUploader, please report it to the developer via feedback.",
+      "value": "发生了错误。请根据此错误尝试解决，或向社区等寻求帮助。如果错误是由 EAUploader 引起的，请通过反馈功能报告给开发者。"
+    },
+    {
+      "key": "Copy",
+      "value": "复制"
+    },
+    {
+      "key": "Drop files(.unitypackage, .prefab) to import",
+      "value": "拖放要导入的文件（.unitypackage、.prefab）"
+    },
+    {
+      "key": "Drop files(.unitypackage, .prefab, .vrm(ver. 0.x)) to import",
+      "value": "拖放要导入的文件（.unitypackage、.prefab、.vrm(ver. 0.x)）"
+    },
+    {
+      "key": "Restart EAUploader because there is a problem with EAUploader; if restarting EAUploader does not solve the problem, delete EAUploader from VCC and add EAUploader again.",
+      "value": "EAUploader 出现问题，请重新启动 EAUploader。如果重启后问题仍未解决，请在 VCC 中将 EAUploader 从项目中移除后重新添加。"
+    },
+    {
+      "key": "Restart",
+      "value": "重新启动"
+    },
+    {
+      "key": "Avatar Optimization",
+      "value": "模型优化"
+    },
+    {
+      "key": "Automatic avatar optimizing (AvatarOptimizer)",
+      "value": "自动优化（使用 AvatarOptimizer）"
+    },
+    {
+      "key": "Import extentions",
+      "value": "导入扩展"
+    },
+    {
+      "key": "Regenerate Preview",
+      "value": "重新生成预览"
+    },
+    {
+      "key": "Change the thumbnail of list",
+      "value": "更改列表缩略图"
+    },
+    {
+      "key": "Do you also change the thumbnails that appear in the EAUploader avatar list?",
+      "value": "是否也应用到 EAUploader 模型列表中的缩略图？"
+    },
+    {
+      "key": "VRChat Information",
+      "value": "VRChat 上的信息"
+    },
+    {
+      "key": "Created At: ",
+      "value": "上传日期："
+    },
+    {
+      "key": "Updated At: ",
+      "value": "最后更新日期："
+    },
+    {
+      "key": "Upload Count: ",
+      "value": "更新次数："
+    },
+    {
+      "key": "Unlink from VRChat",
+      "value": "解除与 VRChat 的关联"
+    },
+    {
+      "key": "The folder where the log files are stored is opened.",
+      "value": "已打开保存日志文件的文件夹。"
+    },
+    {
+      "key": "Click to Setup",
+      "value": "点击进行配置"
+    },
+    {
+      "key": "Pastel",
+      "value": "柔和"
+    },
+    {
+      "key": "Delete Prefab",
+      "value": "删除 Prefab"
+    },
+    {
+      "key": "Are you sure you want to delete this prefab?",
+      "value": "确定要删除此 Prefab 吗？"
+    },
+    {
+      "key": "The following related assets are used only by this prefab and will also be deleted:",
+      "value": "以下相关资源仅被此 Prefab 使用，将一并删除："
+    },
+    {
+      "key": "Looking for related assets...",
+      "value": "正在查找相关资源..."
+    },
+    {
+      "key": "Outfit Settings",
+      "value": "服装・配饰设置"
+    },
+    {
+      "key": "Here you can configure non-Avatar prefabs (Cloth, Accessory, etc.)",
+      "value": "可以设置模型以外的 Prefab（服装、配饰等）的分类"
+    },
+    {
+      "key": "Checked prefabs will be saved with the selected genre.",
+      "value": "将所选类型保存到勾选的 Prefab。"
+    },
+    {
+      "key": "Select all",
+      "value": "全选"
+    },
+    {
+      "key": "Genre",
+      "value": "类型"
+    },
+    {
+      "key": "Show error report window",
+      "value": "显示错误报告窗口"
+    },
+    {
+      "key": "Do not show this window again (can be re-enabled in Settings)",
+      "value": "不再显示此窗口（可在设置中重新启用）"
+    },
+    {
+      "key": "The log is too long to display in full. Only the latest part is shown. Use Copy to get the whole report.",
+      "value": "日志过长，未显示全文，仅显示最新部分。可通过复制获取完整报告。"
+    },
+    {
+      "key": "Another build is already in progress.",
+      "value": "已有其他构建正在进行。"
+    },
+    {
+      "key": "The build was cancelled.",
+      "value": "已取消构建。"
+    },
+    {
+      "key": "The upload was cancelled.",
+      "value": "已取消上传。"
+    },
+    {
+      "key": "Could not get the VRChat SDK avatar builder.",
+      "value": "无法获取 VRChat SDK 的模型构建器。"
+    },
+    {
+      "key": "The following platforms are skipped because their build support is not installed:",
+      "value": "由于未安装 Build Support，将跳过以下平台："
+    },
+    {
+      "key": "All avatars are uploaded for Windows. Enable the platforms below to additionally build and upload for them.",
+      "value": "模型一定会上传 Windows 版本。如需额外上传到其他平台，请启用对应平台。"
+    },
+    {
+      "key": "Also upload for Quest (Android)",
+      "value": "同时上传 Quest（Android）版本"
+    },
+    {
+      "key": "Also upload for iOS",
+      "value": "同时上传 iOS 版本"
+    },
+    {
+      "key": "The build target will be switched during the upload and restored to Windows afterwards. This can take a while.",
+      "value": "上传过程中会切换构建目标，完成后会切换回 Windows。可能需要一些时间。"
+    },
+    {
+      "key": "Android Build Support Required",
+      "value": "需要 Android Build Support"
+    },
+    {
+      "key": "Android Build Support is required to upload for Quest. Would you like to download it now?",
+      "value": "上传 Quest 版本需要 Android Build Support。要现在下载吗？"
+    },
+    {
+      "key": "iOS Build Support Required",
+      "value": "需要 iOS Build Support"
+    },
+    {
+      "key": "iOS Build Support is required to upload for iOS. Would you like to download it now?",
+      "value": "上传 iOS 版本需要 iOS Build Support。要现在下载吗？"
+    },
+    {
+      "key": "Cancel upload",
+      "value": "取消上传"
+    },
+    {
+      "key": "Build Succeed",
+      "value": "构建成功"
+    },
+    {
+      "key": "Avatar List",
+      "value": "模型列表"
+    },
+    {
+      "key": "Avatar",
+      "value": "模型"
+    },
+    {
+      "key": "Cloth",
+      "value": "服装"
+    },
+    {
+      "key": "Accessory",
+      "value": "配饰"
+    },
+    {
+      "key": "Other",
+      "value": "其他"
+    },
+    {
+      "key": "Items and Others",
+      "value": "物品・其他"
+    },
+    {
+      "key": "How it looks on VRChat",
+      "value": "在 VRChat 中的显示"
+    },
+    {
+      "key": "Private",
+      "value": "私有"
+    },
+    {
+      "key": "Public",
+      "value": "公开"
+    },
+    {
+      "key": "Always uploaded",
+      "value": "一定会上传"
+    },
+    {
+      "key": "Build for this platform too",
+      "value": "同时为此平台构建"
+    },
+    {
+      "key": "Not uploaded",
+      "value": "不上传"
+    },
+    {
+      "key": "Quest (Android)",
+      "value": "Quest（Android）"
+    },
+    {
+      "key": "Show details",
+      "value": "查看明细"
+    },
+    {
+      "key": "Hide details",
+      "value": "收起明细"
+    },
+    {
+      "key": "Go to upload",
+      "value": "前往上传"
+    },
+    {
+      "key": "Upload to VRChat",
+      "value": "上传到 VRChat"
+    },
+    {
+      "key": "Back to edit",
+      "value": "返回编辑"
+    },
+    {
+      "key": "Grid",
+      "value": "网格线"
+    },
+    {
+      "key": "Axes",
+      "value": "坐标轴"
+    },
+    {
+      "key": "All",
+      "value": "全部"
+    },
+    {
+      "key": "Show hidden items",
+      "value": "同时显示已隐藏的物品"
+    },
+    {
+      "key": "No items found.",
+      "value": "未找到物品。"
+    },
+    {
+      "key": "Needs conversion",
+      "value": "需要转换"
+    },
+    {
+      "key": "Pin",
+      "value": "固定"
+    },
+    {
+      "key": "Unpin",
+      "value": "取消固定"
+    },
+    {
+      "key": "Show in Project",
+      "value": "在项目中显示"
+    },
+    {
+      "key": "Edit",
+      "value": "编辑"
+    },
+    {
+      "key": "Back to list",
+      "value": "返回列表"
+    },
+    {
+      "key": "Item Info",
+      "value": "物品信息"
+    },
+    {
+      "key": "Hide from list",
+      "value": "从列表中隐藏"
+    },
+    {
+      "key": "Duplicate",
+      "value": "复制"
+    },
+    {
+      "key": "Last Modified: ",
+      "value": "最后更新："
+    },
+    {
+      "key": "Last Updated",
+      "value": "最后更新"
+    },
+    {
+      "key": "Avatar Height",
+      "value": "模型高度"
+    },
+    {
+      "key": "Blueprint ID",
+      "value": "Blueprint ID"
+    },
+    {
+      "key": "Asset Path",
+      "value": "保存位置"
+    },
+    {
+      "key": "Copy Blueprint ID",
+      "value": "复制 Blueprint ID"
+    },
+    {
+      "key": "Show Blueprint ID",
+      "value": "显示 Blueprint ID"
+    },
+    {
+      "key": "Hide Blueprint ID",
+      "value": "隐藏 Blueprint ID"
+    },
+    {
+      "key": "Copy Path",
+      "value": "复制路径"
+    },
+    {
+      "key": "Copied",
+      "value": "已复制"
+    },
+    {
+      "key": "Blueprint ID copied",
+      "value": "已复制 Blueprint ID"
+    },
+    {
+      "key": "Path copied",
+      "value": "已复制保存位置的路径"
+    },
+    {
+      "key": "Copied to clipboard",
+      "value": "已复制到剪贴板"
+    },
+    {
+      "key": "Close notification",
+      "value": "关闭通知"
+    },
+    {
+      "key": "Path: ",
+      "value": "路径："
+    },
+    {
+      "key": "Select an item from the list first.",
+      "value": "请先从列表中选择物品。"
+    },
+    {
+      "key": "No avatar selected",
+      "value": "未选择模型"
+    },
+    {
+      "key": "A file with this name already exists.",
+      "value": "已存在同名文件。"
+    },
+    {
+      "key": "Error",
+      "value": "错误"
+    },
+    {
+      "key": "Select Thumbnail",
+      "value": "选择缩略图"
+    },
+    {
+      "key": "Tags",
+      "value": "标签"
+    },
+    {
+      "key": "Memo",
+      "value": "备注"
+    },
+    {
+      "key": "Add a note...",
+      "value": "输入备注..."
+    },
+    {
+      "key": "Tag Settings",
+      "value": "标签设置"
+    },
+    {
+      "key": "Add tag",
+      "value": "添加标签"
+    },
+    {
+      "key": "Tags can be added to avatars, outfits and other items.",
+      "value": "可以为模型、服装和物品添加标签。"
+    },
+    {
+      "key": "No tags yet.",
+      "value": "还没有标签。"
+    },
+    {
+      "key": "Are you sure you want to delete this tag?",
+      "value": "确定要删除此标签吗？"
+    },
+    {
+      "key": "This tag will also be removed from the items using it.",
+      "value": "使用此标签的物品也会移除此标签。"
+    },
+    {
+      "key": "Select from existing tags",
+      "value": "从已有标签中选择"
+    },
+    {
+      "key": "Card Size",
+      "value": "卡片大小"
+    },
+    {
+      "key": "Search by name or tag",
+      "value": "按名称或标签搜索"
+    },
+    {
+      "key": "No tags are set.",
+      "value": "未设置标签。"
+    },
+    {
+      "key": "Add a tag",
+      "value": "添加标签"
+    },
+    {
+      "key": "Search or create a tag",
+      "value": "搜索或新建标签"
+    },
+    {
+      "key": "Create new tag",
+      "value": "新建标签"
+    },
+    {
+      "key": "Type to add a new tag.",
+      "value": "输入标签名即可添加。"
+    },
+    {
+      "key": "Add",
+      "value": "添加"
+    },
+    {
+      "key": "Press Enter to add a tag.",
+      "value": "按 Enter 键添加。"
+    },
+    {
+      "key": "Tag names can be up to {0} characters.",
+      "value": "标签名不能超过 {0} 个字符。"
+    },
+    {
+      "key": "This tag is already added.",
+      "value": "此标签已添加。"
+    },
+    {
+      "key": "Click an existing tag to add",
+      "value": "点击已有标签进行添加"
+    },
+    {
+      "key": "Remove tag",
+      "value": "移除标签"
+    },
+    {
+      "key": "Filter by tag",
+      "value": "按标签筛选"
+    },
+    {
+      "key": "Items having all of the selected tags are shown.",
+      "value": "仅显示包含所有已选标签的物品。"
+    },
+    {
+      "key": "Clear selection",
+      "value": "清除选择"
+    },
+    {
+      "key": "Ungrouped",
+      "value": "未分组"
+    },
+    {
+      "key": "New tag name",
+      "value": "新标签名"
+    },
+    {
+      "key": "New group name",
+      "value": "新分组名"
+    },
+    {
+      "key": "Add group",
+      "value": "添加分组"
+    },
+    {
+      "key": "No tags in this group.",
+      "value": "此分组中没有标签。"
+    },
+    {
+      "key": "Are you sure you want to delete this group?",
+      "value": "确定要删除此分组吗？"
+    },
+    {
+      "key": "Tags in this group are kept and become ungrouped.",
+      "value": "分组中的标签不会被删除，而是变为未分组。"
+    },
+    {
+      "key": "Migrate",
+      "value": "迁移"
+    },
+    {
+      "key": "Later",
+      "value": "稍后"
+    },
+    {
+      "key": "The imported prefab it was created from is no longer used and will also be deleted:",
+      "value": "作为来源的已导入 Prefab 将不再使用，也会一并删除："
+    },
+    {
+      "key": "EAUploader now manages prefabs as variants in the following folder:",
+      "value": "EAUploader 现在会将 Prefab 作为以下文件夹中的 Prefab Variant 进行管理："
+    },
+    {
+      "key": "Number of prefabs to move to the new management folder:",
+      "value": "需要迁移到新管理文件夹的 Prefab 数量："
+    },
+    {
+      "key": "The original prefabs are left as they are, apart from removing the information EAUploader added to them.",
+      "value": "除移除 EAUploader 添加的信息外，原始 Prefab 将保持不变。"
+    },
+    {
+      "key": "Add outfit",
+      "value": "添加服装"
+    },
+    {
+      "key": "Adjust colors",
+      "value": "调整颜色"
+    },
+    {
+      "key": "Adjust the shape keys (blend shapes) of the selected item and save them as its default.",
+      "value": "调整所选物品的形态键（BlendShape），并保存为默认值。"
+    },
+    {
+      "key": "Apply",
+      "value": "应用"
+    },
+    {
+      "key": "Attach to",
+      "value": "安装位置"
+    },
+    {
+      "key": "Avatar parts",
+      "value": "模型部件"
+    },
+    {
+      "key": "Avatar root",
+      "value": "模型根节点"
+    },
+    {
+      "key": "Brightness (%)",
+      "value": "亮度 (%)"
+    },
+    {
+      "key": "Change the colors of the textures used by the selected item, or replace them with other images.",
+      "value": "更改所选物品所用纹理的颜色，或替换为其他图片。"
+    },
+    {
+      "key": "Changed",
+      "value": "已更改"
+    },
+    {
+      "key": "Chest",
+      "value": "胸部"
+    },
+    {
+      "key": "Contrast (%)",
+      "value": "对比度 (%)"
+    },
+    {
+      "key": "Could not find the hips bone of the avatar or the outfit.",
+      "value": "找不到模型或服装的 Hips 骨骼。"
+    },
+    {
+      "key": "Could not put on this outfit.",
+      "value": "无法穿上此服装。"
+    },
+    {
+      "key": "Dress the selected avatar with outfits and accessories from the list.",
+      "value": "为所选模型穿上列表中的服装和配饰。"
+    },
+    {
+      "key": "Edited",
+      "value": "已编辑"
+    },
+    {
+      "key": "Eyelids",
+      "value": "眼睑"
+    },
+    {
+      "key": "Focus on face",
+      "value": "显示面部"
+    },
+    {
+      "key": "Head",
+      "value": "头部"
+    },
+    {
+      "key": "Hips",
+      "value": "腰部"
+    },
+    {
+      "key": "Hue",
+      "value": "色相"
+    },
+    {
+      "key": "Left foot",
+      "value": "左脚"
+    },
+    {
+      "key": "Left hand",
+      "value": "左手"
+    },
+    {
+      "key": "Left lower arm",
+      "value": "左前臂"
+    },
+    {
+      "key": "Lip sync",
+      "value": "口型同步"
+    },
+    {
+      "key": "Materials",
+      "value": "材质"
+    },
+    {
+      "key": "Mesh",
+      "value": "网格"
+    },
+    {
+      "key": "Modular Avatar is installed. Outfits are set up without changing the avatar's bones.",
+      "value": "已安装 Modular Avatar。将在不更改模型骨骼的情况下设置服装。"
+    },
+    {
+      "key": "Modular Avatar is not installed. Outfit bones are merged directly into the avatar.",
+      "value": "未安装 Modular Avatar。服装骨骼将直接合并到模型中。"
+    },
+    {
+      "key": "Neck",
+      "value": "颈部"
+    },
+    {
+      "key": "No outfits are worn yet. Choose one below.",
+      "value": "还没有穿任何服装。请从下方选择。"
+    },
+    {
+      "key": "No outfits or accessories found. Import them from the list screen first.",
+      "value": "没有服装或配饰。请先在列表界面中导入。"
+    },
+    {
+      "key": "Outfit",
+      "value": "服装"
+    },
+    {
+      "key": "Outfit Tool",
+      "value": "换装工具"
+    },
+    {
+      "key": "Replace image...",
+      "value": "替换图片..."
+    },
+    {
+      "key": "Reset adjustments",
+      "value": "重置调整"
+    },
+    {
+      "key": "Reset this mesh",
+      "value": "重置此网格"
+    },
+    {
+      "key": "Restore original material",
+      "value": "恢复原始材质"
+    },
+    {
+      "key": "Revert",
+      "value": "还原"
+    },
+    {
+      "key": "Right foot",
+      "value": "右脚"
+    },
+    {
+      "key": "Right hand",
+      "value": "右手"
+    },
+    {
+      "key": "Right lower arm",
+      "value": "右前臂"
+    },
+    {
+      "key": "Saturation (%)",
+      "value": "饱和度 (%)"
+    },
+    {
+      "key": "Save as new avatar",
+      "value": "另存为新模型"
+    },
+    {
+      "key": "Search outfits",
+      "value": "搜索服装"
+    },
+    {
+      "key": "Search shape keys",
+      "value": "搜索形态键"
+    },
+    {
+      "key": "Set all to 0",
+      "value": "全部设为 0"
+    },
+    {
+      "key": "Shape Key Editor",
+      "value": "形态键编辑"
+    },
+    {
+      "key": "Shape Keys",
+      "value": "形态键"
+    },
+    {
+      "key": "Shape keys used for lip sync or blinking are controlled by VRChat while playing. Changing their default value may look wrong in game.",
+      "value": "用于口型同步或眨眼的形态键在 VRChat 中会被自动控制。更改其默认值可能会导致游戏内显示异常。"
+    },
+    {
+      "key": "Show changed only",
+      "value": "仅显示已更改的项"
+    },
+    {
+      "key": "Spine",
+      "value": "脊柱"
+    },
+    {
+      "key": "Take off",
+      "value": "脱下"
+    },
+    {
+      "key": "Take off this outfit?",
+      "value": "要脱下此服装吗？"
+    },
+    {
+      "key": "Texture",
+      "value": "纹理"
+    },
+    {
+      "key": "Texture Editor",
+      "value": "纹理编辑"
+    },
+    {
+      "key": "The original textures and materials are not changed. Edited copies are saved in the item folder when you apply.",
+      "value": "原始纹理和材质不会被更改。应用时，编辑后的副本会保存到物品所在的文件夹中。"
+    },
+    {
+      "key": "The selected item must be an avatar with a VRCAvatarDescriptor.",
+      "value": "请选择带有 VRCAvatarDescriptor 的模型。"
+    },
+    {
+      "key": "The selected item must have a material with a texture.",
+      "value": "请选择带有使用纹理的材质的物品。"
+    },
+    {
+      "key": "The selected item must have a mesh with shape keys.",
+      "value": "请选择带有形态键网格的物品。"
+    },
+    {
+      "key": "This avatar does not have that bone.",
+      "value": "此模型没有该骨骼。"
+    },
+    {
+      "key": "This material has no texture in the selected slot.",
+      "value": "此材质的所选项中没有纹理。"
+    },
+    {
+      "key": "This tool has unsaved changes. Do you want to save them?",
+      "value": "有未保存的更改。要保存吗？"
+    },
+    {
+      "key": "Tint",
+      "value": "色调"
+    },
+    {
+      "key": "Turn off parts such as the original clothes that should not be shown with the outfit.",
+      "value": "关闭原有衣服等不想与服装一同显示的部件。"
+    },
+    {
+      "key": "Unsaved changes",
+      "value": "有未保存的更改"
+    },
+    {
+      "key": "Wearing",
+      "value": "穿着中"
+    },
+    {
+      "key": "Whole body",
+      "value": "显示全身"
+    },
+    {
+      "key": "Dress Up (Compatible Outfits)",
+      "value": "换装（适配服装）"
+    },
+    {
+      "key": "Modular Avatar is not installed. Outfit bones are merged only into the uploaded copy, so the avatar itself is not changed.",
+      "value": "未安装 Modular Avatar。服装骨骼只会合并到用于上传的副本中，模型本身不会被更改。"
+    },
+    {
+      "key": "No matching shape keys.",
+      "value": "没有匹配的形态键。"
+    },
+    {
+      "key": "Main texture",
+      "value": "主纹理"
+    },
+    {
+      "key": "2nd texture",
+      "value": "第 2 纹理"
+    },
+    {
+      "key": "3rd texture",
+      "value": "第 3 纹理"
+    },
+    {
+      "key": "Shadow color",
+      "value": "阴影颜色"
+    },
+    {
+      "key": "2nd shadow color",
+      "value": "第 2 阴影颜色"
+    },
+    {
+      "key": "3rd shadow color",
+      "value": "第 3 阴影颜色"
+    },
+    {
+      "key": "Emission",
+      "value": "自发光"
+    },
+    {
+      "key": "2nd emission",
+      "value": "第 2 自发光"
+    },
+    {
+      "key": "Outline",
+      "value": "描边"
+    },
+    {
+      "key": "MatCap",
+      "value": "MatCap"
+    },
+    {
+      "key": "2nd MatCap",
+      "value": "第 2 MatCap"
+    },
+    {
+      "key": "Rim light",
+      "value": "边缘光"
+    },
+    {
+      "key": "Restore original visibility",
+      "value": "恢复原始显示状态"
+    },
+    {
+      "key": "Back",
+      "value": "返回"
+    },
+    {
+      "key": "The prefab and its preview will be deleted. This cannot be undone.",
+      "value": "将删除 Prefab 及其预览图。此操作无法撤销。"
+    },
+    {
+      "key": "Also delete related assets",
+      "value": "同时删除相关资源"
+    },
+    {
+      "key": "Select deletable assets",
+      "value": "全选可删除的资源"
+    },
+    {
+      "key": "Deselect all",
+      "value": "取消全选"
+    },
+    {
+      "key": "Select the imported prefab, materials and textures to delete together. Assets used elsewhere are kept. To delete a texture, also select the material or imported prefab using it.",
+      "value": "请选择要一并删除的已导入 Prefab、材质和纹理。在其他地方使用的资源将被保留。要删除纹理，请同时选择使用该纹理的材质或已导入 Prefab。"
+    },
+    {
+      "key": "Search again",
+      "value": "重新搜索"
+    },
+    {
+      "key": "Checking the selected assets before deletion...",
+      "value": "正在删除前重新确认所选资源的引用关系…"
+    },
+    {
+      "key": "Looking for related assets. You can delete only the prefab without waiting.",
+      "value": "正在查找相关资源。无需等待即可只删除 Prefab。"
+    },
+    {
+      "key": "Could not check related assets. No assets were deleted. Please search again.",
+      "value": "无法确认相关资源，未执行删除。请重新搜索。"
+    },
+    {
+      "key": "No related assets found. Only the prefab and its preview will be deleted.",
+      "value": "未找到相关资源。将只删除 Prefab 及其预览图。"
+    },
+    {
+      "key": "Related assets found:",
+      "value": "找到的相关资源："
+    },
+    {
+      "key": "Related assets changed. Review the selection and confirm deletion again.",
+      "value": "相关资源的状态已变化。请检查所选内容后再次确认删除。"
+    },
+    {
+      "key": "Some assets could not be deleted. Check the paths below.",
+      "value": "部分资源无法删除。请检查以下路径。"
+    },
+    {
+      "key": "Imported prefab",
+      "value": "已导入的 Prefab"
+    },
+    {
+      "key": "Used by other assets (kept)",
+      "value": "其他资源也在使用（保留）"
+    },
+    {
+      "key": "Used by an unselected related asset (kept)",
+      "value": "未选中的相关资源正在使用（保留）"
+    },
+    {
+      "key": "Will be deleted together",
+      "value": "将一并删除"
+    },
+    {
+      "key": "Keep this asset",
+      "value": "保留此资源"
+    },
+    {
+      "key": "Prefab to delete:",
+      "value": "要删除的 Prefab："
+    },
+    {
+      "key": "Related assets selected:",
+      "value": "要一并删除的相关资源："
+    },
+    {
+      "key": "Delete prefab only",
+      "value": "仅删除 Prefab"
+    },
+    {
+      "key": "Delete selected assets",
+      "value": "删除所选资源"
+    },
+    {
+      "key": "Unused related assets will also be deleted. Assets used elsewhere are kept. This cannot be undone.",
+      "value": "将一并删除不再使用的相关资源。在其他地方使用的资源将被保留。此操作无法撤销。"
+    },
+    {
+      "key": "Deletion details",
+      "value": "删除内容详情"
+    },
+    {
+      "key": "Related assets to delete",
+      "value": "要一并删除的资源"
+    },
+    {
+      "key": "Delete all together",
+      "value": "全部一起删除"
+    },
+    {
+      "key": "Keep related assets",
+      "value": "保留相关资源"
+    },
+    {
+      "key": "Uncheck any related assets you want to keep. Assets needed by them will also be kept.",
+      "value": "请取消勾选想要保留的资源。它们所使用的资源也会被保留。"
+    },
+    {
+      "key": "Preparing deletion...",
+      "value": "正在确认要删除的内容…"
+    },
+    {
+      "key": "The prefab and its preview will be deleted.",
+      "value": "将删除 Prefab 及其预览图。"
+    },
+    {
+      "key": "The prefab, its preview and {0} related assets will be deleted.",
+      "value": "将删除 Prefab、预览图及 {0} 个相关资源。"
+    },
+    {
+      "key": "No related assets to delete.",
+      "value": "没有要一并删除的相关资源。"
+    },
+    {
+      "key": "Checking deletion targets...",
+      "value": "正在重新确认要删除的内容…"
+    },
+    {
+      "key": "Deletion targets changed. Review the list and confirm deletion again.",
+      "value": "要删除的内容已变化。请检查列表后再次确认删除。"
+    },
+    {
+      "key": "Preview image",
+      "value": "预览图"
+    },
+    {
+      "key": "Material",
+      "value": "材质"
+    },
+    {
+      "key": "{0} files will be deleted.",
+      "value": "共将删除 {0} 个文件。"
+    }
+  ]
+}

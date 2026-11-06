@@ -25,6 +25,7 @@ namespace EAUploader.CustomPrefabUtility
 
             wnd.rootVisualElement.style.unityFontDefinition = FontDefinition.FromSDFFont(
                 Resources.Load<UnityEngine.TextCore.Text.FontAsset>("UI/EAUploaderFont"));
+            LanguageUtility.ApplyLanguageFont(wnd.rootVisualElement);
 
             var visualTree = new VisualElement();
             var newPrefabName = new TextField("新しいPrefabの名前")
